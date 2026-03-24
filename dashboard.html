@@ -3,174 +3,253 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oasis Air-Con Management</title>
+    <title>Oasis Air-Con Management System</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --primary-green: #28a745; --light-bg: #f4f7f6; }
-        body { font-family: sans-serif; margin: 0; background: var(--light-bg); }
-        .header { background: var(--primary-green); color: white; padding: 15px; text-align: center; font-weight: bold; position: sticky; top: 0; z-index: 100; }
-        .tab-bar { display: flex; background: white; border-bottom: 1px solid #ddd; }
-        .tab { flex: 1; padding: 12px; text-align: center; cursor: pointer; font-size: 14px; color: #666; font-weight: bold; }
+        :root { --primary-green: #28a745; --dark-green: #1e7e34; --light-bg: #f8f9fa; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--light-bg); color: #333; }
+        .header { background: var(--primary-green); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .logo-small { width: 40px; height: 40px; border-radius: 50%; border: 2px solid white; vertical-align: middle; margin-right: 10px; }
+        .container { padding: 15px; max-width: 800px; margin: auto; }
+        
+        /* Dashboard Charts */
+        .chart-container { background: white; padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        
+        /* Tabs Control */
+        .tab-bar { display: flex; background: white; border-bottom: 1px solid #ddd; position: sticky; top: 70px; z-index: 999; }
+        .tab { flex: 1; padding: 15px; text-align: center; cursor: pointer; font-weight: bold; color: #666; font-size: 13px; }
         .tab.active { color: var(--primary-green); border-bottom: 3px solid var(--primary-green); }
-        .container { padding: 15px; }
-        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; }
+
+        /* Forms & Cards */
+        .card { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 6px; font-weight: bold; font-size: 14px; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        .btn-green { background: var(--primary-green); color: white; border: none; padding: 14px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: #444; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; }
+        .btn-main { background: var(--primary-green); color: white; border: none; padding: 15px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        .btn-pdf { background: #007bff; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; margin-top: 10px; width: 100%; }
         
-        /* Staff Checkbox Styling */
-        .staff-selection { max-height: 150px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 8px; }
-        .staff-item { display: flex; align-items: center; margin-bottom: 8px; font-size: 14px; }
-        .staff-item input { width: auto; margin-right: 10px; }
-        
+        /* Multi-select for Staff */
+        .staff-box { max-height: 120px; overflow-y: auto; border: 1px solid #ddd; border-radius: 8px; padding: 10px; }
+        .staff-opt { display: flex; align-items: center; margin-bottom: 5px; font-size: 14px; }
+        .staff-opt input { width: auto; margin-right: 10px; }
+
         .hidden { display: none; }
-        .staff-list-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; }
-        .footer { text-align: center; font-size: 12px; color: #999; margin: 20px 0; }
+        .footer { text-align: center; font-size: 12px; color: #999; padding: 30px 0; }
     </style>
 </head>
 <body>
 
-<div class="header">OASIS AIR-CON MANAGEMENT</div>
+<div class="header">
+    <div>
+        <img src="1000064267.png" class="logo-small">
+        <span style="font-size: 18px;">OASIS SYSTEM</span>
+    </div>
+    <a href="index.html" style="color:white; text-decoration:none; font-size:14px;">Logout</a>
+</div>
 
 <div class="tab-bar">
-    <div class="tab active" onclick="showTab('jobs')">JOBS</div>
-    <div class="tab" onclick="showTab('staff')">STAFF LIST</div>
+    <div class="tab active" onclick="showTab('home')">HOME</div>
+    <div class="tab" onclick="showTab('jobs')">NEW JOB</div>
+    <div class="tab" onclick="showTab('staff')">STAFF</div>
+    <div class="tab" onclick="showTab('reports')">REPORTS</div>
 </div>
 
 <div class="container">
-    <div id="jobsTab">
+    
+    <div id="homeTab">
+        <div class="chart-container">
+            <h4 style="margin:0 0 15px 0;">Job Summary Dashboard</h4>
+            <canvas id="jobChart" style="max-height: 200px;"></canvas>
+        </div>
+        <div id="recentJobsList">
+            </div>
+    </div>
+
+    <div id="jobsTab" class="hidden">
         <div class="card">
-            <h3 style="margin-top:0; color:var(--primary-green);">New Job Entry</h3>
+            <h3>Service / Sale Record</h3>
+            <div class="form-group">
+                <label>Category</label>
+                <select id="jobCategory">
+                    <option value="Service">Service (ပြုပြင်ရေး)</option>
+                    <option value="Sale">Sale (အရောင်း)</option>
+                    <option value="Purchase">Purchase (အဝယ်)</option>
+                </select>
+            </div>
             <div class="form-group">
                 <label>Customer Name & Phone</label>
-                <input type="text" id="custName" placeholder="Name and Phone Number">
+                <input type="text" id="customer" placeholder="Eg. Daw Aye (09...)">
             </div>
-            
             <div class="form-group">
-                <label>Assigned Staff (အနည်းဆုံး ၂ ယောက်ရွေးပါ)</label>
-                <div id="staffDropdown" class="staff-selection">
-                    <p style="color:#999; font-size:12px;">Staff List ထဲတွင် အရင်နာမည်ထည့်ပါ</p>
-                </div>
+                <label>Appliance & Brand</label>
+                <input type="text" id="brand" placeholder="Eg. Samsung / 1.5HP / R32">
             </div>
-
             <div class="form-group">
-                <label>Appliance & Issue</label>
-                <textarea id="issue" rows="2" placeholder="Brand/Type/Problem/Gas..."></textarea>
+                <label>Assigned Staff (Min 2)</label>
+                <div id="staffSelect" class="staff-box">
+                    </div>
             </div>
-            
+            <div class="form-group">
+                <label>Service Date</label>
+                <input type="date" id="jobDate">
+            </div>
+            <div class="form-group">
+                <label>Cost (MMK)</label>
+                <input type="number" id="cost" placeholder="0 MMK">
+            </div>
             <div class="form-group">
                 <label>Status</label>
-                <select id="status">
+                <select id="jobStatus">
                     <option value="Pending">Pending</option>
                     <option value="Done">Done</option>
                 </select>
             </div>
-            <button class="btn-green" onclick="saveJob()">SAVE JOB RECORD</button>
+            <button class="btn-main" onclick="saveData()">SAVE RECORD</button>
         </div>
     </div>
 
     <div id="staffTab" class="hidden">
         <div class="card">
-            <h3 style="margin-top:0; color:var(--primary-green);">Add New Staff</h3>
-            <div class="form-group">
-                <label>Staff Name</label>
-                <input type="text" id="newStaffName" placeholder="ဝန်ထမ်းနာမည်ရိုက်ထည့်ပါ">
-            </div>
-            <div class="form-group">
-                <label>Position (ရာထူး)</label>
-                <select id="staffPosition">
-                    <option>Technician</option>
-                    <option>Helper</option>
-                    <option>Leader</option>
-                    <option>MD / Manager</option>
-                </select>
-            </div>
-            <button class="btn-green" onclick="addStaff()">ADD TO LIST</button>
-        </div>
-
-        <div class="card">
-            <h3 style="margin-top:0;">Staff Directory</h3>
-            <div id="staffDisplayList">
-                </div>
+            <h3>Add New Staff</h3>
+            <input type="text" id="staffName" placeholder="Staff Name" style="margin-bottom:10px;">
+            <select id="staffPos" style="margin-bottom:10px;">
+                <option>MD</option>
+                <option>Manager</option>
+                <option>Technician</option>
+                <option>Leader</option>
+                <option>Co-leader</option>
+                <option>Helper</option>
+                <option>Clerk (စာရေးမ)</option>
+            </select>
+            <button class="btn-main" onclick="addStaff()">ADD STAFF</button>
         </div>
     </div>
+
+    <div id="reportsTab" class="hidden">
+        <div class="card" id="reportContent">
+            <h3>Weekly Job Report</h3>
+            <p style="font-size:12px; color:#666;">Oasis Air-Con Sales & Service</p>
+            <div id="reportTableArea">
+                <p>No records found for this week.</p>
+            </div>
+        </div>
+        <button class="btn-pdf" onclick="downloadPDF()">DOWNLOAD WEEKLY REPORT (PDF)</button>
+    </div>
+
 </div>
 
-<div class="footer">App Developer - Zwe Maung Maung</div>
+<div class="footer">
+    App Developer - Zwe Maung Maung<br>
+    © 2026 Oasis Air-Con Co., Ltd.
+</div>
 
 <script>
-    let staffList = JSON.parse(localStorage.getItem('oasisStaff')) || [];
+    // --- APP LOGIC ---
+    let db = JSON.parse(localStorage.getItem('oasis_db')) || { jobs: [], staff: [] };
 
-    function showTab(tabName) {
-        document.getElementById('jobsTab').classList.toggle('hidden', tabName !== 'jobs');
-        document.getElementById('staffTab').classList.toggle('hidden', tabName !== 'staff');
+    function showTab(name) {
+        ['home', 'jobs', 'staff', 'reports'].forEach(t => document.getElementById(t+'Tab').classList.add('hidden'));
+        document.getElementById(name+'Tab').classList.remove('hidden');
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         event.currentTarget.classList.add('active');
-        if(tabName === 'jobs') updateStaffCheckboxes();
+        if(name === 'home') updateChart();
+        if(name === 'jobs') loadStaffOptions();
+        if(name === 'reports') prepareReport();
     }
 
-    // ဝန်ထမ်းအသစ်ထည့်ခြင်း
+    // Auto Sync Simulation (For true multi-phone sync, Firebase is needed)
+    function syncToCloud() {
+        localStorage.setItem('oasis_db', JSON.stringify(db));
+        // ကိုကိုရေ... တကယ်လို့ ဖုန်းအားလုံးမှာ တူချင်ရင် ဒီနေရာမှာ Firebase API ကို လှမ်းခေါ်ရမှာပါရှင်။
+    }
+
     function addStaff() {
-        const name = document.getElementById('newStaffName').value;
-        const pos = document.getElementById('staffPosition').value;
-        if (!name) return alert("နာမည်ရိုက်ထည့်ပါ");
-
-        staffList.push({ name: name, position: pos });
-        localStorage.setItem('oasisStaff', JSON.stringify(staffList));
-        document.getElementById('newStaffName').value = '';
-        renderStaffList();
-        updateStaffCheckboxes();
-        alert("ဝန်ထမ်းစာရင်းထဲ ထည့်ပြီးပါပြီ");
+        const name = document.getElementById('staffName').value;
+        const pos = document.getElementById('staffPos').value;
+        if(!name) return;
+        db.staff.push({ name, pos });
+        syncToCloud();
+        alert('Staff Added!');
+        document.getElementById('staffName').value = '';
     }
 
-    // ဝန်ထမ်းစာရင်းကို ပြသခြင်း
-    function renderStaffList() {
-        const display = document.getElementById('staffDisplayList');
-        display.innerHTML = staffList.map((s, index) => `
-            <div class="staff-list-item">
-                <span><strong>${s.name}</strong> (${s.position})</span>
-                <span style="color:red; cursor:pointer;" onclick="deleteStaff(${index})">ဖျက်မည်</span>
+    function loadStaffOptions() {
+        const box = document.getElementById('staffSelect');
+        box.innerHTML = db.staff.map(s => `
+            <div class="staff-opt">
+                <input type="checkbox" name="staff_choice" value="${s.name}">
+                <span>${s.name} (${s.pos})</span>
             </div>
         `).join('');
     }
 
-    function deleteStaff(index) {
-        if(confirm("ဤဝန်ထမ်းကို စာရင်းမှ ဖျက်မှာ သေချာပါသလား?")) {
-            staffList.splice(index, 1);
-            localStorage.setItem('oasisStaff', JSON.stringify(staffList));
-            renderStaffList();
-            updateStaffCheckboxes();
-        }
+    function saveData() {
+        const job = {
+            id: Date.now(),
+            cat: document.getElementById('jobCategory').value,
+            customer: document.getElementById('customer').value,
+            brand: document.getElementById('brand').value,
+            staff: Array.from(document.querySelectorAll('input[name="staff_choice"]:checked')).map(c => c.value),
+            date: document.getElementById('jobDate').value,
+            cost: document.getElementById('cost').value,
+            status: document.getElementById('jobStatus').value
+        };
+        db.jobs.push(job);
+        syncToCloud();
+        alert('Record Saved and Synced!');
+        showTab('home');
     }
 
-    // Job Form ထဲက Dropdown (Checkboxes) ကို Update လုပ်ခြင်း
-    function updateStaffCheckboxes() {
-        const container = document.getElementById('staffDropdown');
-        if (staffList.length === 0) {
-            container.innerHTML = '<p style="color:#999; font-size:12px;">Staff List ထဲတွင် အရင်နာမည်ထည့်ပါ</p>';
-            return;
-        }
-        container.innerHTML = staffList.map(s => `
-            <div class="staff-item">
-                <input type="checkbox" name="assignedStaff" value="${s.name}">
-                <span>${s.name} (${s.position})</span>
-            </div>
-        `).join('');
+    // PDF GENERATION (One Click Download)
+    function downloadPDF() {
+        const element = document.getElementById('reportContent');
+        const opt = {
+            margin: 10,
+            filename: 'Oasis_Weekly_Report.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+        html2pdf().set(opt).from(element).save();
     }
 
-    function saveJob() {
-        const selectedStaff = Array.from(document.querySelectorAll('input[name="assignedStaff"]:checked')).map(cb => cb.value);
-        if (selectedStaff.length < 2) return alert("အနည်းဆုံး ဝန်ထမ်း ၂ ယောက် ရွေးချယ်ပေးပါ ကိုကို");
+    function prepareReport() {
+        const area = document.getElementById('reportTableArea');
+        if(db.jobs.length === 0) return;
+        let html = '<table border="1" style="width:100%; border-collapse: collapse; font-size:10px; margin-top:10px;">';
+        html += '<tr style="background:#eee;"><th>Date</th><th>Customer</th><th>Brand</th><th>Staff</th><th>MMK</th><th>Status</th></tr>';
+        db.jobs.forEach(j => {
+            html += `<tr><td>${j.date}</td><td>${j.customer}</td><td>${j.brand}</td><td>${j.staff.join(', ')}</td><td>${j.cost}</td><td>${j.status}</td></tr>`;
+        });
+        html += '</table>';
+        area.innerHTML = html;
+    }
+
+    // Chart Logic
+    let myChart;
+    function updateChart() {
+        const ctx = document.getElementById('jobChart').getContext('2d');
+        const done = db.jobs.filter(j => j.status === 'Done').length;
+        const pending = db.jobs.filter(j => j.status === 'Pending').length;
         
-        // ဒီနေရာမှာ Job ကို သိမ်းတဲ့ Logic ဆက်ရေးလို့ရပါတယ်
-        alert("အလုပ်မှတ်တမ်းကို အောင်မြင်စွာ သိမ်းဆည်းပြီးပါပြီ");
+        if(myChart) myChart.destroy();
+        myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Done', 'Pending'],
+                datasets: [{
+                    label: 'Job Status',
+                    data: [done, pending],
+                    backgroundColor: ['#28a745', '#dc3545']
+                }]
+            },
+            options: { responsive: true, scales: { y: { beginAtZero: true } } }
+        });
     }
 
-    // Initial Load
-    renderStaffList();
-    updateStaffCheckboxes();
+    window.onload = () => { updateChart(); };
 </script>
 
 </body>
 </html>
-
