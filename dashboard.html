@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oasis Dashboard</title>
+    <style>
+        :root { --primary-green: #28a745; --bg-light: #f8f9fa; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg-light); }
+        .navbar { background: var(--primary-green); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .container { padding: 20px; max-width: 1000px; margin: auto; }
+        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; }
+        .form-section { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        .btn-save { background: var(--primary-green); color: white; border: none; padding: 12px 25px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; }
+        .job-list { background: white; border-radius: 10px; padding: 15px; }
+        .status-done { color: #28a745; font-weight: bold; }
+        .status-pending { color: #dc3545; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div style="font-weight: bold;">OASIS AIR-CON SYSTEM</div>
+    <div style="font-size: 14px;">User: Admin | <a href="index.html" style="color: white; text-decoration: none;">Logout</a></div>
+</div>
+
+<div class="container">
+    <div class="summary-grid">
+        <div class="stat-card">
+            <h3 style="margin:0; color: #28a745;">0</h3>
+            <p style="margin:5px 0 0; font-size: 14px;">Jobs Done</p>
+        </div>
+        <div class="stat-card">
+            <h3 style="margin:0; color: #dc3545;">0</h3>
+            <p style="margin:5px 0 0; font-size: 14px;">Pending</p>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h3 style="margin-top:0;">New Job Record</h3>
+        <div class="form-group">
+            <label>Customer Name & Phone</label>
+            <input type="text" placeholder="Eg. U Aung (09xxxxxxx)">
+        </div>
+        <div class="form-group">
+            <label>Appliance Type</label>
+            <select>
+                <option>Air-Con</option>
+                <option>Refrigerator</option>
+                <option>Washing Machine</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Brand & Specification (Brand/HP/Type/Gas)</label>
+            <input type="text" placeholder="Eg. Samsung / 1.5HP / Wall Mount / R32">
+        </div>
+        <div class="form-group">
+            <label>Issue Description</label>
+            <textarea rows="2" placeholder="Describe the problem..."></textarea>
+        </div>
+        <div class="form-group">
+            <label>Assigned Staff (Min 2)</label>
+            <select multiple style="height: 80px;">
+                <option>Tech: Mg Mg</option>
+                <option>Helper: Kyaw Kyaw</option>
+                <option>Helper: Hla Hla</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Service Date</label>
+            <input type="date">
+        </div>
+        <div class="form-group">
+            <label>Cost (MMK)</label>
+            <input type="number" placeholder="Amount in MMK">
+        </div>
+        <div class="form-group">
+            <label>Status</label>
+            <select>
+                <option>Pending</option>
+                <option>Done</option>
+            </select>
+        </div>
+        <button class="btn-save">SAVE RECORD</button>
+    </div>
+
+    <div class="summary-grid">
+        <button style="padding: 15px; border: 1px solid #28a745; background: white; border-radius: 8px; cursor: pointer;">+ Add Sale Record</button>
+        <button style="padding: 15px; border: 1px solid #28a745; background: white; border-radius: 8px; cursor: pointer;">+ Add Purchase Record</button>
+    </div>
+</div>
+
+</body>
+</html>
+
