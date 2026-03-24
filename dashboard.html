@@ -25,7 +25,6 @@
         .btn-green { background: var(--p-green); color: white; border: none; padding: 12px; border-radius: 6px; width: 100%; font-weight: bold; cursor: pointer; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .hidden { display: none; }
-        .settings-feature-list { padding-left: 20px; font-size: 13px; line-height: 1.8; margin-bottom: 0; }
     </style>
 </head>
 <body data-theme="light">
@@ -33,13 +32,9 @@
 <div class="header">
     <div class="logo-box">
         <img src="1000064267.png" class="logo-img" alt="Logo">
-        <span style="font-weight: bold; font-size: 14px;" id="lbl-header-title">OASIS AC SYSTEM</span>
+        <span style="font-weight: bold; font-size: 14px;">OASIS AC SYSTEM</span>
     </div>
     <div style="display: flex; gap: 10px; align-items: center;">
-        <select id="langBtn" onchange="toggleLang()" style="padding: 2px; font-size: 12px; border-radius: 4px; border: 1px solid white; background: transparent; color: white;">
-            <option value="en" style="color: black;">ENG</option>
-            <option value="mm" style="color: black;">MM</option>
-        </select>
         <button onclick="toggleTheme()" style="background: none; border: none; cursor: pointer; font-size: 16px;">🌓</button>
     </div>
 </div>
@@ -54,111 +49,57 @@
 <div class="container">
     <div id="homeTab">
         <div class="card">
-            <h3 id="lbl-dash-title">Dashboard</h3>
+            <h3>Dashboard</h3>
             <canvas id="jobChart" style="max-height: 200px;"></canvas>
-            <div id="syncStatus" style="text-align: right; color: var(--p-green); font-size: 11px; margin-top: 5px;">Online - Synced</div>
+            <div style="text-align: right; color: var(--p-green); font-size: 11px; margin-top: 5px;">Online - Synced</div>
         </div>
     </div>
 
     <div id="serviceTab" class="hidden">
         <div class="card">
-            <h3 id="lbl-srv-title">New Service Entry</h3>
+            <h3>New Service Entry</h3>
             <div class="grid-2">
-                <div class="form-group"><label id="lbl-srv-name">Customer Name</label><input type="text" id="j-name"></div>
-                <div class="form-group"><label id="lbl-srv-phone">Phone</label><input type="text" id="j-phone"></div>
+                <div class="form-group"><label>Customer Name</label><input type="text" id="j-name"></div>
+                <div class="form-group"><label>Phone</label><input type="text" id="j-phone"></div>
             </div>
-            <div class="form-group"><label id="lbl-srv-addr">Address</label><textarea id="j-addr" rows="2"></textarea></div>
-            <div class="form-group"><label id="lbl-srv-app">Appliance</label><select id="j-app"><option>Air-Con</option><option>Refrigerator</option><option>Washing Machine</option></select></div>
-            
-            <div class="grid-2">
-                <div class="form-group"><label>Brand</label><input type="text" id="j-brand"></div>
-                <div class="form-group"><label>HP</label><input type="text" id="j-hp"></div>
-            </div>
-            <div class="form-group"><label>Gas Type</label><input type="text" id="j-gas"></div>
-            
-            <div class="grid-2">
-                <div class="form-group"><label>Type</label><select id="j-type"><option>Inverter</option><option>Non-Inverter</option></select></div>
-                <div class="form-group"><label>Model</label><select id="j-model"><option>Split</option><option>Ceiling Cassette</option><option>Floor Stand</option><option>Portable</option></select></div>
-            </div>
-
-            <div class="form-group"><label id="lbl-srv-issue">Issue / Problem</label><textarea id="j-issue" rows="2"></textarea></div>
-            
-            <div class="form-group"><label id="lbl-srv-staff">Assigned Staff</label>
-                <div id="staffChecks" style="border:1px solid var(--border); padding:10px; max-height:100px; overflow-y:auto; font-size:13px; border-radius:6px;">No staff found</div>
-            </div>
-
-            <div class="grid-2">
-                <div class="form-group"><label id="lbl-srv-bphoto">Before Photo</label><input type="file" id="j-bphoto" accept="image/*"></div>
-                <div class="form-group"><label id="lbl-srv-aphoto">After Photo</label><input type="file" id="j-aphoto" accept="image/*"></div>
-            </div>
-
-            <div class="grid-2">
-                <div class="form-group"><label id="lbl-srv-date">Date</label><input type="date" id="j-date"></div>
-                <div class="form-group"><label id="lbl-srv-cost">Cost (MMK)</label><input type="number" id="j-cost"></div>
-            </div>
-
-            <button class="btn-green" onclick="saveJob()" id="btn-srv-save">SAVE RECORD</button>
+            <div class="form-group"><label>Address</label><textarea id="j-addr" rows="2"></textarea></div>
+            <div class="form-group"><label>Appliance</label><select id="j-app"><option>Air-Con</option><option>Refrigerator</option></select></div>
+            <div class="form-group"><label>Issue</label><textarea id="j-issue" rows="2"></textarea></div>
+            <button class="btn-green" onclick="saveJob()">SAVE RECORD</button>
         </div>
     </div>
 
     <div id="staffTab" class="hidden">
         <div class="card">
-            <h3 id="lbl-stf-title">Add Staff</h3>
-            <div class="form-group"><label id="lbl-stf-photo">Photo</label><input type="file" id="st-photo" accept="image/*"></div>
-            <div class="form-group"><label id="lbl-stf-name">Name</label><input type="text" id="st-name"></div>
+            <h3>Add Staff</h3>
+            <div class="form-group"><label>Name</label><input type="text" id="st-name"></div>
             <div class="grid-2">
-                <div class="form-group"><label id="lbl-stf-role">Role</label>
-                    <select id="st-role"><option>Technician</option><option>Helper</option><option>Leader</option><option>Manager</option><option>MD</option></select>
+                <div class="form-group">
+                    <label>Role</label>
+                    <select id="st-role"><option>Technician</option><option>Helper</option><option>Leader</option></select>
                 </div>
-                <div class="form-group"><label id="lbl-stf-phone">Phone</label><input type="text" id="st-phone"></div>
+                <div class="form-group"><label>Phone</label><input type="text" id="st-phone"></div>
             </div>
-            <div class="form-group"><label id="lbl-stf-addr">Address</label><input type="text" id="st-addr"></div>
-            <div class="form-group"><label id="lbl-stf-remark">Remark</label><textarea id="st-remark" rows="2"></textarea></div>
+            <div class="form-group"><label>Address</label><input type="text" id="st-addr"></div>
+            <div class="form-group"><label>Remark</label><textarea id="st-remark" rows="2"></textarea></div>
             <button class="btn-green" onclick="addStaff()" id="btn-stf-save">ADD STAFF</button>
         </div>
         <div class="card">
-            <h4 id="lbl-stf-dir">Staff Directory</h4>
+            <h4>Staff Directory</h4>
             <div id="staffList"></div>
         </div>
     </div>
 
     <div id="settingsTab" class="hidden">
         <div class="card" style="text-align: center;">
-            <h3 id="lbl-set-title">App Information</h3>
-            <img src="1000064267.png" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--p-green); margin-bottom: 10px; object-fit:cover;">
-            <h2 style="margin: 0; color: var(--p-green);">Oasis AC System</h2>
-            <p style="margin: 5px 0; color: #666; font-size: 14px;">Version 1.0 (Professional)</p>
-            <hr style="margin: 20px 0; border: 0; border-top: 1px solid var(--border);">
-            
-            <div style="text-align: left; background: var(--bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border); font-size: 14px; line-height: 1.6;">
-                <p style="margin:0;"><strong id="lbl-set-dev">Developer:</strong> <span style="color: var(--p-green); font-weight: bold;">Zwe Maung Maung</span></p>
-                <p style="margin:5px 0 0 0;"><strong id="lbl-set-org">Organization:</strong> <span style="font-weight: bold;" id="lbl-set-org-name">Ko Htay Aung (Oasis) AC Sales and Service</span></p>
-                <p style="margin:5px 0 0 0;"><strong id="lbl-set-db">Database:</strong> Firebase Cloud System</p>
-            </div>
-
-            <div style="text-align: left; background: var(--bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border); font-size: 14px; line-height: 1.6; margin-top: 15px;">
-                <p style="margin:0; font-weight: bold; color: var(--p-green);" id="lbl-set-feat-title">Application Features:</p>
-                <ul class="settings-feature-list">
-                    <li id="feat-1">Real-time Cloud Data Synchronization</li>
-                    <li id="feat-2">Customer & Air-Con Service Tracking</li>
-                    <li id="feat-3">Staff Profile & Assignment Management</li>
-                    <li id="feat-4">Before & After Work Photo Uploads</li>
-                    <li id="feat-5">Automated Dashboard Analytics</li>
-                </ul>
-            </div>
-            
-            <div style="margin-top: 20px; font-size: 12px; color: #888; background: #f8f9fa; padding: 12px; border-radius: 8px; border: 1px dashed var(--border);">
-                <p style="margin: 2px 0;">&copy; 2026 <strong>Zwe Maung Maung</strong>. All Rights Reserved.</p>
-                <p style="margin: 2px 0;" id="lbl-set-copy">Copyright protection applied. Unauthorized use, copying, or distribution is strictly prohibited.</p>
-            </div>
-            
-            <button class="btn-green" onclick="logout()" style="background: #dc3545; margin-top: 20px;" id="btn-set-logout">LOGOUT</button>
+            <h3>Settings</h3>
+            <p>Developed by <strong>Zwe Maung Maung</strong></p>
+            <button class="btn-green" onclick="logout()" style="background: #dc3545;">LOGOUT</button>
         </div>
     </div>
 </div>
 
 <script>
-    // --- FIREBASE INITIALIZATION ---
     const firebaseConfig = {
       apiKey: "AIzaSyAOgPQkaq0mLdzi9jNZK-oRCEa_VsmD_cE",
       authDomain: "oasis-ac-service.firebaseapp.com",
@@ -170,138 +111,66 @@
     if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.firestore();
 
-    // --- LANGUAGE SYSTEM ---
-    const langObj = {
-        en: { 
-            dashTitle: "Dashboard", srvTitle: "New Service Entry", srvName: "Customer Name", srvPhone: "Phone",
-            srvAddr: "Address", srvApp: "Appliance", srvIssue: "Issue / Problem", srvStaff: "Assigned Staff",
-            srvBPhoto: "Before Photo", srvAPhoto: "After Photo", srvDate: "Date", srvCost: "Cost (MMK)",
-            btnSrv: "SAVE RECORD", stfTitle: "Add Staff", stfPhoto: "Photo", stfName: "Name", stfRole: "Role",
-            stfPhone: "Phone", stfAddr: "Address", stfRemark: "Remark", btnStf: "ADD STAFF", stfDir: "Staff Directory",
-            setTitle: "App Information", btnOut: "LOGOUT",
-            setDev: "Developer:", setOrg: "Organization:", setOrgName: "Ko Htay Aung (Oasis) AC Sales and Service", setDb: "Database:",
-            setFeatTitle: "Application Features:", feat1: "Real-time Cloud Data Synchronization", feat2: "Customer & Air-Con Service Tracking",
-            feat3: "Staff Profile & Assignment Management", feat4: "Before & After Work Photo Uploads", feat5: "Automated Dashboard Analytics",
-            setCopy: "Copyright protection applied. Unauthorized use, copying, or distribution is strictly prohibited."
-        },
-        mm: { 
-            dashTitle: "အလုပ်မှတ်တမ်း", srvTitle: "ပြုပြင်ရေး မှတ်တမ်းအသစ်", srvName: "အမည်", srvPhone: "ဖုန်း",
-            srvAddr: "လိပ်စာ", srvApp: "ပစ္စည်းအမျိုးအစား", srvIssue: "ဖြစ်ပွားသည့် ပြဿနာ", srvStaff: "တာဝန်ကျ ဝန်ထမ်းများ",
-            srvBPhoto: "အလုပ်မစခင်ပုံ", srvAPhoto: "အလုပ်ပြီးစီးပုံ", srvDate: "ရက်စွဲ", srvCost: "ကျသင့်ငွေ",
-            btnSrv: "မှတ်တမ်းသိမ်းမည်", stfTitle: "ဝန်ထမ်းအသစ်သွင်းရန်", stfPhoto: "ဓာတ်ပုံ", stfName: "အမည်", stfRole: "ရာထူး",
-            stfPhone: "ဖုန်း", stfAddr: "လိပ်စာ", stfRemark: "မှတ်ချက်", btnStf: "ဝန်ထမ်းသိမ်းမည်", stfDir: "ဝန်ထမ်းစာရင်း",
-            setTitle: "ဆော့ဝဲလ် အချက်အလက်", btnOut: "အကောင့်ထွက်မည်",
-            setDev: "ရေးသားသူ -", setOrg: "လုပ်ငန်းအမည် -", setOrgName: "ကိုဌေးအောင် (Oasis) အဲကွန်း အရောင်းနှင့် ဝန်ဆောင်မှု", setDb: "အချက်အလက်သိမ်းဆည်းမှု -",
-            setFeatTitle: "ဆော့ဝဲလ်၏ လုပ်ဆောင်နိုင်စွမ်းများ:", feat1: "အင်တာနက်ဖြင့် အချက်အလက်များ အလိုအလျောက် သိမ်းဆည်းခြင်း", feat2: "ဖောက်သည်နှင့် ပြုပြင်ရေးမှတ်တမ်းများ ထိန်းသိမ်းခြင်း",
-            feat3: "ဝန်ထမ်းစာရင်းနှင့် တာဝန်ချထားမှု စီမံခန့်ခွဲခြင်း", feat4: "အလုပ်မလုပ်မီနှင့် လုပ်ပြီး ဓာတ်ပုံများ သိမ်းဆည်းခြင်း", feat5: "လုပ်ငန်းအကျဉ်းချုပ် အချက်အလက်များ ပြသခြင်း",
-            setCopy: "မူပိုင်ခွင့် ဥပဒေဖြင့် အကာအကွယ်ပေးထားပါသည်။ ခွင့်ပြုချက်မရှိဘဲ ကူးယူသုံးစွဲခြင်းကို တားမြစ်ထားပါသည်။"
-        }
-    };
+    let isStaffLoading = false;
 
-    function toggleLang() {
-        const l = document.getElementById('langBtn').value;
-        document.getElementById('lbl-dash-title').innerText = langObj[l].dashTitle;
-        document.getElementById('lbl-srv-title').innerText = langObj[l].srvTitle;
-        document.getElementById('lbl-srv-name').innerText = langObj[l].srvName;
-        document.getElementById('lbl-srv-phone').innerText = langObj[l].srvPhone;
-        document.getElementById('lbl-srv-addr').innerText = langObj[l].srvAddr;
-        document.getElementById('lbl-srv-app').innerText = langObj[l].srvApp;
-        document.getElementById('lbl-srv-issue').innerText = langObj[l].srvIssue;
-        document.getElementById('lbl-srv-staff').innerText = langObj[l].srvStaff;
-        document.getElementById('lbl-srv-bphoto').innerText = langObj[l].srvBPhoto;
-        document.getElementById('lbl-srv-aphoto').innerText = langObj[l].srvAPhoto;
-        document.getElementById('lbl-srv-date').innerText = langObj[l].srvDate;
-        document.getElementById('lbl-srv-cost').innerText = langObj[l].srvCost;
-        document.getElementById('btn-srv-save').innerText = langObj[l].btnSrv;
-        document.getElementById('lbl-stf-title').innerText = langObj[l].stfTitle;
-        document.getElementById('lbl-stf-photo').innerText = langObj[l].stfPhoto;
-        document.getElementById('lbl-stf-name').innerText = langObj[l].stfName;
-        document.getElementById('lbl-stf-role').innerText = langObj[l].stfRole;
-        document.getElementById('lbl-stf-phone').innerText = langObj[l].stfPhone;
-        document.getElementById('lbl-stf-addr').innerText = langObj[l].stfAddr;
-        document.getElementById('lbl-stf-remark').innerText = langObj[l].stfRemark;
-        document.getElementById('btn-stf-save').innerText = langObj[l].btnStf;
-        document.getElementById('lbl-stf-dir').innerText = langObj[l].stfDir;
-        
-        document.getElementById('lbl-set-title').innerText = langObj[l].setTitle;
-        document.getElementById('lbl-set-dev').innerText = langObj[l].setDev;
-        document.getElementById('lbl-set-org').innerText = langObj[l].setOrg;
-        document.getElementById('lbl-set-org-name').innerText = langObj[l].setOrgName;
-        document.getElementById('lbl-set-db').innerText = langObj[l].setDb;
-        document.getElementById('lbl-set-feat-title').innerText = langObj[l].setFeatTitle;
-        document.getElementById('feat-1').innerText = langObj[l].feat1;
-        document.getElementById('feat-2').innerText = langObj[l].feat2;
-        document.getElementById('feat-3').innerText = langObj[l].feat3;
-        document.getElementById('feat-4').innerText = langObj[l].feat4;
-        document.getElementById('feat-5').innerText = langObj[l].feat5;
-        document.getElementById('lbl-set-copy').innerText = langObj[l].setCopy;
-        document.getElementById('btn-set-logout').innerText = langObj[l].btnOut;
-    }
-
-    // --- NAVIGATION ---
-    let isStaffLoaded = false;
     function showTab(t) {
-        ['home','service','staff','settings'].forEach(id => document.getElementById(id+'Tab').classList.add('hidden'));
-        document.getElementById(t+'Tab').classList.remove('hidden');
+        ['home', 'service', 'staff', 'settings'].forEach(id => document.getElementById(id + 'Tab').classList.add('hidden'));
+        document.getElementById(t + 'Tab').classList.remove('hidden');
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('t-'+t).classList.add('active');
-        
-        if(t === 'staff' && !isStaffLoaded) { loadStaff(); isStaffLoaded = true; }
-        if(t === 'service') loadStaffForService();
+        document.getElementById('t-' + t).classList.add('active');
+
+        if (t === 'staff') loadStaff();
     }
 
     function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light'); }
     function logout() { localStorage.removeItem('isLoggedIn'); location.href = 'index.html'; }
 
-    // --- STAFF (MEMORY LEAK & SIZE LIMIT FIXED) ---
     async function addStaff() {
-        try {
-            document.getElementById('btn-stf-save').innerText = "Saving... Please wait";
-            const photoStr = await toBase64(document.getElementById('st-photo').files[0]);
-            
-            // Limit photo size to ~1MB to prevent freeze
-            if(photoStr.length > 1000000) {
-                alert("ဓာတ်ပုံ File Size ကြီးလွန်းနေပါသည်။ 1MB ထက်ငယ်သောပုံကို ရွေးပေးပါ။");
-                document.getElementById('btn-stf-save').innerText = "ADD STAFF";
-                return;
-            }
-
-            const data = {
-                name: document.getElementById('st-name').value,
-                role: document.getElementById('st-role').value,
-                phone: document.getElementById('st-phone').value,
-                addr: document.getElementById('st-addr').value,
-                remark: document.getElementById('st-remark').value,
-                photo: photoStr,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            };
-            
-            if(!data.name) {
-                alert("Please enter Staff Name.");
-                document.getElementById('btn-stf-save').innerText = "ADD STAFF";
-                return;
-            }
-
-            await db.collection("staff").add(data);
-            alert("Staff Added Successfully.");
-            
-            // Clear Form
-            document.getElementById('st-name').value = '';
-            document.getElementById('st-phone').value = '';
-            document.getElementById('st-addr').value = '';
-            document.getElementById('st-remark').value = '';
-            document.getElementById('st-photo').value = '';
-            document.getElementById('btn-stf-save').innerText = "ADD STAFF";
-            
-            // Manual Refresh list once to avoid loop
-            loadStaff(); 
-        } catch (error) {
-            alert("Error: " + error.message);
-            document.getElementById('btn-stf-save').innerText = "ADD STAFF";
-        }
+        const btn = document.getElementById('btn-stf-save');
+        btn.innerText = "Saving...";
+        const data = {
+            name: document.getElementById('st-name').value,
+            role: document.getElementById('st-role').value,
+            phone: document.getElementById('st-phone').value,
+            addr: document.getElementById('st-addr').value,
+            remark: document.getElementById('st-remark').value,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        if(!data.name) { alert("Enter Name"); btn.innerText = "ADD STAFF"; return; }
+        
+        await db.collection("staff").add(data);
+        alert("Staff Added!");
+        btn.innerText = "ADD STAFF";
+        document.getElementById('st-name').value = '';
+        loadStaff();
     }
 
-    // Use .get() instead of .onSnapshot() to prevent multiple hidden background loops freezing the phone
     function loadStaff() {
-        document.getElementById('staffList').innerHTML = "<p style='text-align:center; font-size:12px;'>Loading data...</p>";
-        db.collection("staff").orderBy("createdAt", "desc").get().th
+        const list = document.getElementById('staffList');
+        list.innerHTML = "Loading...";
+        // .get() instead of .onSnapshot() to prevent freeze
+        db.collection("staff").orderBy("createdAt", "desc").get().then(snap => {
+            if (snap.empty) { list.innerHTML = "No data."; return; }
+            list.innerHTML = snap.docs.map(doc => {
+                const s = doc.data();
+                return `<div style="padding:10px; border-bottom:1px solid var(--border); font-size:13px;">
+                    <strong>${s.name}</strong> (${s.role})<br>📞 ${s.phone || '-'}<br>📍 ${s.addr || '-'}</div>`;
+            }).join('');
+        });
+    }
+
+    async function saveJob() {
+        const data = {
+            name: document.getElementById('j-name').value,
+            phone: document.getElementById('j-phone').value,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        await db.collection("jobs").add(data);
+        alert("Saved!");
+        location.reload();
+    }
+
+    window.onload = () => { if(!localStorage.getItem('isLoggedIn')) location.href='index.html'; };
+</script>
+</body>
+</html>
