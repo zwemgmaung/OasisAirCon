@@ -167,7 +167,7 @@
       messagingSenderId: "1039018990829",
       appId: "1:1039018990829:web:bffe0ea0269bfbded780e4"
     };
-    firebase.initializeApp(firebaseConfig);
+    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.firestore();
 
     // --- LANGUAGE SYSTEM ---
@@ -239,60 +239,69 @@
     }
 
     // --- NAVIGATION ---
+    let isStaffLoaded = false;
     function showTab(t) {
         ['home','service','staff','settings'].forEach(id => document.getElementById(id+'Tab').classList.add('hidden'));
         document.getElementById(t+'Tab').classList.remove('hidden');
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('t-'+t).classList.add('active');
-        if(t === 'staff') loadStaff();
+        
+        if(t === 'staff' && !isStaffLoaded) { loadStaff(); isStaffLoaded = true; }
         if(t === 'service') loadStaffForService();
     }
 
     function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light'); }
     function logout() { localStorage.removeItem('isLoggedIn'); location.href = 'index.html'; }
 
-    // --- STAFF ---
+    // --- STAFF (MEMORY LEAK & SIZE LIMIT FIXED) ---
     async function addStaff() {
-        const photoStr = await toBase64(document.getElementById('st-photo').files[0]);
-        const data = {
-            name: document.getElementById('st-name').value,
-            role: document.getElementById('st-role').value,
-            phone: document.getElementById('st-phone').value,
-            addr: document.getElementById('st-addr').value,
-            remark: document.getElementById('st-remark').value,
-            photo: photoStr,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        };
-        if(!data.name) return alert("Please enter Staff Name.");
-        db.collection("staff").add(data).then(() => { alert("Staff Added Successfully."); document.getElementById('st-name').value = ''; loadStaff(); });
+        try {
+            document.getElementById('btn-stf-save').innerText = "Saving... Please wait";
+            const photoStr = await toBase64(document.getElementById('st-photo').files[0]);
+            
+            // Limit photo size to ~1MB to prevent freeze
+            if(photoStr.length > 1000000) {
+                alert("ဓာတ်ပုံ File Size ကြီးလွန်းနေပါသည်။ 1MB ထက်ငယ်သောပုံကို ရွေးပေးပါ။");
+                document.getElementById('btn-stf-save').innerText = "ADD STAFF";
+                return;
+            }
+
+            const data = {
+                name: document.getElementById('st-name').value,
+                role: document.getElementById('st-role').value,
+                phone: document.getElementById('st-phone').value,
+                addr: document.getElementById('st-addr').value,
+                remark: document.getElementById('st-remark').value,
+                photo: photoStr,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            
+            if(!data.name) {
+                alert("Please enter Staff Name.");
+                document.getElementById('btn-stf-save').innerText = "ADD STAFF";
+                return;
+            }
+
+            await db.collection("staff").add(data);
+            alert("Staff Added Successfully.");
+            
+            // Clear Form
+            document.getElementById('st-name').value = '';
+            document.getElementById('st-phone').value = '';
+            document.getElementById('st-addr').value = '';
+            document.getElementById('st-remark').value = '';
+            document.getElementById('st-photo').value = '';
+            document.getElementById('btn-stf-save').innerText = "ADD STAFF";
+            
+            // Manual Refresh list once to avoid loop
+            loadStaff(); 
+        } catch (error) {
+            alert("Error: " + error.message);
+            document.getElementById('btn-stf-save').innerText = "ADD STAFF";
+        }
     }
 
+    // Use .get() instead of .onSnapshot() to prevent multiple hidden background loops freezing the phone
     function loadStaff() {
-        db.collection("staff").orderBy("createdAt", "desc").onSnapshot(snap => {
-            if(snap.empty) { document.getElementById('staffList').innerHTML = "No staff data."; return; }
-            document.getElementById('staffList').innerHTML = snap.docs.map(doc => {
-                const s = doc.data();
-                return `<div style="display:flex; gap:15px; border-bottom:1px solid var(--border); padding:10px 0; align-items:center;">
-                    <img src="${s.photo || '1000064267.png'}" style="width:50px; height:50px; border-radius:50%; object-fit:cover; border:1px solid #ddd;">
-                    <div style="font-size:13px; flex:1;"><strong>${s.name}</strong> (${s.role})<br>📞 ${s.phone || 'N/A'}<br>📍 ${s.addr || 'N/A'}<br><small>Note: ${s.remark || 'None'}</small></div>
-                </div>`;
-            }).join('');
-        });
-    }
-
-    function loadStaffForService() {
-        db.collection("staff").get().then(snap => {
-            if(snap.empty) { document.getElementById('staffChecks').innerHTML = "No staff found."; return; }
-            document.getElementById('staffChecks').innerHTML = snap.docs.map(doc => `
-                <div style="margin-bottom:6px;"><input type="checkbox" name="assigned" value="${doc.data().name}"> ${doc.data().name} (${doc.data().role})</div>
-            `).join('');
-        });
-    }
-
-    // --- SERVICE ---
-    async function saveJob() {
-        const assigned = Array.from(document.querySelectorAll('input[name="assigned"]:checked')).map(c => c.value);
-        const name = document.getElementById('j-name').value;
-        const date = document.getElementById('j-date').value;
-        
-        if(!name |
+        document.getElementById('staffList').innerHTML = "<p style='text-align:center; font-size:12px;'>Loading data...</p>";
+        db.collection("staff").orderBy("createdAt", "desc").get().th
