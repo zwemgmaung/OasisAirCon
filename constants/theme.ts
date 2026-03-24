@@ -1,0 +1,122 @@
+// Oasis Air-Con - Theme Constants
+export const Colors = {
+  light: {
+    primary: '#2E7D32',
+    primaryLight: '#4CAF50',
+    primaryDark: '#1B5E20',
+    secondary: '#81C784',
+    accent: '#00C853',
+    background: '#F8FFF8',
+    surface: '#FFFFFF',
+    surfaceVariant: '#E8F5E9',
+    card: '#FFFFFF',
+    border: '#C8E6C9',
+    text: '#1A1A1A',
+    textSecondary: '#546E7A',
+    textMuted: '#90A4AE',
+    error: '#D32F2F',
+    warning: '#F57C00',
+    success: '#388E3C',
+    info: '#1976D2',
+    white: '#FFFFFF',
+    black: '#000000',
+    shadow: 'rgba(0,0,0,0.1)',
+    overlay: 'rgba(0,0,0,0.5)',
+    done: '#2E7D32',
+    pending: '#F57C00',
+    tabBar: '#FFFFFF',
+    tabBorder: '#E0E0E0',
+    inputBg: '#F1F8E9',
+    headerBg: '#2E7D32',
+    headerText: '#FFFFFF',
+  },
+  dark: {
+    primary: '#4CAF50',
+    primaryLight: '#81C784',
+    primaryDark: '#2E7D32',
+    secondary: '#388E3C',
+    accent: '#69F0AE',
+    background: '#0D1F0D',
+    surface: '#1A2E1A',
+    surfaceVariant: '#1E3A1E',
+    card: '#1E3A1E',
+    border: '#2E5F2E',
+    text: '#E8F5E9',
+    textSecondary: '#A5D6A7',
+    textMuted: '#66BB6A',
+    error: '#EF9A9A',
+    warning: '#FFCC02',
+    success: '#69F0AE',
+    info: '#64B5F6',
+    white: '#FFFFFF',
+    black: '#000000',
+    shadow: 'rgba(0,0,0,0.4)',
+    overlay: 'rgba(0,0,0,0.7)',
+    done: '#69F0AE',
+    pending: '#FFCC02',
+    tabBar: '#1A2E1A',
+    tabBorder: '#2E5F2E',
+    inputBg: '#152615',
+    headerBg: '#1A2E1A',
+    headerText: '#E8F5E9',
+  },
+};
+
+export const Spacing = {
+  xs: 4,
+  sm: 8,
+  md: 16,
+  lg: 24,
+  xl: 32,
+  xxl: 48,
+};
+
+export const FontSize = {
+  xs: 11,
+  sm: 13,
+  md: 15,
+  base: 16,
+  lg: 18,
+  xl: 20,
+  xxl: 24,
+  xxxl: 28,
+};
+
+export const FontWeight = {
+  regular: '400' as const,
+  medium: '500' as const,
+  semibold: '600' as const,
+  bold: '700' as const,
+};
+
+export const BorderRadius = {
+  sm: 6,
+  md: 10,
+  lg: 16,
+  xl: 24,
+  full: 999,
+};
+
+export const Shadow = {
+  sm: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  md: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  lg: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.16,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+};
