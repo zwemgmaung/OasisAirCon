@@ -7,6 +7,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
         :root { --p-green: #28a745; --bg: #ffffff; --text: #333; --card: #f8f9fa; --border: #ddd; }
         [data-theme="dark"] { --bg: #121212; --text: #e0e0e0; --card: #1e1e1e; --border: #333; }
@@ -22,6 +24,7 @@
         label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 13px; color: var(--p-green); }
         input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); box-sizing: border-box; }
         .btn-green { background: var(--p-green); color: white; border: none; padding: 12px; border-radius: 6px; width: 100%; font-weight: bold; cursor: pointer; }
+        .btn-pdf { background: #007bff; color: white; border: none; padding: 8px 15px; border-radius: 5px; font-size: 12px; cursor: pointer; margin-top: 10px; font-weight: bold; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .hidden { display: none; }
     </style>
@@ -51,7 +54,12 @@
 
 <div class="container">
     <div id="homeTab">
-        <div class="card"><h3 id="lbl-dash">Dashboard Summary</h3><canvas id="jobChart" style="max-height: 200px;"></canvas></div>
+        <div class="card" style="text-align: center;">
+            <h3 id="lbl-dash" style="margin-bottom:5px;">Dashboard Summary</h3>
+            <p style="font-size: 12px; color: var(--p-green); margin-bottom: 15px; font-weight: bold;">Developed by Zwe Maung Maung</p>
+            <canvas id="jobChart" style="max-height: 200px;"></canvas>
+            <button class="btn-pdf" onclick="downloadPDF()">Download Records (PDF)</button>
+        </div>
     </div>
 
     <div id="serviceTab" class="hidden">
@@ -133,7 +141,7 @@
             <p><strong>Developed by Zwe Maung Maung</strong></p>
             <p style="font-size:12px; color:#888;">Ko Htay Aung (Oasis) Air-Con Sales & Service</p>
             <div style="margin-top:20px; font-size:11px; color:#999; border-top:1px dashed var(--border); padding-top:15px;">
-                <p>© 2026 **Zwe Maung Maung**. All Rights Reserved.</p>
+                <p>© 2026 <strong>Zwe Maung Maung</strong>. All Rights Reserved.</p>
                 <p id="lbl-copy">Copyright protection applied by Zwe Maung Maung.</p>
             </div>
             <button class="btn-green" onclick="logout()" style="background:#dc3545; margin-top:20px;">LOGOUT</button>
@@ -191,15 +199,11 @@
     function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light'); }
     function logout() { localStorage.removeItem('isLoggedIn'); location.href = 'index.html'; }
 
-    function toBase64(file) {
-        if(!file) return Promise.resolve("");
-        return new Promise(r => { const reader = new FileReader(); reader.onload = e => r(e.target.result); reader.readAsDataURL(file); });
-    }
-
     async function addStaff() {
         const btn = document.getElementById('btn-stf');
         btn.innerText = "Saving...";
-        const photo = await toBase64(document.getElementById('st-photo').files[0]);
+        const file = document.getElementById('st-photo').files[0];
+        const photo = file ? await toBase64(file) : "";
         const data = {
             name: document.getElementById('st-name').value,
             role: document.getElementById('st-role').value,
@@ -237,8 +241,11 @@
     async function saveJob() {
         document.getElementById('btn-srv').innerText = "Saving Record...";
         const assigned = Array.from(document.querySelectorAll('input[name="assigned"]:checked')).map(c => c.value);
-        const bPhoto = await toBase64(document.getElementById('j-bphoto').files[0]);
-        const aPhoto = await toBase64(document.getElementById('j-aphoto').files[0]);
+        const bPhotoFile = document.getElementById('j-bphoto').files[0];
+        const aPhotoFile = document.getElementById('j-aphoto').files[0];
+        const bPhoto = bPhotoFile ? await toBase64(bPhotoFile) : "";
+        const aPhoto = aPhotoFile ? await toBase64(aPhotoFile) : "";
+        
         const data = {
             name: document.getElementById('j-name').value, phone: document.getElementById('j-phone').value,
             address: document.getElementById('j-addr').value, app: document.getElementById('j-app').value,
@@ -249,8 +256,40 @@
             bPhoto, aPhoto, timestamp: firebase.firestore.FieldValue.serverTimestamp()
         };
         await db.collection("jobs").add(data);
-        alert("Service Saved Successfully!");
+        alert("Service Saved!");
         location.reload();
+    }
+
+    function toBase64(file) {
+        return new Promise(r => { const reader = new FileReader(); reader.onload = e => r(e.target.result); reader.readAsDataURL(file); });
+    }
+
+    // --- ONE CLICK PDF DOWNLOAD SYSTEM ---
+    async function downloadPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('l', 'mm', 'a4');
+        
+        // Add Title
+        doc.setFontSize(18);
+        doc.text("Oasis Air-Con Service Records", 14, 20);
+        doc.setFontSize(10);
+        doc.text("Generated by Zwe Maung Maung", 14, 28);
+
+        const snap = await db.collection("jobs").orderBy("timestamp", "desc").get();
+        const rows = snap.docs.map(d => {
+            const j = d.data();
+            return [j.date, j.name, j.phone, j.app, j.brand, j.issue, j.staff.join(', '), j.cost];
+        });
+
+        doc.autoTable({
+            startY: 35,
+            head: [['Date', 'Customer', 'Phone', 'Appliance', 'Brand', 'Issue', 'Staff', 'Cost (MMK)']],
+            body: rows,
+            theme: 'striped',
+            headStyles: { fillColor: [40, 167, 69] }
+        });
+
+        doc.save("Oasis_Service_Records.pdf");
     }
 
     window.onload = () => {
