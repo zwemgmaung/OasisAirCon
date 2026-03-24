@@ -62,7 +62,13 @@
                 <div class="form-group"><label id="lbl-phone">Phone</label><input type="text" id="j-phone"></div>
             </div>
             <div class="form-group"><label id="lbl-addr">Address</label><textarea id="j-addr" rows="2"></textarea></div>
-            <div class="form-group"><label>Appliance</label><select id="j-app"><option>Air-Con</option><option>Refrigerator</option></select></div>
+            <div class="form-group"><label>Appliance</label>
+                <select id="j-app">
+                    <option>Air-Con</option>
+                    <option>Refrigerator</option>
+                    <option>Washing Machine</option>
+                </select>
+            </div>
             <div class="grid-2">
                 <div class="form-group"><label>Brand</label><input type="text" id="j-brand"></div>
                 <div class="form-group"><label>HP</label><input type="text" id="j-hp"></div>
@@ -71,7 +77,14 @@
                 <div class="form-group"><label>Gas Type</label><input type="text" id="j-gas"></div>
                 <div class="form-group"><label>Type</label><select id="j-type"><option>Inverter</option><option>Non-Inverter</option></select></div>
             </div>
-            <div class="form-group"><label>Model</label><select id="j-model"><option>Split</option><option>Ceiling Cassette</option><option>Floor Stand</option></select></div>
+            <div class="form-group"><label>Model</label>
+                <select id="j-model">
+                    <option>Split</option>
+                    <option>Ceiling Cassette</option>
+                    <option>Floor Stand</option>
+                    <option>Portable</option>
+                </select>
+            </div>
             <div class="form-group"><label>Issue</label><textarea id="j-issue" rows="2"></textarea></div>
             <div class="form-group"><label id="lbl-assign">Assigned Staff</label><div id="staffChecks" style="border:1px solid var(--border); padding:10px; border-radius:6px; max-height:100px; overflow:auto;">Loading...</div></div>
             <div class="grid-2">
@@ -120,8 +133,8 @@
             <p><strong>Developed by Zwe Maung Maung</strong></p>
             <p style="font-size:12px; color:#888;">Ko Htay Aung (Oasis) Air-Con Sales & Service</p>
             <div style="margin-top:20px; font-size:11px; color:#999; border-top:1px dashed var(--border); padding-top:15px;">
-                <p>© 2026 Oasis AC Co., Ltd. All Rights Reserved.</p>
-                <p id="lbl-copy">Copyright protection applied. Unauthorized use is prohibited.</p>
+                <p>© 2026 **Zwe Maung Maung**. All Rights Reserved.</p>
+                <p id="lbl-copy">Copyright protection applied by Zwe Maung Maung.</p>
             </div>
             <button class="btn-green" onclick="logout()" style="background:#dc3545; margin-top:20px;">LOGOUT</button>
         </div>
@@ -141,8 +154,8 @@
     const db = firebase.firestore();
 
     const lang = {
-        en: { dash: "Dashboard Summary", srv: "New Service Entry", name: "Customer Name", phone: "Phone", addr: "Address", assign: "Assigned Staff", save: "SAVE RECORD", stf_add: "Add Staff", stf_name: "Name", role: "Role", stf_phone: "Phone", stf_addr: "Address", remark: "Remark", btn_stf: "ADD STAFF", dir: "Staff Directory", set: "Settings", copy: "Copyright protection applied. Unauthorized use is prohibited." },
-        mm: { dash: "အနှစ်ချုပ် ဇယား", srv: "ပြုပြင်ရေး မှတ်တမ်းအသစ်", name: "အမည်", phone: "ဖုန်းနံပါတ်", addr: "လိပ်စာ", assign: "တာဝန်ကျဝန်ထမ်းများ", save: "မှတ်တမ်းသိမ်းမည်", stf_add: "ဝန်ထမ်းအသစ်သွင်းရန်", stf_name: "အမည်", role: "ရာထူး", stf_phone: "ဖုန်း", stf_addr: "လိပ်စာ", remark: "မှတ်ချက်", btn_stf: "ဝန်ထမ်းသိမ်းမည်", dir: "ဝန်ထမ်းစာရင်း", set: "ဆော့ဝဲလ် အချက်အလက်", copy: "မူပိုင်ခွင့် ဥပဒေဖြင့် ကာကွယ်ထားပါသည်။ ခွင့်ပြုချက်မရှိဘဲ ကူးယူခြင်းကို တားမြစ်ပါသည်။" }
+        en: { dash: "Dashboard Summary", srv: "New Service Entry", name: "Customer Name", phone: "Phone", addr: "Address", assign: "Assigned Staff", save: "SAVE RECORD", stf_add: "Add Staff", stf_name: "Name", role: "Role", stf_phone: "Phone", stf_addr: "Address", remark: "Remark", btn_stf: "ADD STAFF", dir: "Staff Directory", set: "Settings", copy: "Copyright protection applied by Zwe Maung Maung." },
+        mm: { dash: "အနှစ်ချုပ် ဇယား", srv: "ပြုပြင်ရေး မှတ်တမ်းအသစ်", name: "အမည်", phone: "ဖုန်းနံပါတ်", addr: "လိပ်စာ", assign: "တာဝန်ကျဝန်ထမ်းများ", save: "မှတ်တမ်းသိမ်းမည်", stf_add: "ဝန်ထမ်းအသစ်သွင်းရန်", stf_name: "အမည်", role: "ရာထူး", stf_phone: "ဖုန်း", stf_addr: "လိပ်စာ", remark: "မှတ်ချက်", btn_stf: "ဝန်ထမ်းသိမ်းမည်", dir: "ဝန်ထမ်းစာရင်း", set: "ဆော့ဝဲလ် အချက်အလက်", copy: "Zwe Maung Maung ၏ မူပိုင်ခွင့် ဥပဒေဖြင့် ကာကွယ်ထားပါသည်။" }
     };
 
     function toggleLang() {
