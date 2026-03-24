@@ -10,9 +10,8 @@
     <style>
         :root { --p-green: #28a745; --bg: #ffffff; --text: #333; --card: #f8f9fa; --border: #ddd; }
         [data-theme="dark"] { --bg: #121212; --text: #e0e0e0; --card: #1e1e1e; --border: #333; }
-        body { font-family: Arial, sans-serif; margin: 0; background: var(--bg); color: var(--text); padding-bottom: 50px; }
+        body { font-family: Arial, sans-serif; margin: 0; background: var(--bg); color: var(--text); padding-bottom: 60px; }
         .header { background: var(--p-green); color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1001; }
-        .logo-box { display: flex; align-items: center; gap: 10px; }
         .logo-img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; background: white; }
         .nav-tabs { display: flex; overflow-x: auto; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 60px; z-index: 1000; }
         .tab-btn { padding: 15px; flex: 1; text-align: center; cursor: pointer; font-weight: bold; font-size: 12px; color: #666; border-bottom: 3px solid transparent; }
@@ -21,21 +20,20 @@
         .card { background: var(--card); padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--border); }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 13px; color: var(--p-green); }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); box-sizing: border-box; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); }
         .btn-green { background: var(--p-green); color: white; border: none; padding: 12px; border-radius: 6px; width: 100%; font-weight: bold; cursor: pointer; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .hidden { display: none; }
-        .staff-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center; }
     </style>
 </head>
-<body data-theme="light">
+<body data-theme="dark">
 
 <div class="header">
-    <div class="logo-box">
-        <img src="1000064267.png" class="logo-img" alt="Logo">
-        <span style="font-weight: bold; font-size: 14px;">OASIS AC SYSTEM</span>
+    <div style="display:flex; align-items:center; gap:10px;">
+        <img src="1000064267.png" class="logo-img">
+        <span style="font-weight:bold;">OASIS AC SYSTEM</span>
     </div>
-    <button onclick="toggleTheme()" style="background: none; border: none; cursor: pointer; font-size: 18px;">🌓</button>
+    <button onclick="toggleTheme()" style="background:none; border:none; cursor:pointer; font-size:18px;">🌓</button>
 </div>
 
 <div class="nav-tabs">
@@ -61,8 +59,7 @@
                 <div class="form-group"><label>Phone</label><input type="text" id="j-phone"></div>
             </div>
             <div class="form-group"><label>Address</label><textarea id="j-addr" rows="2"></textarea></div>
-            <div class="form-group"><label>Appliance</label><select id="j-app"><option>Air-Con</option><option>Refrigerator</option><option>Washing Machine</option></select></div>
-            
+            <div class="form-group"><label>Appliance</label><select id="j-app"><option>Air-Con</option><option>Refrigerator</option></select></div>
             <div class="grid-2">
                 <div class="form-group"><label>Brand</label><input type="text" id="j-brand"></div>
                 <div class="form-group"><label>HP</label><input type="text" id="j-hp"></div>
@@ -71,18 +68,13 @@
                 <div class="form-group"><label>Gas Type</label><input type="text" id="j-gas"></div>
                 <div class="form-group"><label>Type</label><select id="j-type"><option>Inverter</option><option>Non-Inverter</option></select></div>
             </div>
-            <div class="form-group"><label>Model</label><select id="j-model"><option>Split</option><option>Ceiling Cassette</option><option>Floor Stand</option><option>Portable</option></select></div>
+            <div class="form-group"><label>Model</label><select id="j-model"><option>Split</option><option>Ceiling Cassette</option><option>Floor Stand</option></select></div>
             <div class="form-group"><label>Issue / Problem</label><textarea id="j-issue" rows="2"></textarea></div>
-            
-            <div class="form-group"><label>Assigned Staff</label>
-                <div id="staffChecks" style="border:1px solid var(--border); padding:10px; max-height:100px; overflow-y:auto; font-size:13px; border-radius:6px; background:var(--bg);">No staff found</div>
-            </div>
-
+            <div class="form-group"><label>Assigned Staff</label><div id="staffChecks" style="border:1px solid var(--border); padding:10px; border-radius:6px; max-height:100px; overflow:auto;">Loading...</div></div>
             <div class="grid-2">
                 <div class="form-group"><label>Before Photo</label><input type="file" id="j-bphoto" accept="image/*"></div>
                 <div class="form-group"><label>After Photo</label><input type="file" id="j-aphoto" accept="image/*"></div>
             </div>
-
             <div class="grid-2">
                 <div class="form-group"><label>Date</label><input type="date" id="j-date"></div>
                 <div class="form-group"><label>Cost (MMK)</label><input type="number" id="j-cost"></div>
@@ -93,30 +85,25 @@
 
     <div id="staffTab" class="hidden">
         <div class="card">
-            <h3>Add New Staff</h3>
-            <div class="form-group"><label>Profile Photo</label><input type="file" id="st-photo" accept="image/*"></div>
-            <div class="form-group"><label>Full Name</label><input type="text" id="st-name"></div>
+            <h3>Add Staff</h3>
+            <div class="form-group"><label>Photo</label><input type="file" id="st-photo" accept="image/*"></div>
+            <div class="form-group"><label>Name</label><input type="text" id="st-name"></div>
             <div class="grid-2">
-                <div class="form-group"><label>Role</label><select id="st-role"><option>Technician</option><option>Helper</option><option>Leader</option><option>Manager</option></select></div>
+                <div class="form-group"><label>Role</label><select id="st-role"><option>Technician</option><option>Helper</option><option>Leader</option><option>MD</option></select></div>
                 <div class="form-group"><label>Phone</label><input type="text" id="st-phone"></div>
             </div>
             <div class="form-group"><label>Address</label><input type="text" id="st-addr"></div>
             <div class="form-group"><label>Remark</label><textarea id="st-remark" rows="2"></textarea></div>
             <button class="btn-green" onclick="addStaff()" id="btn-stf-save">ADD STAFF</button>
         </div>
-        <div class="card">
-            <h4>Staff Directory</h4>
-            <div id="staffList"></div>
-        </div>
+        <div class="card"><h4>Staff Directory</h4><div id="staffList"></div></div>
     </div>
 
     <div id="settingsTab" class="hidden">
-        <div class="card" style="text-align: center;">
-            <h3>Settings</h3>
-            <img src="1000064267.png" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--p-green); margin-bottom: 10px; object-fit:cover;">
+        <div class="card" style="text-align:center;">
+            <h3>App Info</h3>
             <p><strong>Developed by Zwe Maung Maung</strong></p>
-            <p style="font-size: 12px; color: #888;">Ko Htay Aung (Oasis) Air-Con Sales & Service</p>
-            <button class="btn-green" onclick="logout()" style="background: #dc3545; margin-top: 20px;">LOGOUT</button>
+            <button class="btn-green" onclick="logout()" style="background:#dc3545;">LOGOUT</button>
         </div>
     </div>
 </div>
@@ -145,12 +132,15 @@
     function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light'); }
     function logout() { localStorage.removeItem('isLoggedIn'); location.href = 'index.html'; }
 
+    function toBase64(file) {
+        if(!file) return Promise.resolve("");
+        return new Promise(r => { const reader = new FileReader(); reader.onload = e => r(e.target.result); reader.readAsDataURL(file); });
+    }
+
     async function addStaff() {
         const btn = document.getElementById('btn-stf-save');
         btn.innerText = "Saving...";
         const photo = await toBase64(document.getElementById('st-photo').files[0]);
-        if(photo.length > 1000000) { alert("Photo too large! Under 1MB please."); btn.innerText = "ADD STAFF"; return; }
-
         const data = {
             name: document.getElementById('st-name').value,
             role: document.getElementById('st-role').value,
@@ -160,21 +150,16 @@
             photo: photo,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         };
-        if(!data.name) { alert("Enter Name"); btn.innerText = "ADD STAFF"; return; }
         await db.collection("staff").add(data);
         alert("Staff Added!");
-        btn.innerText = "ADD STAFF";
         location.reload();
     }
 
     function loadStaff() {
-        const list = document.getElementById('staffList');
-        list.innerHTML = "Loading...";
         db.collection("staff").orderBy("createdAt", "desc").get().then(snap => {
-            if(snap.empty) { list.innerHTML = "No data."; return; }
-            list.innerHTML = snap.docs.map(doc => {
+            document.getElementById('staffList').innerHTML = snap.docs.map(doc => {
                 const s = doc.data();
-                return `<div class="staff-item">
+                return `<div style="display:flex; gap:10px; border-bottom:1px solid var(--border); padding:10px 0;">
                     <img src="${s.photo || '1000064267.png'}" style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
                     <div style="font-size:13px;"><strong>${s.name}</strong> (${s.role})<br>📞 ${s.phone || '-'}<br>📍 ${s.addr || '-'}</div>
                 </div>`;
@@ -184,7 +169,6 @@
 
     function loadStaffForService() {
         db.collection("staff").get().then(snap => {
-            if(snap.empty) { document.getElementById('staffChecks').innerHTML = "No staff found."; return; }
             document.getElementById('staffChecks').innerHTML = snap.docs.map(doc => `
                 <div style="margin-bottom:5px;"><input type="checkbox" name="assigned" value="${doc.data().name}"> ${doc.data().name}</div>
             `).join('');
@@ -192,12 +176,10 @@
     }
 
     async function saveJob() {
-        const btn = document.getElementById('btn-srv-save');
-        btn.innerText = "Saving Record...";
+        document.getElementById('btn-srv-save').innerText = "Saving Record...";
         const assigned = Array.from(document.querySelectorAll('input[name="assigned"]:checked')).map(c => c.value);
         const bPhoto = await toBase64(document.getElementById('j-bphoto').files[0]);
         const aPhoto = await toBase64(document.getElementById('j-aphoto').files[0]);
-
         const data = {
             name: document.getElementById('j-name').value,
             phone: document.getElementById('j-phone').value,
@@ -216,20 +198,15 @@
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         };
         await db.collection("jobs").add(data);
-        alert("Service Saved Successfully!");
+        alert("Service Saved!");
         location.reload();
     }
 
-    function toBase64(file) {
-        if(!file) return Promise.resolve("");
-        return new Promise(r => { const reader = new FileReader(); reader.onload = e => r(e.target.result); reader.readAsDataURL(file); });
-    }
-
-    window.onload = () => { 
+    window.onload = () => {
         if(!localStorage.getItem('isLoggedIn')) location.href='index.html';
         db.collection("jobs").get().then(snap => {
             const ctx = document.getElementById('jobChart').getContext('2d');
-            new Chart(ctx, { type: 'bar', data: { labels: ['Jobs'], datasets: [{ label: 'Total Service Records', data: [snap.docs.length], backgroundColor: '#28a745' }] } });
+            new Chart(ctx, { type: 'bar', data: { labels: ['Jobs'], datasets: [{ label: 'Total Records', data: [snap.docs.length], backgroundColor: '#28a745' }] } });
         });
     };
 </script>
