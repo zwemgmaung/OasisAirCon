@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oasis AC System</title>
+    <title>Oasis AC Enterprise System</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -12,11 +12,11 @@
     <style>
         :root { --p-green: #28a745; --bg: #ffffff; --text: #333; --card: #f8f9fa; --border: #ddd; }
         [data-theme="dark"] { --bg: #121212; --text: #e0e0e0; --card: #1e1e1e; --border: #333; }
-        body { font-family: Arial, sans-serif; margin: 0; background: var(--bg); color: var(--text); padding-bottom: 60px; transition: 0.3s; }
+        body { font-family: Arial, sans-serif; margin: 0; background: var(--bg); color: var(--text); padding-bottom: 70px; transition: 0.3s; }
         .header { background: var(--p-green); color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1001; }
         .logo-img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; background: white; }
         .nav-tabs { display: flex; overflow-x: auto; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 60px; z-index: 1000; }
-        .tab-btn { padding: 15px; flex: 1; text-align: center; cursor: pointer; font-weight: bold; font-size: 11px; color: #666; border-bottom: 3px solid transparent; white-space: nowrap; }
+        .tab-btn { padding: 15px; flex: none; text-align: center; cursor: pointer; font-weight: bold; font-size: 11px; color: #666; border-bottom: 3px solid transparent; }
         .tab-btn.active { color: var(--p-green); border-bottom-color: var(--p-green); }
         .container { padding: 15px; max-width: 800px; margin: auto; }
         .card { background: var(--card); padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--border); }
@@ -24,9 +24,10 @@
         label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 13px; color: var(--p-green); }
         input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); box-sizing: border-box; }
         .btn-green { background: var(--p-green); color: white; border: none; padding: 12px; border-radius: 6px; width: 100%; font-weight: bold; cursor: pointer; }
-        .btn-pdf { background: #007bff; color: white; border: none; padding: 8px 15px; border-radius: 5px; font-size: 12px; cursor: pointer; margin-top: 10px; font-weight: bold; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .hidden { display: none; }
+        .finance-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .finance-item { text-align: center; padding: 10px; border-radius: 8px; color: white; }
     </style>
 </head>
 <body data-theme="dark">
@@ -34,12 +35,12 @@
 <div class="header">
     <div style="display:flex; align-items:center; gap:10px;">
         <img src="1000064267.png" class="logo-img">
-        <span style="font-weight:bold; font-size:14px;">OASIS AC SYSTEM</span>
+        <span style="font-weight:bold; font-size:14px;">OASIS ENTERPRISE</span>
     </div>
     <div style="display:flex; gap:10px; align-items:center;">
         <select id="langBtn" onchange="toggleLang()" style="padding:2px; font-size:11px; width:auto; border:1px solid white; background:transparent; color:white;">
-            <option value="en" style="color:black;">ENG</option>
-            <option value="mm" style="color:black;">MM</option>
+            <option value="en">ENG</option>
+            <option value="mm">MM</option>
         </select>
         <button onclick="toggleTheme()" style="background:none; border:none; cursor:pointer; font-size:18px;">🌓</button>
     </div>
@@ -48,103 +49,111 @@
 <div class="nav-tabs">
     <div class="tab-btn active" onclick="showTab('home')" id="t-home">HOME</div>
     <div class="tab-btn" onclick="showTab('service')" id="t-service">SERVICE</div>
+    <div class="tab-btn" onclick="showTab('purchase')" id="t-purchase">PURCHASE</div>
+    <div class="tab-btn" onclick="showTab('sale')" id="t-sale">SALE</div>
     <div class="tab-btn" onclick="showTab('staff')" id="t-staff">STAFF</div>
     <div class="tab-btn" onclick="showTab('settings')" id="t-settings">SETTINGS</div>
 </div>
 
 <div class="container">
     <div id="homeTab">
-        <div class="card" style="text-align: center;">
-            <h3 id="lbl-dash" style="margin-bottom:5px;">Dashboard Summary</h3>
-            <p style="font-size: 12px; color: var(--p-green); margin-bottom: 15px; font-weight: bold;">Developed by Zwe Maung Maung</p>
-            <canvas id="jobChart" style="max-height: 200px;"></canvas>
-            <button class="btn-pdf" onclick="downloadPDF()">Download Records (PDF)</button>
+        <div class="card">
+            <h3 id="lbl-dash">Dashboard Summary</h3>
+            <p style="font-size: 12px; color: var(--p-green); margin-bottom: 10px;">Developed by Zwe Maung Maung</p>
+            <canvas id="jobChart" style="max-height: 150px;"></canvas>
+            
+            <div class="finance-grid">
+                <div class="finance-item" style="background: #28a745;"><small>Income</small><div id="totalIncome" style="font-weight:bold; font-size:12px;">0</div></div>
+                <div class="finance-item" style="background: #dc3545;"><small>Expense</small><div id="totalExpense" style="font-weight:bold; font-size:12px;">0</div></div>
+                <div class="finance-item" style="background: #007bff;"><small>Profit</small><div id="totalProfit" style="font-weight:bold; font-size:12px;">0</div></div>
+            </div>
+            <button class="btn-green" style="margin-top:15px; font-size:12px; padding:8px;" onclick="downloadPDF()">Download PDF Report</button>
+        </div>
+    </div>
+
+    <div id="purchaseTab" class="hidden">
+        <div class="card">
+            <h3 id="lbl-pur">New Purchase</h3>
+            <div class="form-group"><label>Item Type</label><input type="text" id="p-type" placeholder="e.g. Spare Part / Gas"></div>
+            <div class="form-group"><label>Item Name</label><input type="text" id="p-name"></div>
+            <div class="grid-2">
+                <div class="form-group"><label>Quantity</label><input type="number" id="p-qty" oninput="calcPurchase()"></div>
+                <div class="form-group"><label>Unit Price (MMK)</label><input type="number" id="p-price" oninput="calcPurchase()"></div>
+            </div>
+            <div class="form-group"><label>Total Cost (MMK)</label><input type="number" id="p-total" readonly style="background:#eee; color:#333;"></div>
+            <button class="btn-green" onclick="savePurchase()">SAVE PURCHASE</button>
+        </div>
+    </div>
+
+    <div id="saleTab" class="hidden">
+        <div class="card">
+            <h3 id="lbl-sale">New Sale</h3>
+            <div class="form-group"><label>Appliance Type</label>
+                <select id="s-app"><option>Air-Con</option><option>Refrigerator</option><option>Washing Machine</option></select>
+            </div>
+            <div class="grid-2">
+                <div class="form-group"><label>Brand Name</label><input type="text" id="s-brand"></div>
+                <div class="form-group"><label>Model</label><input type="text" id="s-model"></div>
+            </div>
+            <div class="grid-2">
+                <div class="form-group"><label>HP</label><input type="text" id="s-hp"></div>
+                <div class="form-group"><label>Quantity</label><input type="number" id="s-qty"></div>
+            </div>
+            <div class="form-group"><label>Sale Price (MMK)</label><input type="number" id="s-price"></div>
+            <div class="form-group"><label>Remark</label><textarea id="s-remark" rows="2"></textarea></div>
+            <button class="btn-green" onclick="saveSale()">SAVE SALE</button>
         </div>
     </div>
 
     <div id="serviceTab" class="hidden">
         <div class="card">
-            <h3 id="lbl-srv-new">New Service Entry</h3>
+            <h3>New Service Entry</h3>
             <div class="grid-2">
-                <div class="form-group"><label id="lbl-name">Customer Name</label><input type="text" id="j-name"></div>
-                <div class="form-group"><label id="lbl-phone">Phone</label><input type="text" id="j-phone"></div>
+                <div class="form-group"><label>Customer Name</label><input type="text" id="j-name"></div>
+                <div class="form-group"><label>Phone</label><input type="text" id="j-phone"></div>
             </div>
-            <div class="form-group"><label id="lbl-addr">Address</label><textarea id="j-addr" rows="2"></textarea></div>
-            <div class="form-group"><label>Appliance</label>
-                <select id="j-app">
-                    <option>Air-Con</option>
-                    <option>Refrigerator</option>
-                    <option>Washing Machine</option>
-                </select>
-            </div>
+            <div class="form-group"><label>Address</label><textarea id="j-addr" rows="2"></textarea></div>
+            <div class="form-group"><label>Appliance</label><select id="j-app"><option>Air-Con</option><option>Refrigerator</option><option>Washing Machine</option></select></div>
             <div class="grid-2">
                 <div class="form-group"><label>Brand</label><input type="text" id="j-brand"></div>
                 <div class="form-group"><label>HP</label><input type="text" id="j-hp"></div>
             </div>
-            <div class="grid-2">
-                <div class="form-group"><label>Gas Type</label><input type="text" id="j-gas"></div>
-                <div class="form-group"><label>Type</label><select id="j-type"><option>Inverter</option><option>Non-Inverter</option></select></div>
-            </div>
-            <div class="form-group"><label>Model</label>
-                <select id="j-model">
-                    <option>Split</option>
-                    <option>Ceiling Cassette</option>
-                    <option>Floor Stand</option>
-                    <option>Portable</option>
-                </select>
-            </div>
             <div class="form-group"><label>Issue</label><textarea id="j-issue" rows="2"></textarea></div>
             <div class="form-group"><label id="lbl-assign">Assigned Staff</label><div id="staffChecks" style="border:1px solid var(--border); padding:10px; border-radius:6px; max-height:100px; overflow:auto;">Loading...</div></div>
             <div class="grid-2">
-                <div class="form-group"><label>Before Photo</label><input type="file" id="j-bphoto" accept="image/*"></div>
-                <div class="form-group"><label>After Photo</label><input type="file" id="j-aphoto" accept="image/*"></div>
-            </div>
-            <div class="grid-2">
                 <div class="form-group"><label>Date</label><input type="date" id="j-date"></div>
-                <div class="form-group"><label>Cost</label><input type="number" id="j-cost"></div>
+                <div class="form-group"><label>Cost (MMK)</label><input type="number" id="j-cost"></div>
             </div>
-            <button class="btn-green" onclick="saveJob()" id="btn-srv">SAVE RECORD</button>
+            <button class="btn-green" onclick="saveJob()">SAVE SERVICE</button>
         </div>
     </div>
 
     <div id="staffTab" class="hidden">
         <div class="card">
-            <h3 id="lbl-stf-add">Add Staff</h3>
-            <div class="form-group"><label>Photo</label><input type="file" id="st-photo" accept="image/*"></div>
-            <div class="form-group"><label id="lbl-stf-name">Name</label><input type="text" id="st-name"></div>
+            <h3>Add Staff</h3>
+            <div class="form-group"><label>Name</label><input type="text" id="st-name"></div>
             <div class="grid-2">
                 <div class="form-group">
-                    <label id="lbl-role">Role</label>
+                    <label>Role</label>
                     <select id="st-role">
-                        <option>MD</option>
-                        <option>Manager</option>
-                        <option>Leader</option>
-                        <option>Second-Leader</option>
-                        <option>Helper</option>
-                        <option>Technician</option>
-                        <option>စာရေးမ</option>
+                        <option>MD</option><option>Manager</option><option>Leader</option>
+                        <option>Second-Leader</option><option>Helper</option><option>Technician</option>
+                        <option value="Office Staff">Office Staff (စာရေးမ)</option>
                     </select>
                 </div>
-                <div class="form-group"><label id="lbl-stf-phone">Phone</label><input type="text" id="st-phone"></div>
+                <div class="form-group"><label>Phone</label><input type="text" id="st-phone"></div>
             </div>
-            <div class="form-group"><label id="lbl-stf-addr">Address</label><input type="text" id="st-addr"></div>
-            <div class="form-group"><label id="lbl-remark">Remark</label><textarea id="st-remark" rows="2"></textarea></div>
-            <button class="btn-green" onclick="addStaff()" id="btn-stf">ADD STAFF</button>
+            <button class="btn-green" onclick="addStaff()">ADD STAFF</button>
         </div>
-        <div class="card"><h4 id="lbl-dir">Staff Directory</h4><div id="staffList"></div></div>
+        <div class="card"><h4>Staff Directory</h4><div id="staffList"></div></div>
     </div>
 
     <div id="settingsTab" class="hidden">
         <div class="card" style="text-align:center;">
-            <h3 id="lbl-set">Settings</h3>
-            <img src="1000064267.png" style="width:80px; height:80px; border-radius:50%; border:3px solid var(--p-green); margin-bottom:10px; object-fit:cover;">
+            <h3>Settings</h3>
             <p><strong>Developed by Zwe Maung Maung</strong></p>
-            <p style="font-size:12px; color:#888;">Ko Htay Aung (Oasis) Air-Con Sales & Service</p>
-            <div style="margin-top:20px; font-size:11px; color:#999; border-top:1px dashed var(--border); padding-top:15px;">
-                <p>© 2026 <strong>Zwe Maung Maung</strong>. All Rights Reserved.</p>
-                <p id="lbl-copy">Copyright protection applied by Zwe Maung Maung.</p>
-            </div>
-            <button class="btn-green" onclick="logout()" style="background:#dc3545; margin-top:20px;">LOGOUT</button>
+            <p>© 2026 Zwe Maung Maung. All Rights Reserved.</p>
+            <button class="btn-green" onclick="logout()" style="background:#dc3545;">LOGOUT</button>
         </div>
     </div>
 </div>
@@ -161,144 +170,96 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    const lang = {
-        en: { dash: "Dashboard Summary", srv: "New Service Entry", name: "Customer Name", phone: "Phone", addr: "Address", assign: "Assigned Staff", save: "SAVE RECORD", stf_add: "Add Staff", stf_name: "Name", role: "Role", stf_phone: "Phone", stf_addr: "Address", remark: "Remark", btn_stf: "ADD STAFF", dir: "Staff Directory", set: "Settings", copy: "Copyright protection applied by Zwe Maung Maung." },
-        mm: { dash: "အနှစ်ချုပ် ဇယား", srv: "ပြုပြင်ရေး မှတ်တမ်းအသစ်", name: "အမည်", phone: "ဖုန်းနံပါတ်", addr: "လိပ်စာ", assign: "တာဝန်ကျဝန်ထမ်းများ", save: "မှတ်တမ်းသိမ်းမည်", stf_add: "ဝန်ထမ်းအသစ်သွင်းရန်", stf_name: "အမည်", role: "ရာထူး", stf_phone: "ဖုန်း", stf_addr: "လိပ်စာ", remark: "မှတ်ချက်", btn_stf: "ဝန်ထမ်းသိမ်းမည်", dir: "ဝန်ထမ်းစာရင်း", set: "ဆော့ဝဲလ် အချက်အလက်", copy: "Zwe Maung Maung ၏ မူပိုင်ခွင့် ဥပဒေဖြင့် ကာကွယ်ထားပါသည်။" }
-    };
-
-    function toggleLang() {
-        const l = document.getElementById('langBtn').value;
-        document.getElementById('lbl-dash').innerText = lang[l].dash;
-        document.getElementById('lbl-srv-new').innerText = lang[l].srv;
-        document.getElementById('lbl-name').innerText = lang[l].name;
-        document.getElementById('lbl-phone').innerText = lang[l].phone;
-        document.getElementById('lbl-addr').innerText = lang[l].addr;
-        document.getElementById('lbl-assign').innerText = lang[l].assign;
-        document.getElementById('btn-srv').innerText = lang[l].save;
-        document.getElementById('lbl-stf-add').innerText = lang[l].stf_add;
-        document.getElementById('lbl-stf-name').innerText = lang[l].stf_name;
-        document.getElementById('lbl-role').innerText = lang[l].role;
-        document.getElementById('lbl-stf-phone').innerText = lang[l].stf_phone;
-        document.getElementById('lbl-stf-addr').innerText = lang[l].stf_addr;
-        document.getElementById('lbl-remark').innerText = lang[l].remark;
-        document.getElementById('btn-stf').innerText = lang[l].btn_stf;
-        document.getElementById('lbl-dir').innerText = lang[l].dir;
-        document.getElementById('lbl-set').innerText = lang[l].set;
-        document.getElementById('lbl-copy').innerText = lang[l].copy;
-    }
-
     function showTab(t) {
-        ['home','service','staff','settings'].forEach(id => document.getElementById(id+'Tab').classList.add('hidden'));
+        ['home','service','purchase','sale','staff','settings'].forEach(id => document.getElementById(id+'Tab').classList.add('hidden'));
         document.getElementById(t+'Tab').classList.remove('hidden');
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('t-'+t).classList.add('active');
         if(t === 'staff') loadStaff();
         if(t === 'service') loadStaffForService();
+        if(t === 'home') updateFinance();
     }
 
     function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light'); }
     function logout() { localStorage.removeItem('isLoggedIn'); location.href = 'index.html'; }
 
-    async function addStaff() {
-        const btn = document.getElementById('btn-stf');
-        btn.innerText = "Saving...";
-        const file = document.getElementById('st-photo').files[0];
-        const photo = file ? await toBase64(file) : "";
+    // --- PURCHASE LOGIC ---
+    function calcPurchase() {
+        const qty = document.getElementById('p-qty').value || 0;
+        const price = document.getElementById('p-price').value || 0;
+        document.getElementById('p-total').value = qty * price;
+    }
+    async function savePurchase() {
         const data = {
-            name: document.getElementById('st-name').value,
-            role: document.getElementById('st-role').value,
-            phone: document.getElementById('st-phone').value,
-            addr: document.getElementById('st-addr').value,
-            remark: document.getElementById('st-remark').value,
-            photo: photo,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            type: document.getElementById('p-type').value, name: document.getElementById('p-name').value,
+            qty: Number(document.getElementById('p-qty').value), price: Number(document.getElementById('p-price').value),
+            total: Number(document.getElementById('p-total').value), timestamp: firebase.firestore.FieldValue.serverTimestamp()
         };
-        await db.collection("staff").add(data);
-        alert("Staff Added!");
-        location.reload();
+        await db.collection("purchases").add(data);
+        alert("Purchase Recorded!"); location.reload();
     }
 
+    // --- SALE LOGIC ---
+    async function saveSale() {
+        const data = {
+            app: document.getElementById('s-app').value, brand: document.getElementById('s-brand').value,
+            model: document.getElementById('s-model').value, hp: document.getElementById('s-hp').value,
+            qty: Number(document.getElementById('s-qty').value), price: Number(document.getElementById('s-price').value),
+            remark: document.getElementById('s-remark').value, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        await db.collection("sales").add(data);
+        alert("Sale Recorded!"); location.reload();
+    }
+
+    // --- SERVICE LOGIC ---
+    async function saveJob() {
+        const assigned = Array.from(document.querySelectorAll('input[name="assigned"]:checked')).map(c => c.value);
+        const data = {
+            name: document.getElementById('j-name').value, phone: document.getElementById('j-phone').value,
+            app: document.getElementById('j-app').value, cost: Number(document.getElementById('j-cost').value),
+            staff: assigned, date: document.getElementById('j-date').value, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        await db.collection("jobs").add(data);
+        alert("Service Saved!"); location.reload();
+    }
+
+    // --- FINANCE SUMMARY ---
+    async function updateFinance() {
+        let income = 0, expense = 0;
+        const jobs = await db.collection("jobs").get();
+        jobs.forEach(d => income += (d.data().cost || 0));
+        const sales = await db.collection("sales").get();
+        sales.forEach(d => income += (d.data().price || 0));
+        const pur = await db.collection("purchases").get();
+        pur.forEach(d => expense += (d.data().total || 0));
+
+        document.getElementById('totalIncome').innerText = income.toLocaleString() + " MMK";
+        document.getElementById('totalExpense').innerText = expense.toLocaleString() + " MMK";
+        document.getElementById('totalProfit').innerText = (income - expense).toLocaleString() + " MMK";
+    }
+
+    // --- STAFF LIST ---
     function loadStaff() {
-        db.collection("staff").orderBy("createdAt", "desc").get().then(snap => {
-            document.getElementById('staffList').innerHTML = snap.docs.map(doc => {
-                const s = doc.data();
-                return `<div style="display:flex; gap:10px; border-bottom:1px solid var(--border); padding:10px 0; align-items:center;">
-                    <img src="${s.photo || '1000064267.png'}" style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
-                    <div style="font-size:12px;"><strong>${s.name}</strong> (${s.role})<br>📞 ${s.phone || '-'}<br>📍 ${s.addr || '-'}</div>
-                </div>`;
-            }).join('');
+        db.collection("staff").get().then(snap => {
+            document.getElementById('staffList').innerHTML = snap.docs.map(doc => `
+                <div style="padding:10px; border-bottom:1px solid var(--border); font-size:12px;">
+                    <strong>${doc.data().name}</strong> (${doc.data().role}) - ${doc.data().phone || '-'}
+                </div>`).join('');
         });
     }
-
     function loadStaffForService() {
         db.collection("staff").get().then(snap => {
             document.getElementById('staffChecks').innerHTML = snap.docs.map(doc => `
-                <div style="margin-bottom:5px;"><input type="checkbox" name="assigned" value="${doc.data().name}"> ${doc.data().name} (${doc.data().role})</div>
+                <div style="margin-bottom:5px;"><input type="checkbox" name="assigned" value="${doc.data().name}"> ${doc.data().name}</div>
             `).join('');
         });
     }
-
-    async function saveJob() {
-        document.getElementById('btn-srv').innerText = "Saving Record...";
-        const assigned = Array.from(document.querySelectorAll('input[name="assigned"]:checked')).map(c => c.value);
-        const bPhotoFile = document.getElementById('j-bphoto').files[0];
-        const aPhotoFile = document.getElementById('j-aphoto').files[0];
-        const bPhoto = bPhotoFile ? await toBase64(bPhotoFile) : "";
-        const aPhoto = aPhotoFile ? await toBase64(aPhotoFile) : "";
-        
-        const data = {
-            name: document.getElementById('j-name').value, phone: document.getElementById('j-phone').value,
-            address: document.getElementById('j-addr').value, app: document.getElementById('j-app').value,
-            brand: document.getElementById('j-brand').value, hp: document.getElementById('j-hp').value,
-            gas: document.getElementById('j-gas').value, type: document.getElementById('j-type').value,
-            model: document.getElementById('j-model').value, issue: document.getElementById('j-issue').value,
-            staff: assigned, date: document.getElementById('j-date').value, cost: document.getElementById('j-cost').value,
-            bPhoto, aPhoto, timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        };
-        await db.collection("jobs").add(data);
-        alert("Service Saved!");
-        location.reload();
+    async function addStaff() {
+        await db.collection("staff").add({ name: document.getElementById('st-name').value, role: document.getElementById('st-role').value, phone: document.getElementById('st-phone').value });
+        alert("Staff Added!"); loadStaff();
     }
 
-    function toBase64(file) {
-        return new Promise(r => { const reader = new FileReader(); reader.onload = e => r(e.target.result); reader.readAsDataURL(file); });
-    }
-
-    // --- ONE CLICK PDF DOWNLOAD SYSTEM ---
-    async function downloadPDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF('l', 'mm', 'a4');
-        
-        // Add Title
-        doc.setFontSize(18);
-        doc.text("Oasis Air-Con Service Records", 14, 20);
-        doc.setFontSize(10);
-        doc.text("Generated by Zwe Maung Maung", 14, 28);
-
-        const snap = await db.collection("jobs").orderBy("timestamp", "desc").get();
-        const rows = snap.docs.map(d => {
-            const j = d.data();
-            return [j.date, j.name, j.phone, j.app, j.brand, j.issue, j.staff.join(', '), j.cost];
-        });
-
-        doc.autoTable({
-            startY: 35,
-            head: [['Date', 'Customer', 'Phone', 'Appliance', 'Brand', 'Issue', 'Staff', 'Cost (MMK)']],
-            body: rows,
-            theme: 'striped',
-            headStyles: { fillColor: [40, 167, 69] }
-        });
-
-        doc.save("Oasis_Service_Records.pdf");
-    }
-
-    window.onload = () => {
-        if(!localStorage.getItem('isLoggedIn')) location.href='index.html';
-        db.collection("jobs").get().then(snap => {
-            const ctx = document.getElementById('jobChart').getContext('2d');
-            new Chart(ctx, { type: 'bar', data: { labels: ['Jobs'], datasets: [{ label: 'Total Services', data: [snap.docs.length], backgroundColor: '#28a745' }] } });
-        });
-    };
+    window.onload = () => { if(!localStorage.getItem('isLoggedIn')) location.href='index.html'; updateFinance(); };
 </script>
 </body>
 </html>
