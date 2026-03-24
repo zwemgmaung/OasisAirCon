@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oasis AC Enterprise System</title>
+    <title>Oasis AC Sales and Service</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -28,6 +28,7 @@
         .hidden { display: none; }
         .finance-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 15px; }
         .finance-item { text-align: center; padding: 10px; border-radius: 8px; color: white; }
+        .settings-info { text-align: left; background: var(--bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; margin-top: 10px; line-height: 1.6; }
     </style>
 </head>
 <body data-theme="dark">
@@ -35,7 +36,7 @@
 <div class="header">
     <div style="display:flex; align-items:center; gap:10px;">
         <img src="1000064267.png" class="logo-img">
-        <span style="font-weight:bold; font-size:14px;">OASIS ENTERPRISE</span>
+        <span style="font-weight:bold; font-size:12px;">KO HTAY AUNG (OASIS) AC SALES AND SERVICE</span>
     </div>
     <div style="display:flex; gap:10px; align-items:center;">
         <select id="langBtn" onchange="toggleLang()" style="padding:2px; font-size:11px; width:auto; border:1px solid white; background:transparent; color:white;">
@@ -57,15 +58,15 @@
 
 <div class="container">
     <div id="homeTab">
-        <div class="card">
-            <h3 id="lbl-dash">Dashboard Summary</h3>
-            <p style="font-size: 12px; color: var(--p-green); margin-bottom: 10px;">Developed by Zwe Maung Maung</p>
+        <div class="card" style="text-align: center;">
+            <h3 id="lbl-dash" style="margin-bottom:5px;">Dashboard Summary</h3>
+            <p style="font-size: 12px; color: var(--p-green); margin-bottom: 15px; font-weight: bold;">Developed by Zwe Maung Maung</p>
             <canvas id="jobChart" style="max-height: 150px;"></canvas>
             
             <div class="finance-grid">
-                <div class="finance-item" style="background: #28a745;"><small>Income</small><div id="totalIncome" style="font-weight:bold; font-size:12px;">0</div></div>
-                <div class="finance-item" style="background: #dc3545;"><small>Expense</small><div id="totalExpense" style="font-weight:bold; font-size:12px;">0</div></div>
-                <div class="finance-item" style="background: #007bff;"><small>Profit</small><div id="totalProfit" style="font-weight:bold; font-size:12px;">0</div></div>
+                <div class="finance-item" style="background: #28a745;"><small>Income</small><div id="totalIncome" style="font-weight:bold; font-size:11px;">0</div></div>
+                <div class="finance-item" style="background: #dc3545;"><small>Expense</small><div id="totalExpense" style="font-weight:bold; font-size:11px;">0</div></div>
+                <div class="finance-item" style="background: #007bff;"><small>Profit</small><div id="totalProfit" style="font-weight:bold; font-size:11px;">0</div></div>
             </div>
             <button class="btn-green" style="margin-top:15px; font-size:12px; padding:8px;" onclick="downloadPDF()">Download PDF Report</button>
         </div>
@@ -107,53 +108,64 @@
 
     <div id="serviceTab" class="hidden">
         <div class="card">
-            <h3>New Service Entry</h3>
+            <h3 id="lbl-srv-new">New Service Entry</h3>
             <div class="grid-2">
-                <div class="form-group"><label>Customer Name</label><input type="text" id="j-name"></div>
-                <div class="form-group"><label>Phone</label><input type="text" id="j-phone"></div>
+                <div class="form-group"><label id="lbl-name">Customer Name</label><input type="text" id="j-name"></div>
+                <div class="form-group"><label id="lbl-phone">Phone</label><input type="text" id="j-phone"></div>
             </div>
-            <div class="form-group"><label>Address</label><textarea id="j-addr" rows="2"></textarea></div>
+            <div class="form-group"><label id="lbl-addr">Address</label><textarea id="j-addr" rows="2"></textarea></div>
             <div class="form-group"><label>Appliance</label><select id="j-app"><option>Air-Con</option><option>Refrigerator</option><option>Washing Machine</option></select></div>
             <div class="grid-2">
                 <div class="form-group"><label>Brand</label><input type="text" id="j-brand"></div>
                 <div class="form-group"><label>HP</label><input type="text" id="j-hp"></div>
             </div>
-            <div class="form-group"><label>Issue</label><textarea id="j-issue" rows="2"></textarea></div>
             <div class="form-group"><label id="lbl-assign">Assigned Staff</label><div id="staffChecks" style="border:1px solid var(--border); padding:10px; border-radius:6px; max-height:100px; overflow:auto;">Loading...</div></div>
             <div class="grid-2">
                 <div class="form-group"><label>Date</label><input type="date" id="j-date"></div>
                 <div class="form-group"><label>Cost (MMK)</label><input type="number" id="j-cost"></div>
             </div>
-            <button class="btn-green" onclick="saveJob()">SAVE SERVICE</button>
+            <button class="btn-green" onclick="saveJob()" id="btn-srv">SAVE SERVICE</button>
         </div>
     </div>
 
     <div id="staffTab" class="hidden">
         <div class="card">
-            <h3>Add Staff</h3>
-            <div class="form-group"><label>Name</label><input type="text" id="st-name"></div>
+            <h3 id="lbl-stf-add">Add Staff</h3>
+            <div class="form-group"><label id="lbl-stf-name">Name</label><input type="text" id="st-name"></div>
             <div class="grid-2">
                 <div class="form-group">
-                    <label>Role</label>
+                    <label id="lbl-role">Role</label>
                     <select id="st-role">
                         <option>MD</option><option>Manager</option><option>Leader</option>
                         <option>Second-Leader</option><option>Helper</option><option>Technician</option>
-                        <option value="Office Staff">Office Staff (စာရေးမ)</option>
+                        <option value="Office Staff">Office Staff</option>
                     </select>
                 </div>
-                <div class="form-group"><label>Phone</label><input type="text" id="st-phone"></div>
+                <div class="form-group"><label id="lbl-stf-phone">Phone</label><input type="text" id="st-phone"></div>
             </div>
-            <button class="btn-green" onclick="addStaff()">ADD STAFF</button>
+            <button class="btn-green" onclick="addStaff()" id="btn-stf">ADD STAFF</button>
         </div>
-        <div class="card"><h4>Staff Directory</h4><div id="staffList"></div></div>
+        <div class="card"><h4 id="lbl-dir">Staff Directory</h4><div id="staffList"></div></div>
     </div>
 
     <div id="settingsTab" class="hidden">
         <div class="card" style="text-align:center;">
-            <h3>Settings</h3>
-            <p><strong>Developed by Zwe Maung Maung</strong></p>
-            <p>© 2026 Zwe Maung Maung. All Rights Reserved.</p>
-            <button class="btn-green" onclick="logout()" style="background:#dc3545;">LOGOUT</button>
+            <h3 id="lbl-set">Settings</h3>
+            <img src="1000064267.png" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--p-green); margin-bottom: 10px; object-fit:cover;">
+            
+            <div class="settings-info">
+                <p><strong>App Name:</strong> Oasis AC System</p>
+                <p><strong>Version:</strong> 1.0.5 (Build 2026)</p>
+                <p><strong>Developed by:</strong> <span style="color:var(--p-green); font-weight:bold;">Zwe Maung Maung</span></p>
+                <p><strong>Organization:</strong> Ko Htay Aung (Oasis) AC Sales and Service</p>
+                <p><strong>Database:</strong> Firebase Real-time Cloud</p>
+            </div>
+
+            <div style="margin-top:20px; font-size:11px; color:#999; border-top:1px dashed var(--border); padding-top:15px;">
+                <p>© 2026 **Zwe Maung Maung**. All Rights Reserved.</p>
+                <p id="lbl-copy">Copyright protection applied. Unauthorized use is prohibited.</p>
+            </div>
+            <button class="btn-green" onclick="logout()" style="background:#dc3545; margin-top:20px;">LOGOUT</button>
         </div>
     </div>
 </div>
@@ -170,6 +182,32 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    const lang = {
+        en: { dash: "Dashboard Summary", srv: "New Service Entry", name: "Customer Name", phone: "Phone", addr: "Address", assign: "Assigned Staff", save: "SAVE RECORD", stf_add: "Add Staff", stf_name: "Name", role: "Role", stf_phone: "Phone", btn_stf: "ADD STAFF", dir: "Staff Directory", set: "App Information", copy: "Copyright protection applied. Unauthorized use is prohibited.", pur: "New Purchase", sale: "New Sale" },
+        mm: { dash: "အနှစ်ချုပ် ဇယား", srv: "ပြုပြင်ရေး မှတ်တမ်းအသစ်", name: "အမည်", phone: "ဖုန်းနံပါတ်", addr: "လိပ်စာ", assign: "တာဝန်ကျဝန်ထမ်းများ", save: "မှတ်တမ်းသိမ်းမည်", stf_add: "ဝန်ထမ်းအသစ်သွင်းရန်", stf_name: "အမည်", role: "ရာထူး", stf_phone: "ဖုန်း", btn_stf: "ဝန်ထမ်းသိမ်းမည်", dir: "ဝန်ထမ်းစာရင်း", set: "ဆော့ဝဲလ် အချက်အလက်", copy: "Zwe Maung Maung ၏ မူပိုင်ခွင့် ဥပဒေဖြင့် ကာကွယ်ထားပါသည်။", pur: "ပစ္စည်းဝယ်ယူမှု မှတ်တမ်း", sale: "အရောင်းမှတ်တမ်းအသစ်" }
+    };
+
+    function toggleLang() {
+        const l = document.getElementById('langBtn').value;
+        document.getElementById('lbl-dash').innerText = lang[l].dash;
+        document.getElementById('lbl-srv-new').innerText = lang[l].srv;
+        document.getElementById('lbl-name').innerText = lang[l].name;
+        document.getElementById('lbl-phone').innerText = lang[l].phone;
+        document.getElementById('lbl-addr').innerText = lang[l].addr;
+        document.getElementById('lbl-assign').innerText = lang[l].assign;
+        document.getElementById('btn-srv').innerText = lang[l].save;
+        document.getElementById('lbl-stf-add').innerText = lang[l].stf_add;
+        document.getElementById('lbl-stf-name').innerText = lang[l].stf_name;
+        document.getElementById('lbl-role').innerText = lang[l].role;
+        document.getElementById('lbl-stf-phone').innerText = lang[l].stf_phone;
+        document.getElementById('btn-stf').innerText = lang[l].btn_stf;
+        document.getElementById('lbl-dir').innerText = lang[l].dir;
+        document.getElementById('lbl-set').innerText = lang[l].set;
+        document.getElementById('lbl-copy').innerText = lang[l].copy;
+        document.getElementById('lbl-pur').innerText = lang[l].pur;
+        document.getElementById('lbl-sale').innerText = lang[l].sale;
+    }
+
     function showTab(t) {
         ['home','service','purchase','sale','staff','settings'].forEach(id => document.getElementById(id+'Tab').classList.add('hidden'));
         document.getElementById(t+'Tab').classList.remove('hidden');
@@ -183,75 +221,45 @@
     function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light'); }
     function logout() { localStorage.removeItem('isLoggedIn'); location.href = 'index.html'; }
 
-    // --- PURCHASE LOGIC ---
+    // PURCHASE & SALE
     function calcPurchase() {
         const qty = document.getElementById('p-qty').value || 0;
         const price = document.getElementById('p-price').value || 0;
         document.getElementById('p-total').value = qty * price;
     }
     async function savePurchase() {
-        const data = {
-            type: document.getElementById('p-type').value, name: document.getElementById('p-name').value,
-            qty: Number(document.getElementById('p-qty').value), price: Number(document.getElementById('p-price').value),
-            total: Number(document.getElementById('p-total').value), timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        };
-        await db.collection("purchases").add(data);
-        alert("Purchase Recorded!"); location.reload();
+        await db.collection("purchases").add({ type: document.getElementById('p-type').value, name: document.getElementById('p-name').value, total: Number(document.getElementById('p-total').value), timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        alert("Purchase Saved!"); location.reload();
     }
-
-    // --- SALE LOGIC ---
     async function saveSale() {
-        const data = {
-            app: document.getElementById('s-app').value, brand: document.getElementById('s-brand').value,
-            model: document.getElementById('s-model').value, hp: document.getElementById('s-hp').value,
-            qty: Number(document.getElementById('s-qty').value), price: Number(document.getElementById('s-price').value),
-            remark: document.getElementById('s-remark').value, timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        };
-        await db.collection("sales").add(data);
-        alert("Sale Recorded!"); location.reload();
+        await db.collection("sales").add({ brand: document.getElementById('s-brand').value, price: Number(document.getElementById('s-price').value), timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        alert("Sale Saved!"); location.reload();
     }
-
-    // --- SERVICE LOGIC ---
     async function saveJob() {
         const assigned = Array.from(document.querySelectorAll('input[name="assigned"]:checked')).map(c => c.value);
-        const data = {
-            name: document.getElementById('j-name').value, phone: document.getElementById('j-phone').value,
-            app: document.getElementById('j-app').value, cost: Number(document.getElementById('j-cost').value),
-            staff: assigned, date: document.getElementById('j-date').value, timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        };
-        await db.collection("jobs").add(data);
+        await db.collection("jobs").add({ name: document.getElementById('j-name').value, cost: Number(document.getElementById('j-cost').value), staff: assigned, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
         alert("Service Saved!"); location.reload();
     }
 
-    // --- FINANCE SUMMARY ---
+    // FINANCE
     async function updateFinance() {
-        let income = 0, expense = 0;
-        const jobs = await db.collection("jobs").get();
-        jobs.forEach(d => income += (d.data().cost || 0));
-        const sales = await db.collection("sales").get();
-        sales.forEach(d => income += (d.data().price || 0));
-        const pur = await db.collection("purchases").get();
-        pur.forEach(d => expense += (d.data().total || 0));
-
-        document.getElementById('totalIncome').innerText = income.toLocaleString() + " MMK";
-        document.getElementById('totalExpense').innerText = expense.toLocaleString() + " MMK";
-        document.getElementById('totalProfit').innerText = (income - expense).toLocaleString() + " MMK";
+        let inc = 0, exp = 0;
+        const j = await db.collection("jobs").get(); j.forEach(d => inc += d.data().cost || 0);
+        const s = await db.collection("sales").get(); s.forEach(d => inc += d.data().price || 0);
+        const p = await db.collection("purchases").get(); p.forEach(d => exp += d.data().total || 0);
+        document.getElementById('totalIncome').innerText = inc.toLocaleString() + " MMK";
+        document.getElementById('totalExpense').innerText = exp.toLocaleString() + " MMK";
+        document.getElementById('totalProfit').innerText = (inc - exp).toLocaleString() + " MMK";
     }
 
-    // --- STAFF LIST ---
     function loadStaff() {
         db.collection("staff").get().then(snap => {
-            document.getElementById('staffList').innerHTML = snap.docs.map(doc => `
-                <div style="padding:10px; border-bottom:1px solid var(--border); font-size:12px;">
-                    <strong>${doc.data().name}</strong> (${doc.data().role}) - ${doc.data().phone || '-'}
-                </div>`).join('');
+            document.getElementById('staffList').innerHTML = snap.docs.map(doc => `<div style="padding:10px; border-bottom:1px solid var(--border); font-size:12px;"><strong>${doc.data().name}</strong> (${doc.data().role})</div>`).join('');
         });
     }
     function loadStaffForService() {
         db.collection("staff").get().then(snap => {
-            document.getElementById('staffChecks').innerHTML = snap.docs.map(doc => `
-                <div style="margin-bottom:5px;"><input type="checkbox" name="assigned" value="${doc.data().name}"> ${doc.data().name}</div>
-            `).join('');
+            document.getElementById('staffChecks').innerHTML = snap.docs.map(doc => `<div style="margin-bottom:5px;"><input type="checkbox" name="assigned" value="${doc.data().name}"> ${doc.data().name}</div>`).join('');
         });
     }
     async function addStaff() {
