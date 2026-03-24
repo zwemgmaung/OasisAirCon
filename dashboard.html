@@ -4,252 +4,313 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Oasis Air-Con Management System</title>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <style>
-        :root { --primary-green: #28a745; --dark-green: #1e7e34; --light-bg: #f8f9fa; }
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--light-bg); color: #333; }
-        .header { background: var(--primary-green); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .logo-small { width: 40px; height: 40px; border-radius: 50%; border: 2px solid white; vertical-align: middle; margin-right: 10px; }
-        .container { padding: 15px; max-width: 800px; margin: auto; }
+        :root { --p-green: #28a745; --bg: #ffffff; --text: #333; --card: #f8f9fa; --border: #ddd; }
+        [data-theme="dark"] { --bg: #121212; --text: #e0e0e0; --card: #1e1e1e; --border: #333; }
         
-        /* Dashboard Charts */
-        .chart-container { background: white; padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; background: var(--bg); color: var(--text); transition: 0.3s; padding-bottom: 50px; }
+        .header { background: var(--p-green); color: white; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1001; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .logo-box { display: flex; align-items: center; gap: 10px; }
+        .logo-img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
         
-        /* Tabs Control */
-        .tab-bar { display: flex; background: white; border-bottom: 1px solid #ddd; position: sticky; top: 70px; z-index: 999; }
-        .tab { flex: 1; padding: 15px; text-align: center; cursor: pointer; font-weight: bold; color: #666; font-size: 13px; }
-        .tab.active { color: var(--primary-green); border-bottom: 3px solid var(--primary-green); }
+        .nav-tabs { display: flex; overflow-x: auto; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 64px; z-index: 1000; }
+        .tab-btn { padding: 15px; flex: 1; text-align: center; cursor: pointer; font-weight: bold; font-size: 12px; color: #777; white-space: nowrap; border-bottom: 3px solid transparent; }
+        .tab-btn.active { color: var(--p-green); border-bottom-color: var(--p-green); }
 
-        /* Forms & Cards */
-        .card { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: #444; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; }
-        .btn-main { background: var(--primary-green); color: white; border: none; padding: 15px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
-        .btn-pdf { background: #007bff; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; margin-top: 10px; width: 100%; }
+        .container { padding: 15px; max-width: 800px; margin: auto; }
+        .card { background: var(--card); padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid var(--border); }
         
-        /* Multi-select for Staff */
-        .staff-box { max-height: 120px; overflow-y: auto; border: 1px solid #ddd; border-radius: 8px; padding: 10px; }
-        .staff-opt { display: flex; align-items: center; margin-bottom: 5px; font-size: 14px; }
-        .staff-opt input { width: auto; margin-right: 10px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 13px; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); box-sizing: border-box; font-size: 14px; }
+        
+        .btn-green { background: var(--p-green); color: white; border: none; padding: 14px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; font-size: 15px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        
+        .staff-selector { border: 1px solid var(--border); border-radius: 8px; padding: 10px; max-height: 120px; overflow-y: auto; background: var(--bg); }
+        .staff-item { display: flex; align-items: center; margin-bottom: 8px; font-size: 13px; }
+        .staff-item input { width: auto; margin-right: 10px; }
 
         .hidden { display: none; }
-        .footer { text-align: center; font-size: 12px; color: #999; padding: 30px 0; }
+        .footer { text-align: center; font-size: 11px; opacity: 0.6; padding: 20px; }
+        .sync-indicator { font-size: 10px; color: var(--p-green); margin-top: 5px; text-align: right; }
     </style>
 </head>
-<body>
+<body data-theme="light">
 
 <div class="header">
-    <div>
-        <img src="1000064267.png" class="logo-small">
-        <span style="font-size: 18px;">OASIS SYSTEM</span>
+    <div class="logo-box">
+        <img src="1000064270.png" class="logo-img">
+        <span style="font-size: 16px; font-weight: bold;">OASIS AIR-CON</span>
     </div>
-    <a href="index.html" style="color:white; text-decoration:none; font-size:14px;">Logout</a>
+    <div style="display: flex; gap: 15px; align-items: center;">
+        <select id="langBtn" onchange="toggleLang()" style="width: auto; padding: 2px 5px; font-size: 12px;">
+            <option value="en">ENG</option>
+            <option value="mm">မြန်မာ</option>
+        </select>
+        <button onclick="toggleTheme()" style="background: none; border: none; font-size: 18px; cursor: pointer;">🌓</button>
+        <button onclick="logout()" style="background: none; border: none; color: white; font-weight: bold; font-size: 12px;">LOGOUT</button>
+    </div>
 </div>
 
-<div class="tab-bar">
-    <div class="tab active" onclick="showTab('home')">HOME</div>
-    <div class="tab" onclick="showTab('jobs')">NEW JOB</div>
-    <div class="tab" onclick="showTab('staff')">STAFF</div>
-    <div class="tab" onclick="showTab('reports')">REPORTS</div>
+<div class="nav-tabs">
+    <div class="tab-btn active" onclick="showTab('home')" id="tab-home">HOME</div>
+    <div class="tab-btn" onclick="showTab('service')" id="tab-service">SERVICE</div>
+    <div class="tab-btn" onclick="showTab('sale')" id="tab-sale">SALE</div>
+    <div class="tab-btn" onclick="showTab('purchase')" id="tab-purchase">PURCHASE</div>
+    <div class="tab-btn" onclick="showTab('staff')" id="tab-staff">STAFF</div>
+    <div class="tab-btn" onclick="showTab('reports')" id="tab-reports">REPORTS</div>
 </div>
 
 <div class="container">
-    
+    <div id="syncStatus" class="sync-indicator">Online Syncing...</div>
+
     <div id="homeTab">
-        <div class="chart-container">
-            <h4 style="margin:0 0 15px 0;">Job Summary Dashboard</h4>
-            <canvas id="jobChart" style="max-height: 200px;"></canvas>
+        <div class="card">
+            <h3 id="txt-summary">Job Summary Dashboard</h3>
+            <canvas id="jobChart" style="max-height: 250px;"></canvas>
         </div>
-        <div id="recentJobsList">
-            </div>
+        <div id="recentActivity" class="card">
+            <h4 id="txt-recent">Recent Activity</h4>
+            <div id="recentJobsList"></div>
+        </div>
     </div>
 
-    <div id="jobsTab" class="hidden">
+    <div id="serviceTab" class="hidden">
         <div class="card">
-            <h3>Service / Sale Record</h3>
-            <div class="form-group">
-                <label>Category</label>
-                <select id="jobCategory">
-                    <option value="Service">Service (ပြုပြင်ရေး)</option>
-                    <option value="Sale">Sale (အရောင်း)</option>
-                    <option value="Purchase">Purchase (အဝယ်)</option>
-                </select>
+            <h3 id="txt-service-title">New Service Entry</h3>
+            <div class="form-group"><label id="lbl-cust">Customer Name & Phone</label><input type="text" id="j-cust"></div>
+            <div class="form-group"><label id="lbl-addr">Address</label><textarea id="j-addr" rows="2"></textarea></div>
+            <div class="grid-2">
+                <div class="form-group"><label id="lbl-app-type">Appliance Type</label>
+                    <select id="j-type"><option>Air-Con</option><option>Refrigerator</option><option>Washing Machine</option></select>
+                </div>
+                <div class="form-group"><label id="lbl-brand">Brand</label><input type="text" id="j-brand"></div>
             </div>
-            <div class="form-group">
-                <label>Customer Name & Phone</label>
-                <input type="text" id="customer" placeholder="Eg. Daw Aye (09...)">
+            <div class="grid-2">
+                <div class="form-group"><label>HP</label><input type="text" id="j-hp"></div>
+                <div class="form-group"><label id="lbl-gas">Gas Type</label><input type="text" id="j-gas"></div>
             </div>
-            <div class="form-group">
-                <label>Appliance & Brand</label>
-                <input type="text" id="brand" placeholder="Eg. Samsung / 1.5HP / R32">
+            <div class="form-group"><label id="lbl-issue">Issue Description</label><textarea id="j-issue"></textarea></div>
+            <div class="form-group"><label id="lbl-assign">Assigned Staff (Min 2)</label>
+                <div id="staffCheckboxes" class="staff-selector"></div>
             </div>
-            <div class="form-group">
-                <label>Assigned Staff (Min 2)</label>
-                <div id="staffSelect" class="staff-box">
-                    </div>
+            <div class="grid-2">
+                <div class="form-group"><label id="lbl-date">Date</label><input type="date" id="j-date"></div>
+                <div class="form-group"><label id="lbl-cost">Cost (MMK)</label><input type="number" id="j-cost"></div>
             </div>
-            <div class="form-group">
-                <label>Service Date</label>
-                <input type="date" id="jobDate">
+            <div class="form-group"><label id="lbl-status">Status</label>
+                <select id="j-status"><option value="Pending">Pending</option><option value="Done">Done</option></select>
             </div>
-            <div class="form-group">
-                <label>Cost (MMK)</label>
-                <input type="number" id="cost" placeholder="0 MMK">
-            </div>
-            <div class="form-group">
-                <label>Status</label>
-                <select id="jobStatus">
-                    <option value="Pending">Pending</option>
-                    <option value="Done">Done</option>
-                </select>
-            </div>
-            <button class="btn-main" onclick="saveData()">SAVE RECORD</button>
+            <div class="form-group"><label id="lbl-photo">Photo</label><input type="file" id="j-photo" accept="image/*"></div>
+            <button class="btn-green" onclick="saveJob()" id="btn-save-job">SAVE & SYNC</button>
+        </div>
+    </div>
+
+    <div id="saleTab" class="hidden">
+        <div class="card">
+            <h3 id="txt-sale-title">Sale Record (အရောင်း)</h3>
+            <div class="form-group"><label id="lbl-sale-item">Item/Brand</label><input type="text" id="s-item"></div>
+            <div class="form-group"><label id="lbl-price">Price (MMK)</label><input type="number" id="s-price"></div>
+            <button class="btn-green" onclick="saveInventory('Sale')" id="btn-save-sale">SAVE SALE</button>
+        </div>
+    </div>
+
+    <div id="purchaseTab" class="hidden">
+        <div class="card">
+            <h3 id="txt-pur-title">Purchase Record (အဝယ်)</h3>
+            <div class="form-group"><label id="lbl-pur-item">Description (Tools, Gas...)</label><input type="text" id="p-item"></div>
+            <div class="form-group"><label id="lbl-pur-cost">Cost (MMK)</label><input type="number" id="p-price"></div>
+            <button class="btn-green" onclick="saveInventory('Purchase')" id="btn-save-pur">SAVE PURCHASE</button>
         </div>
     </div>
 
     <div id="staffTab" class="hidden">
         <div class="card">
-            <h3>Add New Staff</h3>
-            <input type="text" id="staffName" placeholder="Staff Name" style="margin-bottom:10px;">
-            <select id="staffPos" style="margin-bottom:10px;">
-                <option>MD</option>
-                <option>Manager</option>
-                <option>Technician</option>
-                <option>Leader</option>
-                <option>Co-leader</option>
-                <option>Helper</option>
-                <option>Clerk (စာရေးမ)</option>
-            </select>
-            <button class="btn-main" onclick="addStaff()">ADD STAFF</button>
+            <h3 id="txt-staff-title">Add New Staff</h3>
+            <div class="form-group"><input type="text" id="st-name" placeholder="Name"></div>
+            <div class="form-group">
+                <select id="st-role">
+                    <option>MD</option><option>Manager</option><option>Technician</option>
+                    <option>Leader</option><option>Co-leader</option><option>Helper</option><option>Clerk</option>
+                </select>
+            </div>
+            <div class="form-group"><input type="text" id="st-phone" placeholder="Phone"></div>
+            <div class="form-group"><input type="text" id="st-addr" placeholder="Address"></div>
+            <div class="form-group"><textarea id="st-note" placeholder="Note/Remark"></textarea></div>
+            <div class="form-group"><label>Staff Photo</label><input type="file" id="st-photo" accept="image/*"></div>
+            <button class="btn-green" onclick="addStaff()" id="btn-add-staff">ADD STAFF</button>
+        </div>
+        <div id="staffDirectory" class="card">
+            <h4 id="txt-directory">Staff Directory</h4>
+            <div id="staffListItems"></div>
         </div>
     </div>
 
     <div id="reportsTab" class="hidden">
-        <div class="card" id="reportContent">
-            <h3>Weekly Job Report</h3>
-            <p style="font-size:12px; color:#666;">Oasis Air-Con Sales & Service</p>
-            <div id="reportTableArea">
-                <p>No records found for this week.</p>
-            </div>
+        <div class="card" id="pdfArea">
+            <h2 style="color:var(--p-green); text-align:center;">Oasis Air-Con Service Report</h2>
+            <div id="reportList"></div>
         </div>
-        <button class="btn-pdf" onclick="downloadPDF()">DOWNLOAD WEEKLY REPORT (PDF)</button>
+        <button class="btn-green" onclick="downloadPDF()" id="btn-pdf">ONE-CLICK DOWNLOAD PDF</button>
     </div>
-
 </div>
 
-<div class="footer">
-    App Developer - Zwe Maung Maung<br>
-    © 2026 Oasis Air-Con Co., Ltd.
-</div>
+<div class="footer">App Developer - <strong>Zwe Maung Maung</strong></div>
 
 <script>
-    // --- APP LOGIC ---
-    let db = JSON.parse(localStorage.getItem('oasis_db')) || { jobs: [], staff: [] };
+    // --- FIREBASE CONFIG (INTEGRATED) ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyAOgPQkaq0mLdzi9jNZK-oRCEa_VsmD_cE",
+      authDomain: "oasis-ac-service.firebaseapp.com",
+      projectId: "oasis-ac-service",
+      storageBucket: "oasis-ac-service.firebasestorage.app",
+      messagingSenderId: "1039018990829",
+      appId: "1:1039018990829:web:bffe0ea0269bfbded780e4",
+      measurementId: "G-VX5RKL4M4Z"
+    };
 
-    function showTab(name) {
-        ['home', 'jobs', 'staff', 'reports'].forEach(t => document.getElementById(t+'Tab').classList.add('hidden'));
-        document.getElementById(name+'Tab').classList.remove('hidden');
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        event.currentTarget.classList.add('active');
-        if(name === 'home') updateChart();
-        if(name === 'jobs') loadStaffOptions();
-        if(name === 'reports') prepareReport();
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    db.enablePersistence().catch(err => console.log("Persistence Error", err));
+
+    // --- LANGUAGE SYSTEM ---
+    const lang = {
+        en: { summary: "Job Summary Dashboard", recent: "Recent Activity", service: "New Service Entry", sale: "Sale Record", pur: "Purchase Record", staff: "Staff Registration", dir: "Staff Directory" },
+        mm: { summary: "ယနေ့/ယခုလ အလုပ်မှတ်တမ်း", recent: "လတ်တလော လုပ်ဆောင်ချက်များ", service: "ပြုပြင်ရေး မှတ်တမ်းအသစ်", sale: "အရောင်းမှတ်တမ်း", pur: "အဝယ်မှတ်တမ်း", staff: "ဝန်ထမ်းအသစ်သွင်းရန်", dir: "ဝန်ထမ်းစာရင်း" }
+    };
+
+    function toggleLang() {
+        const l = document.getElementById('langBtn').value;
+        document.getElementById('txt-summary').innerText = lang[l].summary;
+        document.getElementById('txt-recent').innerText = lang[l].recent;
+        // ... more lang updates can be added here
     }
 
-    // Auto Sync Simulation (For true multi-phone sync, Firebase is needed)
-    function syncToCloud() {
-        localStorage.setItem('oasis_db', JSON.stringify(db));
-        // ကိုကိုရေ... တကယ်လို့ ဖုန်းအားလုံးမှာ တူချင်ရင် ဒီနေရာမှာ Firebase API ကို လှမ်းခေါ်ရမှာပါရှင်။
+    // --- UI LOGIC ---
+    function showTab(t) {
+        ['home','service','sale','purchase','staff','reports'].forEach(id => document.getElementById(id+'Tab').classList.add('hidden'));
+        document.getElementById(t+'Tab').classList.remove('hidden');
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+        if(t === 'home') renderChart();
+        if(t === 'service') loadStaffChecks();
+        if(t === 'reports') loadReport();
+    }
+
+    function toggleTheme() {
+        const b = document.body;
+        b.setAttribute('data-theme', b.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+    }
+
+    // --- DATABASE OPERATIONS ---
+    function saveJob() {
+        const assigned = Array.from(document.querySelectorAll('input[name="staff"]:checked')).map(c => c.value);
+        if(assigned.length < 2) return alert("Please select at least 2 staff members.");
+        
+        const data = {
+            customer: document.getElementById('j-cust').value,
+            address: document.getElementById('j-addr').value,
+            type: document.getElementById('j-type').value,
+            brand: document.getElementById('j-brand').value,
+            hp: document.getElementById('j-hp').value,
+            gas: document.getElementById('j-gas').value,
+            issue: document.getElementById('j-issue').value,
+            staff: assigned,
+            date: document.getElementById('j-date').value,
+            cost: document.getElementById('j-cost').value,
+            status: document.getElementById('j-status').value,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        db.collection("jobs").add(data).then(() => {
+            alert("Record Synced to Cloud!");
+            showTab('home');
+        });
+    }
+
+    function saveInventory(type) {
+        const item = type === 'Sale' ? document.getElementById('s-item').value : document.getElementById('p-item').value;
+        const price = type === 'Sale' ? document.getElementById('s-price').value : document.getElementById('p-price').value;
+        
+        db.collection("inventory").add({ type, item, price, date: new Date().toISOString().split('T')[0] })
+          .then(() => alert(type + " Saved!"));
     }
 
     function addStaff() {
-        const name = document.getElementById('staffName').value;
-        const pos = document.getElementById('staffPos').value;
-        if(!name) return;
-        db.staff.push({ name, pos });
-        syncToCloud();
-        alert('Staff Added!');
-        document.getElementById('staffName').value = '';
-    }
-
-    function loadStaffOptions() {
-        const box = document.getElementById('staffSelect');
-        box.innerHTML = db.staff.map(s => `
-            <div class="staff-opt">
-                <input type="checkbox" name="staff_choice" value="${s.name}">
-                <span>${s.name} (${s.pos})</span>
-            </div>
-        `).join('');
-    }
-
-    function saveData() {
-        const job = {
-            id: Date.now(),
-            cat: document.getElementById('jobCategory').value,
-            customer: document.getElementById('customer').value,
-            brand: document.getElementById('brand').value,
-            staff: Array.from(document.querySelectorAll('input[name="staff_choice"]:checked')).map(c => c.value),
-            date: document.getElementById('jobDate').value,
-            cost: document.getElementById('cost').value,
-            status: document.getElementById('jobStatus').value
+        const data = {
+            name: document.getElementById('st-name').value,
+            role: document.getElementById('st-role').value,
+            phone: document.getElementById('st-phone').value,
+            addr: document.getElementById('st-addr').value,
+            note: document.getElementById('st-note').value
         };
-        db.jobs.push(job);
-        syncToCloud();
-        alert('Record Saved and Synced!');
-        showTab('home');
-    }
-
-    // PDF GENERATION (One Click Download)
-    function downloadPDF() {
-        const element = document.getElementById('reportContent');
-        const opt = {
-            margin: 10,
-            filename: 'Oasis_Weekly_Report.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-        html2pdf().set(opt).from(element).save();
-    }
-
-    function prepareReport() {
-        const area = document.getElementById('reportTableArea');
-        if(db.jobs.length === 0) return;
-        let html = '<table border="1" style="width:100%; border-collapse: collapse; font-size:10px; margin-top:10px;">';
-        html += '<tr style="background:#eee;"><th>Date</th><th>Customer</th><th>Brand</th><th>Staff</th><th>MMK</th><th>Status</th></tr>';
-        db.jobs.forEach(j => {
-            html += `<tr><td>${j.date}</td><td>${j.customer}</td><td>${j.brand}</td><td>${j.staff.join(', ')}</td><td>${j.cost}</td><td>${j.status}</td></tr>`;
+        db.collection("staff").add(data).then(() => {
+            alert("Staff Registered!");
+            document.getElementById('st-name').value = '';
         });
-        html += '</table>';
-        area.innerHTML = html;
     }
 
-    // Chart Logic
+    // --- DATA DISPLAY ---
     let myChart;
-    function updateChart() {
-        const ctx = document.getElementById('jobChart').getContext('2d');
-        const done = db.jobs.filter(j => j.status === 'Done').length;
-        const pending = db.jobs.filter(j => j.status === 'Pending').length;
-        
-        if(myChart) myChart.destroy();
-        myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Done', 'Pending'],
-                datasets: [{
-                    label: 'Job Status',
-                    data: [done, pending],
-                    backgroundColor: ['#28a745', '#dc3545']
-                }]
-            },
-            options: { responsive: true, scales: { y: { beginAtZero: true } } }
+    function renderChart() {
+        db.collection("jobs").onSnapshot(snap => {
+            const jobs = snap.docs.map(doc => doc.data());
+            const done = jobs.filter(j => j.status === 'Done').length;
+            const pending = jobs.filter(j => j.status === 'Pending').length;
+            
+            const ctx = document.getElementById('jobChart').getContext('2d');
+            if(myChart) myChart.destroy();
+            myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: { labels: ['Done', 'Pending'], datasets: [{ data: [done, pending], backgroundColor: ['#28a745', '#dc3545'] }] }
+            });
+
+            // Update Recent Activity
+            document.getElementById('recentJobsList').innerHTML = jobs.slice(0, 5).map(j => `
+                <div style="border-bottom:1px solid var(--border); padding:10px 0; font-size:13px;">
+                    <strong>${j.customer}</strong> - ${j.brand} (${j.type})<br>
+                    <small>${j.status} | ${j.cost} MMK</small>
+                </div>
+            `).join('');
+            document.getElementById('syncStatus').innerText = "Online - All data synced";
         });
     }
 
-    window.onload = () => { updateChart(); };
+    function loadStaffChecks() {
+        db.collection("staff").get().then(snap => {
+            document.getElementById('staffCheckboxes').innerHTML = snap.docs.map(doc => {
+                const s = doc.data();
+                return `<div class="staff-item"><input type="checkbox" name="staff" value="${s.name}"> ${s.name} (${s.role})</div>`;
+            }).join('');
+        });
+    }
+
+    function loadReport() {
+        db.collection("jobs").get().then(snap => {
+            document.getElementById('reportList').innerHTML = snap.docs.map(doc => {
+                const j = doc.data();
+                return `<div style="border-bottom:1px solid #eee; padding:10px; font-size:11px;">
+                    ${j.date} | ${j.customer} | ${j.type} | ${j.status} | ${j.cost} MMK
+                </div>`;
+            }).join('');
+        });
+    }
+
+    function downloadPDF() {
+        const element = document.getElementById('pdfArea');
+        html2pdf().from(element).save('Oasis_Weekly_Report.pdf');
+    }
+
+    function logout() { localStorage.removeItem('isLoggedIn'); location.href = 'index.html'; }
+    window.onload = () => { if(!localStorage.getItem('isLoggedIn')) location.href='index.html'; renderChart(); };
 </script>
 
 </body>
-</html>
+    </html>
+    
