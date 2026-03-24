@@ -3,134 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oasis Air-Con Sales & Service</title>
+    <title>Oasis Air-Con Login</title>
     <style>
-        :root { --main-green: #28a745; --dark-green: #1e7e34; --white: #ffffff; --light-grey: #f8f9fa; }
-        body { font-family: sans-serif; margin: 0; background: var(--light-grey); color: #333; transition: 0.3s; }
-        .login-page { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: var(--white); }
-        .header { background: var(--main-green); color: white; padding: 20px; text-align: center; }
-        .logo { width: 100px; height: 100px; border-radius: 50%; border: 3px solid white; margin-bottom: 10px; }
-        .nav-bar { display: flex; overflow-x: auto; background: white; padding: 10px; border-bottom: 1px solid #ddd; }
-        .nav-item { padding: 10px 20px; cursor: pointer; font-weight: bold; color: var(--main-green); white-space: nowrap; }
-        .container { padding: 15px; }
-        .card { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 15px; }
-        input, select, textarea { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
-        .btn { background: var(--main-green); color: white; padding: 12px; border: none; width: 100%; border-radius: 5px; font-weight: bold; cursor: pointer; }
-        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .stat-box { background: var(--main-green); color: white; padding: 15px; border-radius: 10px; text-align: center; }
-        .hidden { display: none; }
-        .footer { text-align: center; padding: 20px; font-size: 12px; color: #777; }
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f4f4f4; }
+        .login-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; width: 300px; }
+        .logo { width: 120px; height: 120px; border-radius: 50%; border: 3px solid #28a745; margin-bottom: 20px; object-fit: cover; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        .btn { background-color: #28a745; color: white; padding: 12px; border: none; border-radius: 5px; width: 100%; cursor: pointer; font-size: 16px; }
+        .forgot { color: blue; font-size: 14px; text-decoration: none; display: block; margin-top: 15px; }
     </style>
 </head>
 <body>
-
-<div id="loginSection" class="login-page">
-    <img src="https://mrzwemgmaung-hash.github.io/OasisAirCon/assets/1000064270.png" class="logo" alt="Oasis Logo">
-    <h2>Oasis Login</h2>
-    <div style="width: 80%;">
-        <input type="text" id="username" placeholder="Username">
-        <input type="password" id="password" placeholder="Password">
-        <button class="btn" onclick="login()">Login</button>
-        <p style="text-align:center; color:blue; cursor:pointer;" onclick="forgotPassword()">Forgot Password?</p>
+    <div class="login-card">
+        <img src="1000064267.jpg" alt="Oasis Logo" class="logo">
+        <h2>Oasis Login</h2>
+        <input type="text" placeholder="Username">
+        <input type="password" placeholder="Password">
+        <button class="btn">Login</button>
+        <a href="#" class="forgot">Forgot Password?</a>
     </div>
-</div>
-
-<div id="appSection" class="hidden">
-    <div class="header">
-        <img src="https://mrzwemgmaung-hash.github.io/OasisAirCon/assets/1000064270.png" style="width:50px; border-radius:50%;">
-        <h3>Oasis Air-Con Sales & Service</h3>
-    </div>
-
-    <div class="nav-bar">
-        <div class="nav-item" onclick="showPage('home')">Home</div>
-        <div class="nav-item" onclick="showPage('jobs')">Job Entry</div>
-        <div class="nav-item" onclick="showPage('staff')">Staff Management</div>
-        <div class="nav-item" onclick="showPage('sales')">Sales & Purchase</div>
-        <div class="nav-item" onclick="logout()">Logout</div>
-    </div>
-
-    <div id="home" class="container">
-        <h2>Dashboard Summary</h2>
-        <div class="dashboard-grid">
-            <div class="stat-box"><h4>Today Done</h4><h2 id="doneCount">0</h2></div>
-            <div class="stat-box" style="background: #dc3545;"><h4>Pending</h4><h2 id="pendingCount">0</h2></div>
-        </div>
-    </div>
-
-    <div id="jobs" class="container hidden">
-        <h2>Job Record Entry</h2>
-        <div class="card">
-            <input type="date" id="jobDate">
-            <input type="text" id="custName" placeholder="Customer Name">
-            <input type="text" id="custPhone" placeholder="Phone Number">
-            <textarea id="custAddr" placeholder="Address"></textarea>
-            <select id="itemType">
-                <option value="AC">Air-Con</option>
-                <option value="Fridge">Refrigerator</option>
-                <option value="Washing">Washing Machine</option>
-            </select>
-            <input type="text" id="brand" placeholder="Brand Name">
-            <input type="text" id="hp" placeholder="HP / Capacity">
-            <input type="text" id="gas" placeholder="Gas Type (e.g. R32, R410)">
-            <textarea id="problem" placeholder="Issues / Problems"></textarea>
-            <p>Assign Staff:</p>
-            <select id="staff1"><option>Technician</option></select>
-            <select id="staff2"><option>Helper 1</option></select>
-            <input type="number" id="cost" placeholder="Cost (MMK)">
-            <select id="jobStatus">
-                <option value="Pending">Pending</option>
-                <option value="Done">Done</option>
-            </select>
-            <input type="file" accept="image/*">
-            <button class="btn" onclick="saveJob()">Save Job</button>
-        </div>
-    </div>
-
-    <div id="staff" class="container hidden">
-        <h2>Staff Registration</h2>
-        <div class="card">
-            <input type="file" accept="image/*">
-            <input type="text" id="staffName" placeholder="Name">
-            <select id="staffRole">
-                <option>MD</option><option>Manager</option><option>Technician</option>
-                <option>Leader</option><option>Co-leader</option><option>Helper</option><option>စာရေးမ</option>
-            </select>
-            <input type="text" id="staffPhone" placeholder="Phone">
-            <button class="btn" onclick="saveStaff()">Add Staff</button>
-        </div>
-    </div>
-
-    <div class="footer">
-        <p>App Developer: Zwe Maung Maung</p>
-    </div>
-</div>
-
-<script>
-    // Simple Login logic
-    function login() {
-        const user = document.getElementById('username').value;
-        const pass = document.getElementById('password').value;
-        if(user === 'oasis' && pass === 'oasis2000') {
-            document.getElementById('loginSection').classList.add('hidden');
-            document.getElementById('appSection').classList.remove('hidden');
-            localStorage.setItem('isLogged', 'true');
-        } else { alert('Wrong Username or Password!'); }
-    }
-
-    function forgotPassword() { alert('Default: oasis / oasis2000'); }
-
-    function showPage(pageId) {
-        ['home', 'jobs', 'staff'].forEach(id => document.getElementById(id).classList.add('hidden'));
-        document.getElementById(pageId).classList.remove('hidden');
-    }
-
-    window.onload = () => {
-        if(localStorage.getItem('isLogged') === 'true') {
-            document.getElementById('loginSection').classList.add('hidden');
-            document.getElementById('appSection').classList.remove('hidden');
-        }
-    };
-
-    function logout() {
-        localStorage.removeItem
-    
+</body>
+</html>
