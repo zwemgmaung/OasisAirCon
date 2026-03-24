@@ -12,10 +12,10 @@
     <style>
         :root { --p-green: #28a745; --bg: #ffffff; --text: #333; --card: #f8f9fa; --border: #ddd; }
         [data-theme="dark"] { --bg: #121212; --text: #e0e0e0; --card: #1e1e1e; --border: #333; }
-        body { font-family: Arial, sans-serif; margin: 0; background: var(--bg); color: var(--text); padding-bottom: 70px; transition: 0.3s; }
+        body { font-family: Arial, sans-serif; margin: 0; background: var(--bg); color: var(--text); padding-bottom: 70px; }
         .header { background: var(--p-green); color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1001; }
-        .logo-img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; background: white; }
-        .nav-tabs { display: flex; overflow-x: auto; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 60px; z-index: 1000; }
+        .logo-img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid white; object-fit: cover; background: white; }
+        .nav-tabs { display: flex; overflow-x: auto; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 55px; z-index: 1000; }
         .tab-btn { padding: 15px; flex: none; text-align: center; cursor: pointer; font-weight: bold; font-size: 11px; color: #666; border-bottom: 3px solid transparent; }
         .tab-btn.active { color: var(--p-green); border-bottom-color: var(--p-green); }
         .container { padding: 15px; max-width: 800px; margin: auto; }
@@ -26,23 +26,23 @@
         .btn-green { background: var(--p-green); color: white; border: none; padding: 12px; border-radius: 6px; width: 100%; font-weight: bold; cursor: pointer; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .hidden { display: none; }
-        .finance-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .finance-item { text-align: center; padding: 10px; border-radius: 8px; color: white; }
+        .finance-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 15px; }
+        .finance-item { text-align: center; padding: 8px; border-radius: 8px; color: white; font-size: 11px; }
     </style>
 </head>
 <body data-theme="dark">
 
 <div class="header">
-    <div style="display:flex; align-items:center; gap:10px;">
+    <div style="display:flex; align-items:center; gap:8px;">
         <img src="1000064267.png" class="logo-img">
-        <span style="font-weight:bold; font-size:12px;">KO HTAY AUNG (OASIS) AC SALES AND SERVICE</span>
+        <span style="font-weight:bold; font-size:11px;">KO HTAY AUNG (OASIS) AC SALES & SERVICE</span>
     </div>
-    <div style="display:flex; gap:10px; align-items:center;">
-        <select id="langBtn" onchange="toggleLang()" style="padding:2px; font-size:11px; width:auto; border:1px solid white; background:transparent; color:white;">
+    <div style="display:flex; gap:8px; align-items:center;">
+        <select id="langBtn" onchange="toggleLang()" style="padding:2px; font-size:10px; width:auto; border:1px solid white; background:transparent; color:white;">
             <option value="en">ENG</option>
             <option value="mm">MM</option>
         </select>
-        <button onclick="toggleTheme()" style="background:none; border:none; cursor:pointer; font-size:18px;">🌓</button>
+        <button onclick="toggleTheme()" style="background:none; border:none; cursor:pointer; font-size:16px;">🌓</button>
     </div>
 </div>
 
@@ -59,14 +59,14 @@
     <div id="homeTab">
         <div class="card" style="text-align: center;">
             <h3 id="lbl-dash">Dashboard Summary</h3>
-            <p style="font-size: 12px; color: var(--p-green); margin-bottom: 10px; font-weight: bold;">Developed by Zwe Maung Maung</p>
+            <p style="font-size: 11px; color: var(--p-green); margin-bottom: 12px;">Developed by Zwe Maung Maung</p>
             <canvas id="jobChart" style="max-height: 150px;"></canvas>
             <div class="finance-grid">
-                <div class="finance-item" style="background: #28a745;"><small>Income</small><div id="totalIncome" style="font-weight:bold; font-size:11px;">0</div></div>
-                <div class="finance-item" style="background: #dc3545;"><small>Expense</small><div id="totalExpense" style="font-weight:bold; font-size:11px;">0</div></div>
-                <div class="finance-item" style="background: #007bff;"><small>Profit</small><div id="totalProfit" style="font-weight:bold; font-size:11px;">0</div></div>
+                <div class="finance-item" style="background: #28a745;">Income<br><span id="totalIncome">0</span></div>
+                <div class="finance-item" style="background: #dc3545;">Expense<br><span id="totalExpense">0</span></div>
+                <div class="finance-item" style="background: #007bff;">Profit<br><span id="totalProfit">0</span></div>
             </div>
-            <button class="btn-green" style="margin-top:15px; font-size:12px; padding:8px;" onclick="downloadPDF()">Download PDF Report</button>
+            <button class="btn-green" style="margin-top:15px; font-size:11px; padding:10px;" onclick="downloadPDF()">Download PDF Report</button>
         </div>
     </div>
 
@@ -107,25 +107,22 @@
     <div id="purchaseTab" class="hidden">
         <div class="card">
             <h3 id="lbl-pur">New Purchase</h3>
-            <div class="form-group"><label>Item Type</label><input type="text" id="p-type" placeholder="e.g. Spare Part / Gas"></div>
             <div class="form-group"><label>Item Name</label><input type="text" id="p-name"></div>
             <div class="grid-2">
-                <div class="form-group"><label>Quantity</label><input type="number" id="p-qty" oninput="calcPurchase()"></div>
-                <div class="form-group"><label>Unit Price (MMK)</label><input type="number" id="p-price" oninput="calcPurchase()"></div>
+                <div class="form-group"><label>Quantity</label><input type="number" id="p-qty" oninput="calcPur()"></div>
+                <div class="form-group"><label>Unit Price</label><input type="number" id="p-price" oninput="calcPur()"></div>
             </div>
-            <div class="form-group"><label>Total Cost (MMK)</label><input type="number" id="p-total" readonly style="background:#eee; color:#333;"></div>
-            <button class="btn-green" onclick="savePurchase()">SAVE PURCHASE</button>
+            <div class="form-group"><label>Total</label><input type="number" id="p-total" readonly></div>
+            <button class="btn-green" onclick="savePur()">SAVE PURCHASE</button>
         </div>
     </div>
 
     <div id="saleTab" class="hidden">
         <div class="card">
             <h3 id="lbl-sale">New Sale</h3>
-            <div class="form-group"><label>Appliance Type</label><select id="s-app"><option>Air-Con</option><option>Refrigerator</option><option>Washing Machine</option></select></div>
-            <div class="grid-2"><div class="form-group"><label>Brand Name</label><input type="text" id="s-brand"></div><div class="form-group"><label>Model</label><input type="text" id="s-model"></div></div>
-            <div class="grid-2"><div class="form-group"><label>HP</label><input type="text" id="s-hp"></div><div class="form-group"><label>Quantity</label><input type="number" id="s-qty"></div></div>
-            <div class="form-group"><label>Sale Price (MMK)</label><input type="number" id="s-price"></div>
-            <div class="form-group"><label>Remark</label><textarea id="s-remark" rows="2"></textarea></div>
+            <div class="form-group"><label>Appliance</label><select id="s-app"><option>Air-Con</option><option>Refrigerator</option><option>Washing Machine</option></select></div>
+            <div class="grid-2"><div class="form-group"><label>Brand</label><input type="text" id="s-brand"></div><div class="form-group"><label>Model</label><input type="text" id="s-model"></div></div>
+            <div class="grid-2"><div class="form-group"><label>HP</label><input type="text" id="s-hp"></div><div class="form-group"><label>Price (MMK)</label><input type="number" id="s-price"></div></div>
             <button class="btn-green" onclick="saveSale()">SAVE SALE</button>
         </div>
     </div>
@@ -148,18 +145,17 @@
     <div id="settingsTab" class="hidden">
         <div class="card" style="text-align:center;">
             <h3 id="lbl-set">App Information</h3>
-            <img src="1000064267.png" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--p-green); margin-bottom: 10px; object-fit:cover;">
-            <div style="text-align: left; background: var(--bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border); font-size: 14px; line-height: 1.8;">
+            <img src="1000064267.png" style="width: 70px; height: 70px; border-radius: 50%; border: 3px solid var(--p-green); margin-bottom: 10px; object-fit:cover;">
+            <div style="text-align: left; background: var(--bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px;">
                 <p><strong>App Name:</strong> Oasis AC System</p>
                 <p><strong>Version:</strong> 1.1.0 (Professional)</p>
                 <p><strong>Developed by:</strong> <span style="color:var(--p-green); font-weight:bold;">Zwe Maung Maung</span></p>
                 <p><strong>Organization:</strong> Ko Htay Aung (Oasis) AC Sales and Service</p>
             </div>
-            <div style="margin-top:20px; font-size:11px; color:#999; border-top:1px dashed var(--border); padding-top:15px;">
+            <div style="margin-top:20px; font-size:11px; color:#999; border-top:1px dashed var(--border); padding-top:10px;">
                 <p>© 2026 <strong>Zwe Maung Maung</strong>. All Rights Reserved.</p>
-                <p id="lbl-copy">Copyright protection applied. Unauthorized use is prohibited.</p>
             </div>
-            <button class="btn-green" onclick="logout()" style="background:#dc3545; margin-top: 20px;">LOGOUT</button>
+            <button class="btn-green" onclick="logout()" style="background:#dc3545; margin-top: 15px;">LOGOUT</button>
         </div>
     </div>
 </div>
@@ -173,12 +169,12 @@
       messagingSenderId: "1039018990829",
       appId: "1:1039018990829:web:bffe0ea0269bfbded780e4"
     };
-    firebase.initializeApp(firebaseConfig);
+    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.firestore();
 
     const lang = {
-        en: { dash: "Dashboard Summary", srv: "New Service Entry", name: "Customer Name", phone: "Phone", addr: "Address", assign: "Assigned Staff", save: "SAVE RECORD", stf_add: "Add Staff", stf_name: "Name", role: "Role", stf_phone: "Phone", stf_addr: "Address", remark: "Remark", btn_stf: "ADD STAFF", dir: "Staff Directory", set: "App Information", copy: "Copyright Zwe Maung Maung.", pur: "New Purchase", sale: "New Sale", issue: "Description" },
-        mm: { dash: "အနှစ်ချုပ် ဇယား", srv: "ပြုပြင်ရေး မှတ်တမ်းအသစ်", name: "အမည်", phone: "ဖုန်းနံပါတ်", addr: "လိပ်စာ", assign: "တာဝန်ကျဝန်ထမ်းများ", save: "မှတ်တမ်းသိမ်းမည်", stf_add: "ဝန်ထမ်းအသစ်သွင်းရန်", stf_name: "အမည်", role: "ရာထူး", stf_phone: "ဖုန်း", stf_addr: "လိပ်စာ", remark: "မှတ်ချက်", btn_stf: "ဝန်ထမ်းသိမ်းမည်", dir: "ဝန်ထမ်းစာရင်း", set: "ဆော့ဝဲလ် အချက်အလက်", copy: "Zwe Maung Maung ၏ မူပိုင်ခွင့်။", pur: "ပစ္စည်းဝယ်ယူမှု မှတ်တမ်း", sale: "အရောင်းမှတ်တမ်းအသစ်", issue: "အကြောင်းအရာ" }
+        en: { dash: "Dashboard Summary", srv: "New Service Entry", name: "Customer Name", phone: "Phone", addr: "Address", assign: "Assigned Staff", save: "SAVE RECORD", stf_add: "Add Staff", stf_name: "Name", role: "Role", stf_phone: "Phone", stf_addr: "Address", remark: "Remark", btn_stf: "ADD STAFF", dir: "Staff Directory", set: "App Information", pur: "New Purchase", sale: "New Sale", issue: "Description" },
+        mm: { dash: "အနှစ်ချုပ် ဇယား", srv: "ပြုပြင်ရေး မှတ်တမ်းအသစ်", name: "အမည်", phone: "ဖုန်း", addr: "လိပ်စာ", assign: "တာဝန်ကျဝန်ထမ်းများ", save: "မှတ်တမ်းသိမ်းမည်", stf_add: "ဝန်ထမ်းအသစ်သွင်းရန်", stf_name: "အမည်", role: "ရာထူး", stf_phone: "ဖုန်း", stf_addr: "လိပ်စာ", remark: "မှတ်ချက်", btn_stf: "ဝန်ထမ်းသိမ်းမည်", dir: "ဝန်ထမ်းစာရင်း", set: "ဆော့ဝဲလ် အချက်အလက်", pur: "ပစ္စည်းဝယ်ယူမှု မှတ်တမ်း", sale: "အရောင်းမှတ်တမ်းအသစ်", issue: "အကြောင်းအရာ" }
     };
 
     function toggleLang() {
@@ -222,30 +218,29 @@
         return new Promise(r => { const reader = new FileReader(); reader.onload = e => r(e.target.result); reader.readAsDataURL(file); });
     }
 
-    function calcPurchase() {
+    function calcPur() {
         const qty = document.getElementById('p-qty').value || 0;
         const price = document.getElementById('p-price').value || 0;
         document.getElementById('p-total').value = qty * price;
     }
 
-    async function savePurchase() {
-        await db.collection("purchases").add({ type: document.getElementById('p-type').value, name: document.getElementById('p-name').value, total: Number(document.getElementById('p-total').value), timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-        alert("Purchase Saved!"); location.reload();
+    async function savePur() {
+        await db.collection("purchases").add({ name: document.getElementById('p-name').value, total: Number(document.getElementById('p-total').value), timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        alert("Saved!"); location.reload();
     }
 
     async function saveSale() {
         await db.collection("sales").add({ brand: document.getElementById('s-brand').value, price: Number(document.getElementById('s-price').value), timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-        alert("Sale Saved!"); location.reload();
+        alert("Saved!"); location.reload();
     }
 
     async function saveJob() {
-        const btn = document.getElementById('btn-srv');
-        btn.innerText = "Saving...";
+        const btn = document.getElementById('btn-srv'); btn.innerText = "Saving...";
         const assigned = Array.from(document.querySelectorAll('input[name="assigned"]:checked')).map(c => c.value);
         const bPhoto = await toBase64(document.getElementById('j-bphoto').files[0]);
         const aPhoto = await toBase64(document.getElementById('j-aphoto').files[0]);
         await db.collection("jobs").add({ name: document.getElementById('j-name').value, phone: document.getElementById('j-phone').value, address: document.getElementById('j-addr').value, app: document.getElementById('j-app').value, brand: document.getElementById('j-brand').value, hp: document.getElementById('j-hp').value, gas: document.getElementById('j-gas').value, type: document.getElementById('j-type').value, model: document.getElementById('j-model').value, issue: document.getElementById('j-issue').value, staff: assigned, date: document.getElementById('j-date').value, cost: Number(document.getElementById('j-cost').value), bPhoto, aPhoto, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-        alert("Service Saved!"); location.reload();
+        alert("Saved!"); location.reload();
     }
 
     async function updateFinance() {
@@ -260,22 +255,32 @@
 
     function loadStaff() {
         db.collection("staff").get().then(snap => {
-            document.getElementById('staffList').innerHTML = snap.docs.map(doc => `<div style="padding:10px; border-bottom:1px solid var(--border); font-size:12px;"><strong>${doc.data().name}</strong> (${doc.data().role})<br>📍 ${doc.data().addr || '-'}<br>📝 ${doc.data().remark || '-'}</div>`).join('');
+            document.getElementById('staffList').innerHTML = snap.docs.map(doc => `<div style="padding:10px; border-bottom:1px solid var(--border); font-size:11px;"><strong>${doc.data().name}</strong> (${doc.data().role})<br>📍 ${doc.data().addr || '-'}<br>📝 ${doc.data().remark || '-'}</div>`).join('');
         });
     }
 
     function loadStaffForService() {
         db.collection("staff").get().then(snap => {
-            document.getElementById('staffChecks').innerHTML = snap.docs.map(doc => `<div style="margin-bottom:5px;"><input type="checkbox" name="assigned" value="${doc.data().name}"> ${doc.data().name}</div>`).join('');
+            document.getElementById('staffChecks').innerHTML = snap.docs.map(doc => `<div style="margin-bottom:5px; font-size:12px;"><input type="checkbox" name="assigned" value="${doc.data().name}"> ${doc.data().name}</div>`).join('');
         });
     }
 
     async function addStaff() {
         await db.collection("staff").add({ name: document.getElementById('st-name').value, role: document.getElementById('st-role').value, phone: document.getElementById('st-phone').value, addr: document.getElementById('st-addr').value, remark: document.getElementById('st-remark').value });
-        alert("Staff Added!"); loadStaff();
+        alert("Added!"); loadStaff();
     }
 
     async function downloadPDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF('l', 'mm', 'a4');
-        
+        const { jsPDF } = window.jspdf; const doc = new jsPDF('l', 'mm', 'a4');
+        doc.text("Oasis AC Service Report", 14, 20);
+        const snap = await db.collection("jobs").get();
+        const rows = snap.docs.map(d => [d.data().date, d.data().name, d.data().app, d.data().cost]);
+        doc.autoTable({ startY: 30, head: [['Date', 'Customer', 'App', 'Cost']], body: rows });
+        doc.save("Report.pdf");
+    }
+
+    window.onload = () => { if(!localStorage.getItem('isLoggedIn')) location.href='index.html'; updateFinance(); };
+</script>
+</body>
+                                                                                                                                                                                                  </html>
+
