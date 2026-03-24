@@ -107,9 +107,12 @@ export default function LoginScreen() {
             </TouchableOpacity>
           </View>
 
-          {/* Footer */}
-          <Text style={[styles.footer, { color: C.textMuted }]}>
+          {/* Footer with Developer Name */}
+          <Text style={[styles.footer, { color: C.textMuted, marginBottom: 4 }]}>
             Ko Htay Aung (Oasis) Air-Con Co., Ltd. © Since 2000
+          </Text>
+          <Text style={[styles.footerDev, { color: C.primary }]}>
+            Developed by Zwe Maung Maung
           </Text>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -129,4 +132,5 @@ const styles = StyleSheet.create({
   forgotBtn: { alignItems: 'center', marginTop: Spacing.md, paddingVertical: Spacing.sm },
   forgotText: { fontSize: FontSize.sm, fontWeight: '500' },
   footer: { fontSize: FontSize.xs, textAlign: 'center' },
+  footerDev: { fontSize: FontSize.xs, textAlign: 'center', fontWeight: 'bold' },
 });
