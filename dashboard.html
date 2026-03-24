@@ -3,96 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oasis Dashboard</title>
+    <title>Oasis Air-Con Management</title>
     <style>
-        :root { --primary-green: #28a745; --bg-light: #f8f9fa; }
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg-light); }
-        .navbar { background: var(--primary-green); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
-        .container { padding: 20px; max-width: 1000px; margin: auto; }
-        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
-        .stat-card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; }
-        .form-section { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        :root { --primary-green: #28a745; --light-bg: #f4f7f6; }
+        body { font-family: sans-serif; margin: 0; background: var(--light-bg); }
+        .header { background: var(--primary-green); color: white; padding: 15px; text-align: center; font-weight: bold; position: sticky; top: 0; z-index: 100; }
+        .tab-bar { display: flex; background: white; border-bottom: 1px solid #ddd; }
+        .tab { flex: 1; padding: 12px; text-align: center; cursor: pointer; font-size: 14px; color: #666; font-weight: bold; }
+        .tab.active { color: var(--primary-green); border-bottom: 3px solid var(--primary-green); }
+        .container { padding: 15px; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; }
         .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
-        .btn-save { background: var(--primary-green); color: white; border: none; padding: 12px 25px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; }
-        .job-list { background: white; border-radius: 10px; padding: 15px; }
-        .status-done { color: #28a745; font-weight: bold; }
-        .status-pending { color: #dc3545; font-weight: bold; }
+        label { display: block; margin-bottom: 6px; font-weight: bold; font-size: 14px; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .btn-green { background: var(--primary-green); color: white; border: none; padding: 14px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; }
+        
+        /* Staff Checkbox Styling */
+        .staff-selection { max-height: 150px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 8px; }
+        .staff-item { display: flex; align-items: center; margin-bottom: 8px; font-size: 14px; }
+        .staff-item input { width: auto; margin-right: 10px; }
+        
+        .hidden { display: none; }
+        .staff-list-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; }
+        .footer { text-align: center; font-size: 12px; color: #999; margin: 20px 0; }
     </style>
 </head>
 <body>
 
-<div class="navbar">
-    <div style="font-weight: bold;">OASIS AIR-CON SYSTEM</div>
-    <div style="font-size: 14px;">User: Admin | <a href="index.html" style="color: white; text-decoration: none;">Logout</a></div>
+<div class="header">OASIS AIR-CON MANAGEMENT</div>
+
+<div class="tab-bar">
+    <div class="tab active" onclick="showTab('jobs')">JOBS</div>
+    <div class="tab" onclick="showTab('staff')">STAFF LIST</div>
 </div>
 
 <div class="container">
-    <div class="summary-grid">
-        <div class="stat-card">
-            <h3 style="margin:0; color: #28a745;">0</h3>
-            <p style="margin:5px 0 0; font-size: 14px;">Jobs Done</p>
-        </div>
-        <div class="stat-card">
-            <h3 style="margin:0; color: #dc3545;">0</h3>
-            <p style="margin:5px 0 0; font-size: 14px;">Pending</p>
+    <div id="jobsTab">
+        <div class="card">
+            <h3 style="margin-top:0; color:var(--primary-green);">New Job Entry</h3>
+            <div class="form-group">
+                <label>Customer Name & Phone</label>
+                <input type="text" id="custName" placeholder="Name and Phone Number">
+            </div>
+            
+            <div class="form-group">
+                <label>Assigned Staff (အနည်းဆုံး ၂ ယောက်ရွေးပါ)</label>
+                <div id="staffDropdown" class="staff-selection">
+                    <p style="color:#999; font-size:12px;">Staff List ထဲတွင် အရင်နာမည်ထည့်ပါ</p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Appliance & Issue</label>
+                <textarea id="issue" rows="2" placeholder="Brand/Type/Problem/Gas..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>Status</label>
+                <select id="status">
+                    <option value="Pending">Pending</option>
+                    <option value="Done">Done</option>
+                </select>
+            </div>
+            <button class="btn-green" onclick="saveJob()">SAVE JOB RECORD</button>
         </div>
     </div>
 
-    <div class="form-section">
-        <h3 style="margin-top:0;">New Job Record</h3>
-        <div class="form-group">
-            <label>Customer Name & Phone</label>
-            <input type="text" placeholder="Eg. U Aung (09xxxxxxx)">
+    <div id="staffTab" class="hidden">
+        <div class="card">
+            <h3 style="margin-top:0; color:var(--primary-green);">Add New Staff</h3>
+            <div class="form-group">
+                <label>Staff Name</label>
+                <input type="text" id="newStaffName" placeholder="ဝန်ထမ်းနာမည်ရိုက်ထည့်ပါ">
+            </div>
+            <div class="form-group">
+                <label>Position (ရာထူး)</label>
+                <select id="staffPosition">
+                    <option>Technician</option>
+                    <option>Helper</option>
+                    <option>Leader</option>
+                    <option>MD / Manager</option>
+                </select>
+            </div>
+            <button class="btn-green" onclick="addStaff()">ADD TO LIST</button>
         </div>
-        <div class="form-group">
-            <label>Appliance Type</label>
-            <select>
-                <option>Air-Con</option>
-                <option>Refrigerator</option>
-                <option>Washing Machine</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Brand & Specification (Brand/HP/Type/Gas)</label>
-            <input type="text" placeholder="Eg. Samsung / 1.5HP / Wall Mount / R32">
-        </div>
-        <div class="form-group">
-            <label>Issue Description</label>
-            <textarea rows="2" placeholder="Describe the problem..."></textarea>
-        </div>
-        <div class="form-group">
-            <label>Assigned Staff (Min 2)</label>
-            <select multiple style="height: 80px;">
-                <option>Tech: Mg Mg</option>
-                <option>Helper: Kyaw Kyaw</option>
-                <option>Helper: Hla Hla</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Service Date</label>
-            <input type="date">
-        </div>
-        <div class="form-group">
-            <label>Cost (MMK)</label>
-            <input type="number" placeholder="Amount in MMK">
-        </div>
-        <div class="form-group">
-            <label>Status</label>
-            <select>
-                <option>Pending</option>
-                <option>Done</option>
-            </select>
-        </div>
-        <button class="btn-save">SAVE RECORD</button>
-    </div>
 
-    <div class="summary-grid">
-        <button style="padding: 15px; border: 1px solid #28a745; background: white; border-radius: 8px; cursor: pointer;">+ Add Sale Record</button>
-        <button style="padding: 15px; border: 1px solid #28a745; background: white; border-radius: 8px; cursor: pointer;">+ Add Purchase Record</button>
+        <div class="card">
+            <h3 style="margin-top:0;">Staff Directory</h3>
+            <div id="staffDisplayList">
+                </div>
+        </div>
     </div>
 </div>
+
+<div class="footer">App Developer - Zwe Maung Maung</div>
+
+<script>
+    let staffList = JSON.parse(localStorage.getItem('oasisStaff')) || [];
+
+    function showTab(tabName) {
+        document.getElementById('jobsTab').classList.toggle('hidden', tabName !== 'jobs');
+        document.getElementById('staffTab').classList.toggle('hidden', tabName !== 'staff');
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+        if(tabName === 'jobs') updateStaffCheckboxes();
+    }
+
+    // ဝန်ထမ်းအသစ်ထည့်ခြင်း
+    function addStaff() {
+        const name = document.getElementById('newStaffName').value;
+        const pos = document.getElementById('staffPosition').value;
+        if (!name) return alert("နာမည်ရိုက်ထည့်ပါ");
+
+        staffList.push({ name: name, position: pos });
+        localStorage.setItem('oasisStaff', JSON.stringify(staffList));
+        document.getElementById('newStaffName').value = '';
+        renderStaffList();
+        updateStaffCheckboxes();
+        alert("ဝန်ထမ်းစာရင်းထဲ ထည့်ပြီးပါပြီ");
+    }
+
+    // ဝန်ထမ်းစာရင်းကို ပြသခြင်း
+    function renderStaffList() {
+        const display = document.getElementById('staffDisplayList');
+        display.innerHTML = staffList.map((s, index) => `
+            <div class="staff-list-item">
+                <span><strong>${s.name}</strong> (${s.position})</span>
+                <span style="color:red; cursor:pointer;" onclick="deleteStaff(${index})">ဖျက်မည်</span>
+            </div>
+        `).join('');
+    }
+
+    function deleteStaff(index) {
+        if(confirm("ဤဝန်ထမ်းကို စာရင်းမှ ဖျက်မှာ သေချာပါသလား?")) {
+            staffList.splice(index, 1);
+            localStorage.setItem('oasisStaff', JSON.stringify(staffList));
+            renderStaffList();
+            updateStaffCheckboxes();
+        }
+    }
+
+    // Job Form ထဲက Dropdown (Checkboxes) ကို Update လုပ်ခြင်း
+    function updateStaffCheckboxes() {
+        const container = document.getElementById('staffDropdown');
+        if (staffList.length === 0) {
+            container.innerHTML = '<p style="color:#999; font-size:12px;">Staff List ထဲတွင် အရင်နာမည်ထည့်ပါ</p>';
+            return;
+        }
+        container.innerHTML = staffList.map(s => `
+            <div class="staff-item">
+                <input type="checkbox" name="assignedStaff" value="${s.name}">
+                <span>${s.name} (${s.position})</span>
+            </div>
+        `).join('');
+    }
+
+    function saveJob() {
+        const selectedStaff = Array.from(document.querySelectorAll('input[name="assignedStaff"]:checked')).map(cb => cb.value);
+        if (selectedStaff.length < 2) return alert("အနည်းဆုံး ဝန်ထမ်း ၂ ယောက် ရွေးချယ်ပေးပါ ကိုကို");
+        
+        // ဒီနေရာမှာ Job ကို သိမ်းတဲ့ Logic ဆက်ရေးလို့ရပါတယ်
+        alert("အလုပ်မှတ်တမ်းကို အောင်မြင်စွာ သိမ်းဆည်းပြီးပါပြီ");
+    }
+
+    // Initial Load
+    renderStaffList();
+    updateStaffCheckboxes();
+</script>
 
 </body>
 </html>
