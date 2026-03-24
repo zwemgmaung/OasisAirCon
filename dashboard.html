@@ -1,187 +1,111 @@
-<!DOCTYPE html>
-<html lang="my">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oasis Air-Con System</title>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        :root { --p-green: #28a745; --bg: #ffffff; --text: #333; --card: #f8f9fa; --border: #ddd; }
-        [data-theme="dark"] { --bg: #121212; --text: #e0e0e0; --card: #1e1e1e; --border: #333; }
+<div id="staffTab" class="hidden">
+    <div class="card">
+        <h3>ဝန်ထမ်း အချက်အလက် အသစ်သွင်းရန် (New Staff Entry)</h3>
         
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: var(--text); padding-bottom: 50px; }
-        .header { background: var(--p-green); color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1001; }
-        .logo-box { display: flex; align-items: center; gap: 8px; }
-        .logo-img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
+        <div class="form-group">
+            <label>ဓာတ်ပုံ တင်ရန် (Staff Photo)</label>
+            <input type="file" id="st-photo" accept="image/*">
+        </div>
         
-        .nav-tabs { display: flex; overflow-x: auto; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 60px; z-index: 1000; }
-        .tab-btn { padding: 15px; flex: 1; text-align: center; cursor: pointer; font-weight: bold; font-size: 11px; white-space: nowrap; border-bottom: 3px solid transparent; }
-        .tab-btn.active { color: var(--p-green); border-bottom-color: var(--p-green); }
+        <div class="form-group">
+            <input type="text" id="st-name" placeholder="အမည် (Full Name)">
+        </div>
+        
+        <div class="grid-2">
+            <div class="form-group">
+                <select id="st-role">
+                    <option value="Technician">Technician</option>
+                    <option value="Helper">Helper</option>
+                    <option value="Leader">Leader</option>
+                    <option value="Manager">Manager</option>
+                    <option value="MD">MD</option>
+                    <option value="Clerk">Clerk</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="text" id="st-phone" placeholder="ဖုန်းနံပါတ် (Phone Number)">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <input type="text" id="st-addr" placeholder="နေရပ်လိပ်စာ (Address)">
+        </div>
+        
+        <div class="form-group">
+            <textarea id="st-note" placeholder="မှတ်ချက် (Remark/Note)" rows="2"></textarea>
+        </div>
+        
+        <button class="btn-green" onclick="addStaffWithPhoto()">သိမ်းဆည်းမည် (Save Staff Record)</button>
+    </div>
+    
+    <div id="staffList" class="card">
+        <h4>ဝန်ထမ်း စာရင်း (Staff Directory)</h4>
+        <div id="staffItems"></div>
+    </div>
+</div>
 
-        .container { padding: 15px; max-width: 800px; margin: auto; }
-        .card { background: var(--card); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--border); }
-        .form-group { margin-bottom: 12px; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); box-sizing: border-box; }
-        .btn-green { background: var(--p-green); color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; }
-        .hidden { display: none; }
-    </style>
-</head>
-<body data-theme="light">
-<div class="header">
-    <div class="logo-box">
-        <img src="1000064267.png" class="logo-img">
-        <span style="font-size: 14px; font-weight: bold;">OASIS AC SYSTEM</span>
-    </div>
-    <div style="display: flex; gap: 10px; align-items: center;">
-        <button onclick="toggleTheme()" style="background: none; border: none; font-size: 16px;">🌓</button>
-        <button onclick="logout()" style="background: none; border: none; color: white; font-weight: bold; font-size: 11px;">LOGOUT</button>
-    </div>
-</div>
-<div class="nav-tabs">
-    <div class="tab-btn active" onclick="showTab('home')" id="t-home">HOME</div>
-    <div class="tab-btn" onclick="showTab('service')" id="t-service">SERVICE</div>
-    <div class="tab-btn" onclick="showTab('staff')" id="t-staff">STAFF</div>
-    <div class="tab-btn" onclick="showTab('reports')" id="t-reports">REPORTS</div>
-</div>
-<div class="container">
-    <div id="homeTab">
-        <div class="card">
-            <h3>Dashboard</h3>
-            <canvas id="jobChart" style="max-height: 200px;"></canvas>
-            <div id="syncStatus" style="font-size:10px; color:var(--p-green); margin-top:5px; text-align:right;">Online - Synced</div>
-        </div>
-    </div>
-    <div id="serviceTab" class="hidden">
-        <div class="card">
-            <h3>New Service Entry</h3>
-            <div class="form-group"><input type="text" id="j-cust" placeholder="Customer Name & Phone"></div>
-            <div class="form-group"><textarea id="j-addr" rows="2" placeholder="Address"></textarea></div>
-            <div class="form-group"><select id="j-type"><option>Air-Con</option><option>Refrigerator</option><option>Washing Machine</option></select></div>
-            <div class="form-group"><input type="text" id="j-brand" placeholder="Brand/HP/Gas/Type"></div>
-            <div class="form-group"><textarea id="j-issue" placeholder="Issue/Problem"></textarea></div>
-            <div class="form-group"><div id="staffCheckboxes" style="border:1px solid #ddd; padding:10px; border-radius:8px; max-height:100px; overflow-y:auto;"></div></div>
-            <div class="form-group"><input type="date" id="j-date"></div>
-            <div class="form-group"><input type="number" id="j-cost" placeholder="Cost (MMK)"></div>
-            <button class="btn-green" onclick="saveJob()">SAVE & SYNC</button>
-        </div>
-    </div>
-    <div id="staffTab" class="hidden">
-        <div class="card">
-            <h3>Add New Staff</h3>
-            <input type="text" id="st-name" placeholder="Name" style="margin-bottom:10px;">
-            <select id="st-role" style="margin-bottom:10px;">
-                <option>MD</option><option>Manager</option><option>Technician</option>
-                <option>Leader</option><option>Co-leader</option><option>Helper</option><option>Clerk</option>
-            </select>
-            <button class="btn-green" onclick="addStaff()">ADD STAFF</button>
-        </div>
-    </div>
-    <div id="reportsTab" class="hidden">
-        <div class="card" id="pdfArea">
-            <h2 style="color:var(--p-green); text-align:center;">Oasis Weekly Report</h2>
-            <div id="reportContent"></div>
-        </div>
-        <button class="btn-green" onclick="downloadPDF()">DOWNLOAD PDF</button>
-    </div>
-</div>
 <script>
-    // --- FIREBASE INITIALIZATION (INTEGRATED FROM IMAGE_3.PNG) ---
-    const firebaseConfig = {
-      apiKey: "AIzaSyAOgPQkaq0mLdzi9jNZK-oRCEa_VsmD_cE",
-      authDomain: "oasis-ac-service.firebaseapp.com",
-      projectId: "oasis-ac-service",
-      storageBucket: "oasis-ac-service.firebasestorage.app",
-      messagingSenderId: "1039018990829",
-      appId: "1:1039018990829:web:bffe0ea0269bfbded780e4",
-      measurementId: "G-VX5RKL4M4Z"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    db.enablePersistence().catch(err => console.error("Persistence failed", err));
-
-    function showTab(t) {
-        ['home','service','staff','reports'].forEach(id => document.getElementById(id+'Tab').classList.add('hidden'));
-        document.getElementById(t+'Tab').classList.remove('hidden');
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('t-'+t).classList.add('active');
-        if(t === 'home') renderChart();
-        if(t === 'service') loadStaffCheckboxes();
-    }
-
-    function addStaff() {
+    // --- PROFESSIONAL STAFF LOGIC ---
+    async function addStaffWithPhoto() {
+        const file = document.getElementById('st-photo').files[0];
         const name = document.getElementById('st-name').value;
-        if(!name) return alert("Enter Staff Name");
-        db.collection("staff").add({ name, role: document.getElementById('st-role').value })
-        .then(() => { alert("Staff Added!"); document.getElementById('st-name').value = ''; });
+        const role = document.getElementById('st-role').value;
+        const phone = document.getElementById('st-phone').value;
+        const addr = document.getElementById('st-addr').value;
+        const remark = document.getElementById('st-note').value;
+
+        // အမည် မပါရင် Alert ပေးမယ် (Professional Version)
+        if(!name) {
+            return alert("ကျေးဇူးပြု၍ ဝန်ထမ်းအမည် ထည့်သွင်းပေးပါရန်။ (Please enter staff name)");
+        }
+
+        let photoData = "";
+        if (file) {
+            const reader = new FileReader();
+            photoData = await new Promise((resolve) => {
+                reader.onload = (e) => resolve(e.target.result);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        const data = {
+            name, role, phone, addr, remark,
+            photo: photoData,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        db.collection("staff").add(data).then(() => {
+            alert("ဝန်ထမ်းစာရင်း သိမ်းဆည်းမှု အောင်မြင်ပါသည်။ (Staff record saved successfully)");
+            // ဖောင်ကို ပြန်ရှင်းမယ်
+            document.getElementById('st-name').value = '';
+            document.getElementById('st-phone').value = '';
+            document.getElementById('st-addr').value = '';
+            document.getElementById('st-note').value = '';
+            document.getElementById('st-photo').value = '';
+            loadStaffList();
+        }).catch(err => alert("Error: " + err));
     }
 
-    function loadStaffCheckboxes() {
-        db.collection("staff").get().then(snap => {
-            const box = document.getElementById('staffCheckboxes');
-            box.innerHTML = snap.docs.map(doc => {
+    function loadStaffList() {
+        db.collection("staff").orderBy("createdAt", "desc").onSnapshot(snap => {
+            const container = document.getElementById('staffItems');
+            if (snap.empty) {
+                container.innerHTML = "<p style='text-align:center; font-size:12px; color:gray;'>ဝန်ထမ်းစာရင်း မရှိသေးပါ။</p>";
+                return;
+            }
+            container.innerHTML = snap.docs.map(doc => {
                 const s = doc.data();
-                return `<div class="staff-item"><input type="checkbox" name="assigned" value="${s.name}"> ${s.name} (${s.role})</div>`;
+                return `
+                    <div style="display:flex; gap:12px; border-bottom:1px solid #eee; padding:12px 0; align-items:center;">
+                        <img src="${s.photo || 'https://via.placeholder.com/50'}" style="width:50px; height:50px; border-radius:50%; object-fit:cover; border:1px solid #ddd;">
+                        <div style="font-size:12px; flex:1;">
+                            <strong style="color:var(--p-green);">${s.name}</strong> (${s.role})<br>
+                            📞 ${s.phone || '-'} | 📍 ${s.addr || '-'}<br>
+                            <small style="display:block; margin-top:3px; color:#666; font-style:italic;">Remark: ${s.remark || '-'}</small>
+                        </div>
+                    </div>
+                `;
             }).join('');
         });
     }
-
-    function saveJob() {
-        const assigned = Array.from(document.querySelectorAll('input[name="assigned"]:checked')).map(c => c.value);
-        if(assigned.length < 2) return alert("Please select at least 2 staff members.");
-        
-        const job = {
-            customer: document.getElementById('j-cust').value,
-            address: document.getElementById('j-addr').value,
-            type: document.getElementById('j-type').value,
-            brand: document.getElementById('j-brand').value,
-            hp: document.getElementById('j-hp').value,
-            gas: document.getElementById('j-gas').value,
-            issue: document.getElementById('j-issue').value,
-            staff: assigned,
-            date: document.getElementById('j-date').value,
-            cost: document.getElementById('j-cost').value,
-            status: 'Pending',
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        };
-
-        db.collection("jobs").add(job).then(() => {
-            alert("Job Saved & Synced!");
-            showTab('home');
-        });
-    }
-
-    let myChart;
-    function renderChart() {
-        db.collection("jobs").orderBy("timestamp", "desc").onSnapshot(snap => {
-            const done = snap.docs.filter(doc => doc.data().status === 'Done').length;
-            const pending = snap.docs.filter(doc => doc.data().status === 'Pending').length;
-            
-            const ctx = document.getElementById('jobChart').getContext('2d');
-            if(myChart) myChart.destroy();
-            myChart = new Chart(ctx, {
-                type: 'bar',
-                data: { labels: ['Jobs'], datasets: [{ label: 'Done vs Pending', data: [done, pending], backgroundColor: ['#28a745', '#dc3545'] }] }
-            });
-            document.getElementById('syncStatus').innerText = "Online - Synced";
-        });
-    }
-
-    function downloadPDF() {
-        const element = document.getElementById('pdfArea');
-        html2pdf().from(element).save('Oasis_Report.pdf');
-    }
-
-    function toggleTheme() {
-        const b = document.body;
-        b.setAttribute('data-theme', b.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
-    }
-
-    function logout() { localStorage.removeItem('isLoggedIn'); location.href = 'index.html'; }
-    window.onload = () => { if(!localStorage.getItem('isLoggedIn')) location.href='index.html'; renderChart(); };
 </script>
-</body>
-</html>
