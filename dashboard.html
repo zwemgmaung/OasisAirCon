@@ -26,11 +26,9 @@
         .btn-green { background: var(--p-green); color: white; border: none; padding: 12px; border-radius: 6px; width: 100%; font-weight: bold; cursor: pointer; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .hidden { display: none; }
-        /* Modal Style */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
         .modal-content { background: var(--card); padding: 20px; border-radius: 12px; width: 100%; max-width: 350px; position: relative; }
         .close-btn { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; color: #888; }
-        .staff-link { color: var(--p-green); cursor: pointer; text-decoration: underline; font-weight: bold; }
         .finance-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 15px; }
         .finance-item { text-align: center; padding: 8px; border-radius: 8px; color: white; font-size: 10px; }
     </style>
@@ -43,11 +41,11 @@
         <span style="font-weight:bold; font-size:11px;">KO HTAY AUNG (OASIS) AC SALES & SERVICE</span>
     </div>
     <div style="display:flex; gap:8px; align-items:center;">
-        <select id="langBtn" onchange="toggleLang()" style="padding:2px; font-size:10px; width:auto; border:1px solid white; background:transparent; color:white;">
+        <select id="langBtn" onchange="toggleLang()" style="padding:2px; font-size:10px; border:1px solid white; background:transparent; color:white; width:auto;">
             <option value="en">ENG</option>
             <option value="mm">MM</option>
         </select>
-        <button onclick="toggleTheme()" style="background:none; border:none; cursor:pointer; font-size:18px;">🌓</button>
+        <button onclick="toggleTheme()" style="background:none; border:none; cursor:pointer; font-size:16px;">🌓</button>
     </div>
 </div>
 
@@ -63,7 +61,7 @@
 <div id="staffModal" class="modal">
     <div class="modal-content">
         <span class="close-btn" onclick="closeModal()">&times;</span>
-        <h3 id="m-title" style="color:var(--p-green); margin-top:0;">Staff Details</h3>
+        <h3 id="m-title" style="color:var(--p-green); margin-top:0;">Edit Staff</h3>
         <input type="hidden" id="m-id">
         <div class="form-group"><label>Name</label><input type="text" id="m-name"></div>
         <div class="grid-2">
@@ -72,12 +70,8 @@
         </div>
         <div class="form-group"><label>Address</label><input type="text" id="m-addr"></div>
         <div class="form-group"><label>Remark</label><textarea id="m-remark" rows="2"></textarea></div>
-        
-        <div style="display:flex; gap:10px; margin-top:10px;">
-            <button class="btn-green" onclick="updateStaff()" style="flex:1;">UPDATE</button>
-            <button class="btn-green" id="m-call-btn" style="background:#007bff; flex:none; padding:10px;">CALL</button>
-        </div>
-        <button class="btn-green" onclick="deleteStaff()" style="background:#dc3545; margin-top:10px; font-size:11px; padding:8px;">DELETE STAFF</button>
+        <div style="display:flex; gap:10px;"><button class="btn-green" onclick="updateStaff()" style="flex:1;">UPDATE</button><button class="btn-green" id="m-call-btn" style="background:#007bff; flex:none; padding:10px;">CALL</button></div>
+        <button class="btn-green" onclick="deleteStaff()" style="background:#dc3545; margin-top:10px; font-size:11px;">DELETE</button>
     </div>
 </div>
 
@@ -99,27 +93,39 @@
     <div id="serviceTab" class="hidden">
         <div class="card">
             <h3>New Service Entry</h3>
-            <div class="grid-2">
-                <div class="form-group"><label>Customer Name</label><input type="text" id="j-name"></div>
-                <div class="form-group"><label>Phone</label><input type="text" id="j-phone"></div>
-            </div>
+            <div class="grid-2"><div class="form-group"><label>Customer Name</label><input type="text" id="j-name"></div><div class="form-group"><label>Phone</label><input type="text" id="j-phone"></div></div>
             <div class="form-group"><label>Address</label><textarea id="j-addr" rows="2"></textarea></div>
-            <div class="grid-2">
-                <div class="form-group"><label>Appliance</label><select id="j-app"><option>Air-Con</option><option>Refrigerator</option><option>Washing Machine</option></select></div>
-                <div class="form-group"><label>Brand</label><input type="text" id="j-brand"></div>
-            </div>
+            <div class="grid-2"><div class="form-group"><label>Appliance</label><select id="j-app"><option>Air-Con</option><option>Refrigerator</option><option>Washing Machine</option></select></div><div class="form-group"><label>Brand</label><input type="text" id="j-brand"></div></div>
+            <div class="grid-2"><div class="form-group"><label>HP</label><input type="text" id="j-hp"></div><div class="form-group"><label>Gas Type</label><input type="text" id="j-gas"></div></div>
+            <div class="grid-2"><div class="form-group"><label>Type</label><select id="j-type"><option>Inverter</option><option>Non-Inverter</option></select></div><div class="form-group"><label>Model</label><select id="j-model"><option>Split</option><option>Ceiling Cassette</option><option>Floor Stand</option><option>Portable</option></select></div></div>
             <div class="form-group"><label>Description</label><textarea id="j-issue" rows="2"></textarea></div>
             <div class="form-group"><label>Assigned Staff</label><div id="staffChecks" style="border:1px solid var(--border); padding:10px; border-radius:6px; max-height:100px; overflow:auto;">Loading...</div></div>
-            <div class="grid-2">
-                <div class="form-group"><label>Date</label><input type="date" id="j-date"></div>
-                <div class="form-group"><label>Cost (MMK)</label><input type="number" id="j-cost"></div>
-            </div>
+            <div class="grid-2"><div class="form-group"><label>Before Photo</label><input type="file" id="j-bphoto" accept="image/*"></div><div class="form-group"><label>After Photo</label><input type="file" id="j-aphoto" accept="image/*"></div></div>
+            <div class="grid-2"><div class="form-group"><label>Date</label><input type="date" id="j-date"></div><div class="form-group"><label>Cost (MMK)</label><input type="number" id="j-cost"></div></div>
             <button class="btn-green" onclick="saveJob()">SAVE SERVICE</button>
         </div>
     </div>
 
-    <div id="purchaseTab" class="hidden"><div class="card"><h3>Purchase</h3><input type="text" id="p-name" placeholder="Item Name"><input type="number" id="p-total" placeholder="Total Cost"><button class="btn-green" onclick="savePurchase()">Save</button></div></div>
-    <div id="saleTab" class="hidden"><div class="card"><h3>Sale</h3><input type="text" id="s-brand" placeholder="Brand"><input type="number" id="s-price" placeholder="Price"><button class="btn-green" onclick="saveSale()">Save</button></div></div>
+    <div id="purchaseTab" class="hidden">
+        <div class="card">
+            <h3>New Purchase</h3>
+            <div class="form-group"><label>Item Name</label><input type="text" id="p-name"></div>
+            <div class="grid-2"><div class="form-group"><label>Quantity</label><input type="number" id="p-qty" oninput="calcPur()"></div><div class="form-group"><label>Unit Price</label><input type="number" id="p-price" oninput="calcPur()"></div></div>
+            <div class="form-group"><label>Total Cost</label><input type="number" id="p-total" readonly style="background:#eee;"></div>
+            <button class="btn-green" onclick="savePur()">SAVE PURCHASE</button>
+        </div>
+    </div>
+
+    <div id="saleTab" class="hidden">
+        <div class="card">
+            <h3>New Sale</h3>
+            <div class="form-group"><label>Appliance Type</label><select id="s-app"><option>Air-Con</option><option>Refrigerator</option><option>Washing Machine</option></select></div>
+            <div class="grid-2"><div class="form-group"><label>Brand Name</label><input type="text" id="s-brand"></div><div class="form-group"><label>Model</label><input type="text" id="s-model"></div></div>
+            <div class="grid-2"><div class="form-group"><label>HP</label><input type="text" id="s-hp"></div><div class="form-group"><label>Quantity</label><input type="number" id="s-qty"></div></div>
+            <div class="form-group"><label>Sale Price (MMK)</label><input type="number" id="s-price"></div>
+            <button class="btn-green" onclick="saveSale()">SAVE SALE</button>
+        </div>
+    </div>
 
     <div id="staffTab" class="hidden">
         <div class="card">
@@ -138,8 +144,15 @@
 
     <div id="settingsTab" class="hidden">
         <div class="card" style="text-align:center;">
-            <h3>Oasis AC System</h3><p>Version 1.1.5<br>Developed by Zwe Maung Maung</p>
-            <button class="btn-green" onclick="logout()" style="background:#dc3545;">LOGOUT</button>
+            <h3>App Information</h3>
+            <img src="1000064267.png" style="width:70px; height:70px; border-radius:50%; border:3px solid var(--p-green); margin-bottom:10px; object-fit:cover;">
+            <div style="text-align: left; background: var(--bg); padding:15px; border-radius:8px; border:1px solid var(--border); font-size:14px;">
+                <p><strong>App:</strong> Oasis AC System</p>
+                <p><strong>Version:</strong> 1.1.5 (Final)</p>
+                <p><strong>Dev by:</strong> Zwe Maung Maung</p>
+                <p><strong>Org:</strong> Ko Htay Aung (Oasis) AC</p>
+            </div>
+            <button class="btn-green" onclick="logout()" style="background:#dc3545; margin-top:15px;">LOGOUT</button>
         </div>
     </div>
 </div>
@@ -169,7 +182,7 @@
     function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light'); }
     function logout() { localStorage.removeItem('isLoggedIn'); location.href = 'index.html'; }
 
-    // --- STAFF EDIT & DELETE LOGIC ---
+    // MODAL
     function openModal(id, name, role, phone, addr, remark) {
         document.getElementById('m-id').value = id;
         document.getElementById('m-name').value = name;
@@ -182,38 +195,40 @@
     }
     function closeModal() { document.getElementById('staffModal').style.display = 'none'; }
 
-    async function updateStaff() {
-        const id = document.getElementById('m-id').value;
-        await db.collection("staff").doc(id).update({
-            name: document.getElementById('m-name').value,
-            role: document.getElementById('m-role').value,
-            phone: document.getElementById('m-phone').value,
-            addr: document.getElementById('m-addr').value,
-            remark: document.getElementById('m-remark').value
-        });
-        alert("Updated!"); closeModal(); loadStaff();
+    // LOGIC
+    function calcPur() { const q = document.getElementById('p-qty').value; const p = document.getElementById('p-price').value; document.getElementById('p-total').value = q * p; }
+
+    async function savePur() {
+        await db.collection("purchases").add({ name: document.getElementById('p-name').value, total: Number(document.getElementById('p-total').value), timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        alert("Saved!"); location.reload();
+    }
+    async function saveSale() {
+        await db.collection("sales").add({ brand: document.getElementById('s-brand').value, price: Number(document.getElementById('s-price').value), timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        alert("Saved!"); location.reload();
+    }
+    async function saveJob() {
+        const staff = Array.from(document.querySelectorAll('input[name="assigned"]:checked')).map(c => c.value);
+        await db.collection("jobs").add({ name: document.getElementById('j-name').value, cost: Number(document.getElementById('j-cost').value), staff, date: document.getElementById('j-date').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        alert("Saved!"); location.reload();
     }
 
-    async function deleteStaff() {
-        if(confirm("Are you sure you want to delete this staff?")) {
-            await db.collection("staff").doc(document.getElementById('m-id').value).delete();
-            alert("Deleted!"); closeModal(); loadStaff();
-        }
-    }
-
-    async function addStaff() {
-        await db.collection("staff").add({ name: document.getElementById('st-name').value, role: document.getElementById('st-role').value, phone: document.getElementById('st-phone').value, addr: document.getElementById('st-addr').value, remark: document.getElementById('st-remark').value, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-        alert("Staff Added!"); loadStaff();
+    async function updateFinance() {
+        let inc = 0, exp = 0;
+        const j = await db.collection("jobs").get(); j.forEach(d => inc += d.data().cost || 0);
+        const s = await db.collection("sales").get(); s.forEach(d => inc += d.data().price || 0);
+        const p = await db.collection("purchases").get(); p.forEach(d => exp += d.data().total || 0);
+        document.getElementById('totalIncome').innerText = inc.toLocaleString() + " MMK";
+        document.getElementById('totalExpense').innerText = exp.toLocaleString() + " MMK";
+        document.getElementById('totalProfit').innerText = (inc - exp).toLocaleString() + " MMK";
     }
 
     function loadStaff() {
         db.collection("staff").orderBy("createdAt", "desc").get().then(snap => {
             document.getElementById('staffList').innerHTML = snap.docs.map(doc => {
                 const s = doc.data();
-                return `<div style="padding:12px 0; border-bottom:1px solid var(--border);">
-                    <span class="staff-link" onclick="openModal('${doc.id}','${s.name}','${s.role}','${s.phone}','${s.addr}','${s.remark}')">${s.name}</span> (${s.role})<br>
-                    <small onclick="window.location.href='tel:${s.phone}'" style="cursor:pointer; color:#888;">📞 ${s.phone}</small>
-                </div>`;
+                return `<div style="padding:10px 0; border-bottom:1px solid var(--border);">
+                    <span style="color:var(--p-green); cursor:pointer; font-weight:bold;" onclick="openModal('${doc.id}','${s.name}','${s.role}','${s.phone}','${s.addr}','${s.remark}')">${s.name}</span> (${s.role})<br>
+                    <small onclick="window.location.href='tel:${s.phone}'" style="cursor:pointer; color:#888;">📞 ${s.phone}</small></div>`;
             }).join('');
         });
     }
@@ -224,17 +239,19 @@
         });
     }
 
-    async function saveJob() {
-        const assigned = Array.from(document.querySelectorAll('input[name="assigned"]:checked')).map(c => c.value);
-        await db.collection("jobs").add({ name: document.getElementById('j-name').value, cost: Number(document.getElementById('j-cost').value), staff: assigned, date: document.getElementById('j-date').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-        alert("Service Saved!"); location.reload();
+    async function updateStaff() {
+        const id = document.getElementById('m-id').value;
+        await db.collection("staff").doc(id).update({ name: document.getElementById('m-name').value, role: document.getElementById('m-role').value, phone: document.getElementById('m-phone').value, addr: document.getElementById('m-addr').value, remark: document.getElementById('m-remark').value });
+        alert("Updated!"); closeModal(); loadStaff();
     }
 
-    async function updateFinance() {
-        let inc = 0;
-        const j = await db.collection("jobs").get(); j.forEach(d => inc += d.data().cost || 0);
-        document.getElementById('totalIncome').innerText = inc.toLocaleString() + " MMK";
-        document.getElementById('totalProfit').innerText = inc.toLocaleString() + " MMK";
+    async function deleteStaff() {
+        if(confirm("Delete staff?")) { await db.collection("staff").doc(document.getElementById('m-id').value).delete(); closeModal(); loadStaff(); }
+    }
+
+    async function addStaff() {
+        await db.collection("staff").add({ name: document.getElementById('st-name').value, role: document.getElementById('st-role').value, phone: document.getElementById('st-phone').value, addr: document.getElementById('st-addr').value, remark: document.getElementById('st-remark').value, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        alert("Added!"); loadStaff();
     }
 
     window.onload = () => { if(!localStorage.getItem('isLoggedIn')) location.href='index.html'; updateFinance(); };
