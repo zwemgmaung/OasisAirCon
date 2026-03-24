@@ -8,53 +8,60 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <style>
         :root { --p-green: #28a745; --bg: #ffffff; --text: #333; --card: #f8f9fa; --border: #ddd; }
         [data-theme="dark"] { --bg: #121212; --text: #e0e0e0; --card: #1e1e1e; --border: #333; }
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: var(--text); padding-bottom: 50px; }
-        .header { background: var(--p-green); color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1001; }
-        .logo-box { display: flex; align-items: center; gap: 8px; }
-        /* --- FIX: DASHBOARD HEADER LOGO --- */
-        .logo-img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
-        .nav-tabs { display: flex; overflow-x: auto; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 60px; z-index: 1000; }
-        .tab-btn { padding: 15px; flex: 1; text-align: center; cursor: pointer; font-weight: bold; font-size: 11px; white-space: nowrap; border-bottom: 3px solid transparent; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; background: var(--bg); color: var(--text); padding-bottom: 50px; }
+        .header { background: var(--p-green); color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1001; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .logo-box { display: flex; align-items: center; gap: 10px; }
+        .logo-img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
+        .nav-tabs { display: flex; overflow-x: auto; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 65px; z-index: 1000; }
+        .tab-btn { padding: 15px 20px; flex: 1; text-align: center; cursor: pointer; font-weight: bold; font-size: 11px; white-space: nowrap; border-bottom: 3px solid transparent; color: #666; }
         .tab-btn.active { color: var(--p-green); border-bottom-color: var(--p-green); }
         .container { padding: 15px; max-width: 800px; margin: auto; }
-        .card { background: var(--card); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--border); }
-        .form-group { margin-bottom: 12px; }
-        label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 13px; color: var(--p-green); }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); box-sizing: border-box; }
-        .btn-green { background: var(--p-green); color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .card { background: var(--card); padding: 20px; border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 13px; color: var(--p-green); }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); box-sizing: border-box; font-size: 14px; }
+        .btn-green { background: var(--p-green); color: white; border: none; padding: 14px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; font-size: 15px; margin-top: 10px; }
+        .btn-green:hover { opacity: 0.9; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .hidden { display: none; }
-        .staff-selector { border: 1px solid var(--border); border-radius: 8px; padding: 10px; max-height: 120px; overflow-y: auto; background: var(--bg); }
-        .staff-item { display: flex; align-items: center; margin-bottom: 5px; font-size: 13px; }
-        .staff-item input { width: auto; margin-right: 8px; }
+        .staff-selector { border: 1px solid var(--border); border-radius: 8px; padding: 12px; max-height: 150px; overflow-y: auto; background: var(--bg); }
+        .staff-item { display: flex; align-items: center; margin-bottom: 8px; font-size: 13px; }
+        .staff-item input { width: auto; margin-right: 10px; }
+        .photo-preview { width: 100%; height: 100px; border: 1px dashed var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #888; margin-top: 5px; overflow: hidden; }
+        .photo-preview img { width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
 <body data-theme="light">
+
 <div class="header">
     <div class="logo-box">
         <img src="1000064267.png" class="logo-img" alt="Oasis Logo">
-        <span style="font-size: 14px; font-weight: bold;">OASIS AC SYSTEM</span>
+        <span style="font-size: 16px; font-weight: bold;">OASIS AC SYSTEM</span>
     </div>
-    <div style="display: flex; gap: 10px; align-items: center;">
-        <button onclick="toggleTheme()" style="background: none; border: none; font-size: 16px;">🌓</button>
-        <button onclick="logout()" style="background: none; border: none; color: white; font-weight: bold; font-size: 11px;">LOGOUT</button>
+    <div style="display: flex; gap: 12px; align-items: center;">
+        <button onclick="toggleTheme()" style="background: none; border: none; font-size: 18px; cursor: pointer;">🌓</button>
+        <button onclick="logout()" style="background: none; border: none; color: white; font-weight: bold; font-size: 12px;">LOGOUT</button>
     </div>
 </div>
+
 <div class="nav-tabs">
     <div class="tab-btn active" onclick="showTab('home')" id="t-home">HOME</div>
     <div class="tab-btn" onclick="showTab('service')" id="t-service">SERVICE</div>
     <div class="tab-btn" onclick="showTab('staff')" id="t-staff">STAFF</div>
     <div class="tab-btn" onclick="showTab('reports')" id="t-reports">REPORTS</div>
 </div>
+
 <div class="container">
+    <div id="syncStatus" style="font-size: 10px; color: var(--p-green); text-align: right; margin-bottom: 5px;">Syncing...</div>
+
     <div id="homeTab">
         <div class="card">
-            <h3>Dashboard</h3>
+            <h3>Job Summary Dashboard</h3>
             <canvas id="jobChart" style="max-height: 200px;"></canvas>
-            <div id="syncStatus" style="font-size:10px; color:var(--p-green); margin-top:5px; text-align:right;">Online - Synced</div>
         </div>
     </div>
 
@@ -62,70 +69,66 @@
         <div class="card">
             <h3>ပြုပြင်ရေး မှတ်တမ်းအသစ် (New Service Entry)</h3>
             
-            <div class="grid-2">
-                <div class="form-group"><label>ဖောက်သည်အမည်</label><input type="text" id="j-cust-name" placeholder="Name"></div>
-                <div class="form-group"><label>ဖုန်းနံပါတ်</label><input type="text" id="j-cust-phone" placeholder="09xxxxxxxxx"></div>
-            </div>
-            <div class="form-group"><label>နေရပ်လိပ်စာ</label><textarea id="j-addr" rows="2" placeholder="Address"></textarea></div>
+            <div class="form-group"><label>ဖောက်သည်အမည် (Customer Name)</label><input type="text" id="j-name"></div>
+            <div class="form-group"><label>ဖုန်းနံပါတ် (Phone Number)</label><input type="text" id="j-phone"></div>
+            <div class="form-group"><label>နေရပ်လိပ်စာ (Address)</label><textarea id="j-addr" rows="2"></textarea></div>
             
-            <div class="form-group"><label>ပစ္စည်းအမျိုးအစား</label>
-                <select id="j-type"><option>Air-Con</option><option>Refrigerator</option><option>Washing Machine</option></select>
+            <div class="form-group"><label>Brand</label><input type="text" id="j-brand" placeholder="e.g. Daikin"></div>
+            <div class="form-group"><label>HP</label><input type="text" id="j-hp" placeholder="e.g. 1.5 HP"></div>
+            <div class="form-group"><label>Gas Type</label><input type="text" id="j-gas" placeholder="e.g. R32"></div>
+            
+            <div class="form-group"><label>Type (Inverter/Non)</label>
+                <select id="j-inv"><option>Inverter Type</option><option>Non-inverter Type</option></select>
             </div>
             
-            <div class="grid-2">
-                <div class="form-group"><label>Brand</label><input type="text" id="j-brand" placeholder="e.g., Daikin"></div>
-                <div class="form-group"><label>HP</label><input type="text" id="j-hp" placeholder="e.g., 1.5 HP"></div>
+            <div class="form-group"><label>Model</label>
+                <select id="j-model"><option>Split Type</option><option>Ceiling Cassette</option><option>Floor Stand</option><option>Portable</option></select>
             </div>
-            <div class="form-group"><label>Gas Type</label><input type="text" id="j-gas" placeholder="e.g., R32"></div>
-            
-            <div class="grid-2">
-                <div class="form-group"><label>Inverter/Non</label>
-                    <select id="j-inv-type"><option>Inverter Type</option><option>Non-inverter Type</option></select>
+
+            <div class="form-group"><label>တာဝန်ကျ ဝန်ထမ်းများ (Select Staff - Min 2)</label>
+                <div id="staffCheckboxes" class="staff-selector">ဝန်ထမ်းစာရင်း ရှာမတွေ့ပါ။</div>
+            </div>
+
+            <div class="form-group"><label>Work Photos (Before & After)</label>
+                <div class="grid-2">
+                    <div><input type="file" id="j-before" accept="image/*" onchange="preview(this, 'p-before')"><div id="p-before" class="photo-preview">Before Photo</div></div>
+                    <div><input type="file" id="j-after" accept="image/*" onchange="preview(this, 'p-after')"><div id="p-after" class="photo-preview">After Photo</div></div>
                 </div>
-                <div class="form-group"><label>AC Model</label>
-                    <select id="j-ac-model"><option>Split</option><option>Ceiling Cassette</option><option>Floor Stand</option><option>Portable</option></select>
-                </div>
             </div>
-            
-            <div class="form-group"><label>ဖြစ်ပွားသည့် ပြဿနာ</label><textarea id="j-issue" placeholder="Issue/Problem"></textarea></div>
-            <div class="form-group"><label>တာဝန်ကျ ဝန်ထမ်းများ (Staff List inside dropdown arrow)</label>
-                <div id="staffCheckboxes" class="staff-selector">ဝန်ထမ်းစာရင်း မရှိသေးပါ။</div>
-            </div>
-            
+
             <div class="grid-2">
-                <div class="form-group"><label>Before Work Photo</label><input type="file" id="j-photo-before" accept="image/*"></div>
-                <div class="form-group"><label>After Work Photo</label><input type="file" id="j-photo-after" accept="image/*"></div>
-            </div>
-            
-            <div class="grid-2">
-                <div class="form-group"><label>ရက်စွဲ</label><input type="date" id="j-date"></div>
+                <div class="form-group"><label>ရက်စွဲ (Date)</label><input type="date" id="j-date"></div>
                 <div class="form-group"><label>ကုန်ကျစရိတ် (MMK)</label><input type="number" id="j-cost"></div>
             </div>
-            
+
             <button class="btn-green" onclick="saveJob()">SAVE & SYNC TO CLOUD</button>
         </div>
     </div>
 
     <div id="staffTab" class="hidden">
         <div class="card">
-            <h3>ဝန်ထမ်းအသစ်ထည့်ရန်</h3>
-            <input type="text" id="st-name" placeholder="အမည်" style="margin-bottom:10px;">
-            <select id="st-role" style="margin-bottom:10px;"><option>Technician</option><option>Helper</option></select>
-            <button class="btn-green" onclick="addStaff()">ADD STAFF</button>
+            <h3>ဝန်ထမ်းအသစ်ထည့်ရန် (Add New Staff)</h3>
+            <div class="form-group"><label>ဓာတ်ပုံ (Staff Photo)</label><input type="file" id="st-photo" accept="image/*"></div>
+            <div class="form-group"><input type="text" id="st-name" placeholder="အမည် (Name)"></div>
+            <div class="form-group">
+                <select id="st-role"><option>Technician</option><option>Helper</option><option>Leader</option><option>Manager</option><option>MD</option></select>
+            </div>
+            <div class="form-group"><input type="text" id="st-phone" placeholder="ဖုန်းနံပါတ် (Phone)"></div>
+            <div class="form-group"><input type="text" id="st-addr" placeholder="နေရပ်လိပ်စာ (Address)"></div>
+            <div class="form-group"><textarea id="st-note" placeholder="မှတ်ချက် (Remark/Note)"></textarea></div>
+            <button class="btn-green" onclick="addStaff()">ADD STAFF RECORD</button>
         </div>
-        <div id="staffList" class="card">
-            <h4>Staff Directory</h4>
-            <div id="staffItems"></div>
-        </div>
+        <div id="staffListItems" class="card"><h4>ဝန်ထမ်းစာရင်း</h4><div id="staffDisplay"></div></div>
     </div>
 
     <div id="reportsTab" class="hidden">
-        <div class="card" id="pdfArea"><h3>Oasis Service Report</h3><div id="reportContent"></div></div>
+        <div class="card" id="pdfArea"><h2 style="text-align:center; color:var(--p-green);">Oasis Service Report</h2><div id="reportContent"></div></div>
         <button class="btn-green" onclick="downloadPDF()">DOWNLOAD PDF</button>
     </div>
 </div>
+
 <script>
-    // --- FIREBASE INITIALIZATION ---
+    // --- FIREBASE CONFIG ---
     const firebaseConfig = {
       apiKey: "AIzaSyAOgPQkaq0mLdzi9jNZK-oRCEa_VsmD_cE",
       authDomain: "oasis-ac-service.firebaseapp.com",
@@ -138,112 +141,106 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    db.enablePersistence().catch(err => console.error("Persistence failed", err));
+    db.enablePersistence().catch(err => console.log(err));
 
+    // --- NAVIGATION ---
     function showTab(t) {
         ['home','service','staff','reports'].forEach(id => document.getElementById(id+'Tab').classList.add('hidden'));
         document.getElementById(t+'Tab').classList.remove('hidden');
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('t-'+t).classList.add('active');
         if(t === 'home') renderChart();
-        if(t === 'service') loadStaffCheckboxes(); // --- Reload Staff list on tab open ---
-        if(t === 'staff') loadStaffList();
+        if(t === 'service') loadStaffForService();
+        if(t === 'staff') loadStaffDisplay();
     }
 
-    // --- STAFF MANAGEMENT (AUTO SYNC) ---
-    function addStaff() {
-        const name = document.getElementById('st-name').value;
-        if(!name) return alert("Enter Staff Name");
-        db.collection("staff").add({ name, role: document.getElementById('st-role').value })
-        .then(() => { alert("Staff Added!"); document.getElementById('st-name').value = ''; loadStaffList(); });
+    // --- STAFF LOGIC ---
+    async function addStaff() {
+        const photo = await toBase64(document.getElementById('st-photo').files[0]);
+        const data = {
+            name: document.getElementById('st-name').value,
+            role: document.getElementById('st-role').value,
+            phone: document.getElementById('st-phone').value,
+            addr: document.getElementById('st-addr').value,
+            remark: document.getElementById('st-note').value,
+            photo: photo,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        if(!data.name) return alert("အမည် ထည့်ပေးပါဦး။");
+        db.collection("staff").add(data).then(() => { alert("Staff Saved!"); loadStaffDisplay(); });
     }
 
-    function loadStaffList() {
+    function loadStaffDisplay() {
         db.collection("staff").get().then(snap => {
-            document.getElementById('staffItems').innerHTML = snap.docs.map(doc => `<p>${doc.data().name} (${doc.data().role})</p>`).join('');
-        });
-    }
-
-    // --- SERVICE ENTRY (REVAMPED LOGIC BY KO KO) ---
-    // 1. DYNAMIC STAFF SELECTION (Load Staff List from Firebase)
-    function loadStaffCheckboxes() {
-        db.collection("staff").get().then(snap => {
-            if (snap.empty) {
-                document.getElementById('staffCheckboxes').innerHTML = "No staff found. Add staff first.";
-                return;
-            }
-            // Populate checkboxes with real staff names from database
-            document.getElementById('staffCheckboxes').innerHTML = snap.docs.map(doc => {
+            document.getElementById('staffDisplay').innerHTML = snap.docs.map(doc => {
                 const s = doc.data();
-                return `<div class="staff-item"><input type="checkbox" name="assigned" value="${s.name}"> ${s.name} (${s.role})</div>`;
+                return `<div style="display:flex; gap:10px; border-bottom:1px solid #eee; padding:10px 0;">
+                    <img src="${s.photo || ''}" style="width:50px; height:50px; border-radius:50%; object-fit:cover; background:#eee;">
+                    <div style="font-size:12px;"><strong>${s.name}</strong> (${s.role})<br>📞 ${s.phone}<br>📍 ${s.addr}</div>
+                </div>`;
             }).join('');
         });
     }
 
-    // 2. SAVE JOB WITH PHOTOS & Granular Details
+    function loadStaffForService() {
+        db.collection("staff").get().then(snap => {
+            document.getElementById('staffCheckboxes').innerHTML = snap.docs.map(doc => `
+                <div class="staff-item"><input type="checkbox" name="assigned" value="${doc.data().name}"> ${doc.data().name} (${doc.data().role})</div>
+            `).join('');
+        });
+    }
+
+    // --- SERVICE LOGIC ---
     async function saveJob() {
-        // Collect assigned staff
         const assigned = Array.from(document.querySelectorAll('input[name="assigned"]:checked')).map(c => c.value);
-        if(assigned.length < 2) return alert("Please select at least 2 staff members.");
+        if(assigned.length < 2) return alert("ဝန်ထမ်း အနည်းဆုံး ၂ ယောက် ရွေးပေးပါရှင်။");
 
-        // Read Photos (Base64)
-        const photoBefore = await readImage(document.getElementById('j-photo-before').files[0]);
-        const photoAfter = await readImage(document.getElementById('j-photo-after').files[0]);
+        const before = await toBase64(document.getElementById('j-before').files[0]);
+        const after = await toBase64(document.getElementById('j-after').files[0]);
 
-        // Construct complete job object based on Ko Ko's new spec
         const job = {
-            customerName: document.getElementById('j-cust-name').value,
-            customerPhone: document.getElementById('j-cust-phone').value,
+            customer: document.getElementById('j-name').value,
+            phone: document.getElementById('j-phone').value,
             address: document.getElementById('j-addr').value,
-            applianceType: document.getElementById('j-type').value,
             brand: document.getElementById('j-brand').value,
             hp: document.getElementById('j-hp').value,
             gas: document.getElementById('j-gas').value,
-            inverterType: document.getElementById('j-inv-type').value,
-            acModelStyle: document.getElementById('j-ac-model').value,
-            issue: document.getElementById('j-issue').value,
-            assignedStaff: assigned,
+            invType: document.getElementById('j-inv').value,
+            model: document.getElementById('j-model').value,
+            staff: assigned,
             date: document.getElementById('j-date').value,
             cost: document.getElementById('j-cost').value,
-            photoBefore,
-            photoAfter,
-            status: 'Pending',
+            photoBefore: before,
+            photoAfter: after,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         };
 
-        if(!job.customerName || !job.date) return alert("Name and Date are required.");
-
-        db.collection("jobs").add(job).then(() => {
-            alert("Record Saved & Synced to Cloud!");
-            location.reload(); // Refresh to see new data
-        });
+        db.collection("jobs").add(job).then(() => { alert("Synced to Cloud!"); location.reload(); });
     }
 
-    // Photo helper function
-    function readImage(file) {
-        if (!file) return Promise.resolve("");
-        return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload = (e) => resolve(e.target.result);
-            reader.readAsDataURL(file);
-        });
+    // --- HELPERS ---
+    function toBase64(file) {
+        if(!file) return Promise.resolve("");
+        return new Promise(r => { const reader = new FileReader(); reader.onload = e => r(e.target.result); reader.readAsDataURL(file); });
     }
-
-    // --- DASHBOARD CHARTS ---
+    function preview(input, id) {
+        const file = input.files[0];
+        if(file) { const r = new FileReader(); r.onload = e => document.getElementById(id).innerHTML = `<img src="${e.target.result}">`; r.readAsDataURL(file); }
+    }
     let myChart;
     function renderChart() {
-        db.collection("jobs").orderBy("timestamp", "desc").onSnapshot(snap => {
-            const count = snap.docs.length;
+        db.collection("jobs").onSnapshot(snap => {
             const ctx = document.getElementById('jobChart').getContext('2d');
             if(myChart) myChart.destroy();
-            myChart = new Chart(ctx, { type: 'bar', data: { labels: ['Jobs'], datasets: [{ label: 'Total Jobs Synced', data: [count], backgroundColor: '#28a745' }] }, options: { scales: { y: { beginAtZero: true } } } });
-            document.getElementById('syncStatus').innerText = "Online - All data synced";
+            myChart = new Chart(ctx, { type: 'bar', data: { labels: ['Jobs'], datasets: [{ label: 'Total Synced', data: [snap.docs.length], backgroundColor: '#28a745' }] } });
+            document.getElementById('syncStatus').innerText = "Online - Synced";
         });
     }
-
     function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light'); }
     function logout() { localStorage.removeItem('isLoggedIn'); location.href = 'index.html'; }
     window.onload = () => { if(!localStorage.getItem('isLoggedIn')) location.href='index.html'; renderChart(); };
 </script>
+
 </body>
 </html>
+
