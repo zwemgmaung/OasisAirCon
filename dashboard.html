@@ -31,11 +31,14 @@
         .bg-done { background: #28a745; }
         .img-preview { width: 100%; height: 100px; object-fit: cover; border-radius: 6px; margin-top: 5px; background: #eee; border: 1px solid var(--border); }
         .history-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 0.5px solid var(--border); font-size: 12px; }
-        .about-bg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 250px; height: 250px; opacity: 0.05; z-index: 0; pointer-events: none; }
-        .about-content { position: relative; z-index: 1; text-align: left; font-size: 12px; line-height: 1.6; }
-        .about-header { color: var(--p-green); font-weight: bold; margin-top: 15px; border-bottom: 1px solid var(--border); padding-bottom: 3px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 11px; }
-        th, td { border: 1px solid var(--border); padding: 8px; text-align: left; }
+        .about-bg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; height: auto; opacity: 0.08; z-index: 0; pointer-events: none; }
+        .about-content { position: relative; z-index: 1; }
+        .about-table { width: 100%; margin-top: 10px; border-collapse: collapse; }
+        .about-table td { padding: 8px 0; font-size: 12px; border-bottom: 0.5px solid rgba(0,0,0,0.05); }
+        .td-left { text-align: left; font-weight: bold; color: var(--p-green); width: 40%; }
+        .td-mid { text-align: center; width: 5%; }
+        .td-right { text-align: right; width: 55%; }
+        .credit-text { text-align: center; margin-top: 20px; font-size: 11px; font-weight: bold; color: var(--p-green); }
     </style>
 </head>
 <body data-theme="dark">
@@ -61,29 +64,40 @@
     <div class="tab-btn" onclick="showTab('attendance')" id="t-attendance">ATTEND</div>
     <div class="tab-btn" onclick="showTab('settings')" id="t-settings">SETTINGS</div>
 </div>
+
+<div id="jobModal" class="modal"><div class="modal-content"><h3>Edit Job</h3><input type="hidden" id="edit-j-id"><div class="form-group"><label>Customer</label><input type="text" id="edit-j-name"></div><div class="form-group"><label>Cost</label><input type="number" id="edit-j-cost"></div><div class="form-group"><label>Status</label><select id="edit-j-status"><option value="Pending">Pending</option><option value="Done">Done</option></select></div><button class="btn-green" onclick="updateJob()">UPDATE</button><button class="btn-green" onclick="deleteJob()" style="background:#dc3545; margin-top:10px;">DELETE</button><button class="btn-green" onclick="closeJobModal()" style="background:#888; margin-top:10px;">CLOSE</button></div></div>
+
+<div id="staffModal" class="modal"><div class="modal-content"><h3>Edit Staff</h3><input type="hidden" id="m-id"><div class="form-group"><label>Name</label><input type="text" id="m-name"></div><div class="grid-2"><div class="form-group"><label>Role</label><select id="m-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Co-Leader</option><option>Helper</option></select></div><div class="form-group"><label>Daily Rate</label><input type="number" id="m-rate"></div></div><div class="form-group"><label>Phone</label><input type="text" id="m-phone"></div><button class="btn-green" onclick="updateStaff()">UPDATE</button><button class="btn-green" onclick="deleteStaff()" style="background:#dc3545; margin-top:10px;">DELETE</button><button class="btn-green" onclick="closeModal()" style="background:#888; margin-top:10px;">CLOSE</button></div></div>
 <div class="container">
     <div id="homeTab">
         <div class="card" style="text-align: center;">
-            <h3>Daily Dashboard</h3>
+            <h3>Daily Dashboard Summary</h3>
             <p style="font-size: 10px; color: var(--p-green);">Today: <span id="currentDateDisp"></span></p>
             <div id="dailyFinanceDisplay" style="font-size:12px; line-height:2.2; text-align: left; padding: 10px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border);">Calculating...</div>
         </div>
         <div class="card">
             <h4>Monthly Summary</h4>
             <div id="monthlyStats" style="font-size:12px; line-height:1.8;">Loading...</div>
-            <div class="grid-2" style="margin-top:10px;"><button class="btn-green" onclick="downloadPDF()">Export PDF</button><button class="btn-green" style="background:#4285f4;" onclick="alert('Ready!')">Google Sync</button></div>
+            <div class="grid-2" style="margin-top:10px;"><button class="btn-green" onclick="downloadPDF()">Export PDF</button><button class="btn-green" style="background:#4285f4;" onclick="alert('Google Sync Ready!')">Google Sync</button></div>
         </div>
+        <div class="credit-text">Developed by Zwe Maung Maung</div>
     </div>
 
-    <div id="jobsTab" class="hidden"><div id="jobMasterList">Loading...</div></div>
+    <div id="jobsTab" class="hidden"><div id="jobMasterList">Loading Jobs...</div></div>
 
     <div id="serviceTab" class="hidden">
         <div class="card">
             <h3>New Service Entry</h3>
             <div class="grid-2"><div class="form-group"><label>Customer</label><input type="text" id="j-name"></div><div class="form-group"><label>Phone</label><input type="text" id="j-phone"></div></div>
+            <div class="form-group"><label>Address</label><textarea id="j-addr" rows="2"></textarea></div>
             <div class="grid-2"><div class="form-group"><label>Appliance</label><select id="j-app"><option>Air-Con</option><option>Refrigerator</option><option>Washing Machine</option></select></div><div class="form-group"><label>Brand</label><input type="text" id="j-brand"></div></div>
-            <div class="form-group"><label>Description</label><textarea id="j-desc" rows="2"></textarea></div>
+            <div class="grid-2"><div class="form-group"><label>HP</label><input type="text" id="j-hp"></div><div class="form-group"><label>Gas Type</label><input type="text" id="j-gas"></div></div>
+            <div class="form-group"><label>Description / Remark</label><textarea id="j-desc" rows="2"></textarea></div>
             <div class="form-group"><label>Assigned Staff</label><div id="staffChecks" style="border:1px solid var(--border); padding:10px; border-radius:6px; max-height:100px; overflow-y:auto;"></div></div>
+            <div class="grid-2">
+                <div class="form-group"><label>Before Photo</label><input type="file" accept="image/*" onchange="previewImg(this, 'p-before')"><img id="p-before" class="img-preview"></div>
+                <div class="form-group"><label>After Photo</label><input type="file" accept="image/*" onchange="previewImg(this, 'p-after')"><img id="p-after" class="img-preview"></div>
+            </div>
             <div class="grid-2"><div class="form-group"><label>Date</label><input type="date" id="j-date"></div><div class="form-group"><label>Cost</label><input type="number" id="j-cost"></div></div>
             <div class="form-group"><label>Status</label><select id="j-status"><option value="Pending">Pending</option><option value="Done">Done</option></select></div>
             <button class="btn-green" onclick="saveJob()">SAVE SERVICE</button>
@@ -92,37 +106,31 @@
 
     <div id="purchaseTab" class="hidden"><div class="card"><h3>New Expense</h3><select id="p-cat" style="margin-bottom:10px;"><option value="Item">Purchase Item</option><option value="Rent">Shop Rent</option></select><input type="text" id="p-name" placeholder="Item Name"><div class="grid-2" style="margin-top:10px;"><input type="number" id="p-qty" placeholder="Qty" oninput="calcPur()"><input type="number" id="p-price" placeholder="Price" oninput="calcPur()"></div><input type="number" id="p-total" readonly style="margin:10px 0; background:var(--bg); color:var(--text);"><button class="btn-green" onclick="savePur()">SAVE</button><div class="history-list"><h4>Purchase History</h4><div id="purHistory"></div></div></div></div>
     <div id="saleTab" class="hidden"><div class="card"><h3>New Sale</h3><input type="text" id="s-name" placeholder="Item Name"><div class="grid-2" style="margin-top:10px;"><input type="number" id="s-qty" placeholder="Qty" oninput="calcSale()"><input type="number" id="s-price" placeholder="Price" oninput="calcSale()"></div><input type="number" id="s-total" readonly style="margin:10px 0; background:var(--bg); color:var(--text);"><button class="btn-green" onclick="saveSale()">SAVE</button><div class="history-list"><h4>Sales History</h4><div id="saleHistory"></div></div></div></div>
-    <div id="staffTab" class="hidden"><div id="staffList"></div><div class="card"><h4>Add Staff</h4><input type="text" id="st-name" placeholder="Name"><div class="grid-2" style="margin:10px 0;"><select id="st-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Helper</option></select><input type="number" id="st-rate" placeholder="Rate"></div><button class="btn-green" onclick="addStaff()">ADD</button></div></div>
-    <div id="attendanceTab" class="hidden"><div class="card"><h3>Attendance</h3><input type="date" id="att-date" style="margin-bottom:10px;"><div id="attTableContainer"></div><button class="btn-green" style="margin-top:15px;" onclick="saveAttendance()">SAVE TODAY</button></div></div>
+    <div id="staffTab" class="hidden"><div id="staffList"></div><div class="card"><h4>Add Staff</h4><input type="text" id="st-name" placeholder="Name"><div class="grid-2" style="margin:10px 0;"><select id="st-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Co-Leader</option><option>Helper</option></select><input type="number" id="st-rate" placeholder="Rate"></div><input type="text" id="st-phone" placeholder="Phone Number"><button class="btn-green" onclick="addStaff()" style="margin-top:10px;">ADD STAFF</button></div></div>
+    <div id="attendanceTab" class="hidden"><div class="card"><h3>Daily Attendance</h3><input type="date" id="att-date" style="margin-bottom:10px;"><div id="attTableContainer"></div><button class="btn-green" style="margin-top:15px;" onclick="saveAttendance()">SAVE TODAY</button></div></div>
 
     <div id="settingsTab" class="hidden">
         <div class="card">
             <img src="1000064267.png" class="about-bg">
             <div class="about-content">
-                <h3 style="text-align:center; color:var(--p-green); margin-bottom:20px;">About App</h3>
-                <div class="about-header">BUSINESS INFO</div>
-                <p><b>Owner:</b> Ko Htay Aung (Oasis)</p>
-                <p><b>Business:</b> Oasis Air-Con Sales and Service Co., Ltd.</p>
-                <p><b>Since:</b> 2000</p>
-                <p><b>Services:</b> AC / Refrigerator / Washing Machine</p>
-                
-                <div class="about-header">APP INFO</div>
-                <p><b>App Name:</b> Ko Htay Aung (Oasis) AC Sales and Service</p>
-                <p><b>Version:</b> 1.5.0 (Ultimate Master)</p>
-                <p><b>Platform:</b> Android / Web</p>
-
-                <div class="about-header">DEVELOPER INFO</div>
-                <p><b>App Developer:</b> Zwe Maung Maung</p>
-
-                <div class="about-header">APP FEATURES</div>
-                <p>✅ Customer records (name, phone, address)</p>
-                <p>✅ AC / Refrigerator problem tracking</p>
-                <p>✅ Brand, HP, Type, Gas Type records</p>
-                <p>✅ Staff & Attendance management</p>
-                <p>✅ Done / Pending status tracking</p>
-                <p>✅ Auto sync when internet connected</p>
+                <h3 style="text-align:center; color:var(--p-green); margin-bottom:15px;">About App</h3>
+                <div style="font-weight:bold; color:var(--p-green); border-bottom:1px solid var(--border); padding:5px 0;">BUSINESS INFO</div>
+                <table class="about-table">
+                    <tr><td class="td-left">Business Owner</td><td class="td-mid">:</td><td class="td-right">Ko Htay Aung (Oasis)</td></tr>
+                    <tr><td class="td-left">Business</td><td class="td-mid">:</td><td class="td-right">Oasis Air-Con Sales & Service</td></tr>
+                    <tr><td class="td-left">Since</td><td class="td-mid">:</td><td class="td-right">2000</td></tr>
+                    <tr><td class="td-left">Services</td><td class="td-mid">:</td><td class="td-right">AC/Refrigerator/Washing Machine</td></tr>
+                </table>
+                <div style="font-weight:bold; color:var(--p-green); border-bottom:1px solid var(--border); padding:15px 0 5px 0;">APP INFO</div>
+                <table class="about-table">
+                    <tr><td class="td-left">App Name</td><td class="td-mid">:</td><td class="td-right">Ko Htay Aung (Oasis) AC Pro</td></tr>
+                    <tr><td class="td-left">Version</td><td class="td-mid">:</td><td class="td-right">1.5.1 (Perfect Final)</td></tr>
+                    <tr><td class="td-left">Platform</td><td class="td-mid">:</td><td class="td-right">Android / Web</td></tr>
+                    <tr><td class="td-left">App Developer</td><td class="td-mid">:</td><td class="td-right">Zwe Maung Maung</td></tr>
+                </table>
+                <div style="font-weight:bold; color:var(--p-green); border-bottom:1px solid var(--border); padding:15px 0 5px 0;">APP FEATURES</div>
+                <div style="font-size:11px; margin-top:5px; line-height:1.8;">✅ Customer Records & Tracking<br>✅ High-Res Photo Attachment<br>✅ Daily Profit & Salary Sync<br>✅ Sorted Staff & Attendance<br>✅ Job Edit/Delete Management</div>
             </div>
-            <div style="margin-top: 30px; border-top: 1px solid var(--border); padding-top:20px; color:#888; font-size:10px; text-align:center;">© 2026 Zwe Maung Maung. All Rights Reserved.</div>
         </div>
     </div>
 </div>
@@ -148,38 +156,43 @@
     }
 
     function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light'); }
+    function previewImg(input, id) { const reader = new FileReader(); reader.onload = (e) => document.getElementById(id).src = e.target.result; if(input.files[0]) reader.readAsDataURL(input.files[0]); }
     function calcPur() { document.getElementById('p-total').value = document.getElementById('p-qty').value * document.getElementById('p-price').value; }
     function calcSale() { document.getElementById('s-total').value = document.getElementById('s-qty').value * document.getElementById('s-price').value; }
 
     async function updateFinance() {
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('currentDateDisp').innerText = today;
-        let jInc = 0, sInc = 0, pExp = 0, totalSal = 0, dJobInc = 0, dSaleInc = 0, dSal = 0;
-        const jobs = await db.collection("jobs").get();
-        jobs.forEach(d => { if(d.data().status === 'Done') jInc += d.data().cost || 0; if(d.data().date === today && d.data().status === 'Done') dJobInc += d.data().cost || 0; });
-        const sales = await db.collection("sales").get(); sales.forEach(d => { sInc += d.data().price || 0; if(d.data().timestamp?.toDate().toISOString().split('T')[0] === today) dSaleInc += d.data().price || 0; });
-        const purs = await db.collection("purchases").get(); purs.forEach(d => pExp += d.data().total || 0);
+        const today = new Date().toISOString().split('T')[0]; document.getElementById('currentDateDisp').innerText = today;
+        let jInc = 0, sInc = 0, pExp = 0, tSal = 0, dJ = 0, dS = 0, dSal = 0, dP = 0;
+        const jobs = await db.collection("jobs").get(); jobs.forEach(d => { if(d.data().status === 'Done') jInc += d.data().cost || 0; if(d.data().date === today && d.data().status === 'Done') dJ += d.data().cost || 0; });
+        const sales = await db.collection("sales").get(); sales.forEach(d => { sInc += d.data().price || 0; if(d.data().timestamp?.toDate().toISOString().split('T')[0] === today) dS += d.data().price || 0; });
+        const purs = await db.collection("purchases").get(); purs.forEach(d => { pExp += d.data().total || 0; if(d.data().timestamp?.toDate().toISOString().split('T')[0] === today) dP += d.data().total || 0; });
         const staffSnap = await db.collection("staff").get(); const attSnap = await db.collection("attendance").get();
-        staffSnap.forEach(sDoc => { attSnap.forEach(aDoc => { if(aDoc.data().records.find(r => r.name === sDoc.data().name && r.status === 'Present')) { totalSal += (sDoc.data().rate || 0); if(aDoc.data().date === today) dSal += (sDoc.data().rate || 0); } }); });
-        document.getElementById('dailyFinanceDisplay').innerHTML = `Income: <b>${(dJobInc+dSaleInc).toLocaleString()}</b> | Salary: <b>${dSal.toLocaleString()}</b> | Profit: <b>${(dJobInc+dSaleInc-dSal).toLocaleString()}</b>`;
-        document.getElementById('monthlyStats').innerHTML = `• Income: ${(jInc+sInc).toLocaleString()}<br>• Expense: ${(pExp+totalSal).toLocaleString()}<br>• Profit: <b>${(jInc+sInc-pExp-totalSal).toLocaleString()}</b> MMK`;
+        staffSnap.forEach(sDoc => { attSnap.forEach(aDoc => { if(aDoc.data().records.find(r => r.name === sDoc.data().name && r.status === 'Present')) { tSal += (sDoc.data().rate || 0); if(aDoc.data().date === today) dSal += (sDoc.data().rate || 0); } }); });
+        document.getElementById('dailyFinanceDisplay').innerHTML = `Daily Income: <b>${(dJ+dS).toLocaleString()}</b> | Expense: <b>${dP.toLocaleString()}</b> | Salary: <b>${dSal.toLocaleString()}</b> | Profit: <b style="color:var(--p-green);">${(dJ+dS-dP-dSal).toLocaleString()}</b>`;
+        document.getElementById('monthlyStats').innerHTML = `• Monthly Income: ${(jInc+sInc).toLocaleString()}<br>• Monthly Expense: ${(pExp+tSal).toLocaleString()}<br>• Net Profit: <b style="color:var(--p-green);">${(jInc+sInc-pExp-tSal).toLocaleString()}</b> MMK`;
     }
 
-    function loadHistory(col, target) {
-        db.collection(col).orderBy("timestamp", "desc").limit(10).get().then(snap => {
-            document.getElementById(target).innerHTML = snap.docs.map(doc => `<div class="history-item"><span>${doc.data().name}</span> <span style="font-weight:bold; color:var(--p-green);">${(doc.data().total || doc.data().price).toLocaleString()}</span></div>`).join('');
-        });
-    }
+    function loadHistory(col, target) { db.collection(col).orderBy("timestamp", "desc").limit(10).get().then(snap => { document.getElementById(target).innerHTML = snap.docs.map(doc => `<div class="history-item"><span>${doc.data().name}</span> <span style="font-weight:bold; color:var(--p-green);">${(doc.data().total || doc.data().price).toLocaleString()}</span></div>`).join(''); }); }
+    function loadJobs() { db.collection("jobs").orderBy("timestamp", "desc").limit(20).get().then(snap => { document.getElementById('jobMasterList').innerHTML = snap.docs.map(doc => `<div class="card" onclick="openJobModal('${doc.id}', '${doc.data().name}', ${doc.data().cost}, '${doc.data().status}')"><b>${doc.data().name}</b><br><small>${doc.data().date} | ${doc.data().cost.toLocaleString()}</small><br><span class="status-badge ${doc.data().status === 'Done' ? 'bg-done' : 'bg-pending'}">${doc.data().status}</span></div>`).join(''); }); }
+    function openJobModal(id, name, cost, status) { document.getElementById('edit-j-id').value = id; document.getElementById('edit-j-name').value = name; document.getElementById('edit-j-cost').value = cost; document.getElementById('edit-j-status').value = status; document.getElementById('jobModal').style.display = 'flex'; }
+    function closeJobModal() { document.getElementById('jobModal').style.display = 'none'; }
+    async function updateJob() { await db.collection("jobs").doc(document.getElementById('edit-j-id').value).update({ name: document.getElementById('edit-j-name').value, cost: Number(document.getElementById('edit-j-cost').value), status: document.getElementById('edit-j-status').value }); closeJobModal(); loadJobs(); updateFinance(); }
+    async function deleteJob() { if(confirm("Delete?")) { await db.collection("jobs").doc(document.getElementById('edit-j-id').value).delete(); closeJobModal(); loadJobs(); updateFinance(); } }
 
-    function loadJobs() { db.collection("jobs").orderBy("timestamp", "desc").limit(20).get().then(snap => { document.getElementById('jobMasterList').innerHTML = snap.docs.map(doc => `<div class="card"><b>${doc.data().name}</b><br><small>${doc.data().date} | ${doc.data().cost.toLocaleString()}</small><br><span class="status-badge ${doc.data().status === 'Done' ? 'bg-done' : 'bg-pending'}">${doc.data().status}</span></div>`).join(''); }); }
-    function loadStaff() { db.collection("staff").get().then(snap => { const sorted = snap.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a,b) => (roleOrder[a.role] || 99) - (roleOrder[b.role] || 99)); document.getElementById('staffList').innerHTML = sorted.map(s => `<div class="card"><b>${s.name}</b> (${s.role})</div>`).join(''); }); }
+    function loadStaff() { db.collection("staff").get().then(snap => { const sorted = snap.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a,b) => (roleOrder[a.role] || 99) - (roleOrder[b.role] || 99)); document.getElementById('staffList').innerHTML = sorted.map(s => `<div class="card" onclick="openModal('${s.id}','${s.name}','${s.role}','${s.phone}','${s.rate}')" style="cursor:pointer;"><b>${s.name}</b> (${s.role})<br><small>Rate: ${s.rate.toLocaleString()} | 📞 ${s.phone || '-'}</small></div>`).join(''); }); }
+    function openModal(id, name, role, phone, rate) { document.getElementById('m-id').value = id; document.getElementById('m-name').value = name; document.getElementById('m-role').value = role; document.getElementById('m-phone').value = phone || ''; document.getElementById('m-rate').value = rate || 0; document.getElementById('staffModal').style.display = 'flex'; }
+    function closeModal() { document.getElementById('staffModal').style.display = 'none'; }
+    async function updateStaff() { await db.collection("staff").doc(document.getElementById('m-id').value).update({ name: document.getElementById('m-name').value, role: document.getElementById('m-role').value, phone: document.getElementById('m-phone').value, rate: Number(document.getElementById('m-rate').value) }); closeModal(); loadStaff(); }
+    async function deleteStaff() { if(confirm("Delete Staff?")) { await db.collection("staff").doc(document.getElementById('m-id').value).delete(); closeModal(); loadStaff(); } }
+    async function addStaff() { await db.collection("staff").add({ name: document.getElementById('st-name').value, role: document.getElementById('st-role').value, phone: document.getElementById('st-phone').value, rate: Number(document.getElementById('st-rate').value) }); alert("Added!"); loadStaff(); }
+
     function loadStaffForAttendance() { db.collection("staff").get().then(snap => { const sorted = snap.docs.map(doc => doc.data()).filter(s => s.role !== 'MD').sort((a,b) => (roleOrder[a.role] || 99) - (roleOrder[b.role] || 99)); document.getElementById('attTableContainer').innerHTML = `<table><tr><th>Staff</th><th>Status</th></tr>` + sorted.map(s => `<tr><td>${s.name}</td><td><select class="att-sel" data-name="${s.name}"><option>Present</option><option>Absent</option></select></td></tr>`).join('') + `</table>`; }); }
     async function saveAttendance() { const records = Array.from(document.querySelectorAll('.att-sel')).map(s => ({ name: s.getAttribute('data-name'), status: s.value })); await db.collection("attendance").add({ date: document.getElementById('att-date').value, records, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); updateFinance(); }
     function loadStaffForService() { db.collection("staff").get().then(snap => { const sorted = snap.docs.map(doc => doc.data()).filter(s => s.role !== 'MD').sort((a,b) => (roleOrder[a.role] || 99) - (roleOrder[b.role] || 99)); document.getElementById('staffChecks').innerHTML = sorted.map(s => `<div><input type="checkbox" name="assigned" value="${s.name}"> ${s.name}</div>`).join(''); }); }
-    async function saveJob() { const staff = Array.from(document.querySelectorAll('input[name="assigned"]:checked')).map(c => c.value); await db.collection("jobs").add({ name: document.getElementById('j-name').value, cost: Number(document.getElementById('j-cost').value), status: document.getElementById('j-status').value, appliance: document.getElementById('j-app').value, desc: document.getElementById('j-desc').value, staff, date: document.getElementById('j-date').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); showTab('jobs'); }
+    async function saveJob() { const staff = Array.from(document.querySelectorAll('input[name="assigned"]:checked')).map(c => c.value); await db.collection("jobs").add({ name: document.getElementById('j-name').value, cost: Number(document.getElementById('j-cost').value), status: document.getElementById('j-status').value, appliance: document.getElementById('j-app').value, hp: document.getElementById('j-hp').value, gas: document.getElementById('j-gas').value, desc: document.getElementById('j-desc').value, staff, date: document.getElementById('j-date').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); showTab('jobs'); }
     async function savePur() { await db.collection("purchases").add({ name: document.getElementById('p-name').value, total: Number(document.getElementById('p-total').value), category: document.getElementById('p-cat').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); showTab('purchase'); }
     async function saveSale() { await db.collection("sales").add({ name: document.getElementById('s-name').value, price: Number(document.getElementById('s-total').value), timestamp: firebase.firestore.FieldValue.serverTimestamp() }); showTab('sale'); }
-    function toggleLang() { alert("Master Version Updated!"); }
+    function toggleLang() { alert("Perfect Final Restore!"); }
     window.onload = () => { showTab('home'); };
 </script>
 </body>
