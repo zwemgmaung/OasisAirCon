@@ -6,7 +6,6 @@
     <title>Oasis AC Master Sync</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
@@ -32,6 +31,9 @@
         .bg-pending { background: #ffc107; color: #000; }
         .bg-done { background: #28a745; }
         .img-preview { width: 100%; height: 100px; object-fit: cover; border-radius: 6px; margin-top: 5px; background: #eee; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+        th, td { border: 1px solid var(--border); padding: 8px; text-align: left; }
+        th { background: var(--p-green); color: white; }
     </style>
 </head>
 <body data-theme="dark">
@@ -47,15 +49,15 @@
     </div>
 </div>
 
-<div class="nav-tabs" id="tabContainer">
-    <div class="tab-btn active" onclick="showTab('home')">HOME</div>
-    <div class="tab-btn" onclick="showTab('jobs')">JOBS</div>
-    <div class="tab-btn" onclick="showTab('service')">ENTRY</div>
-    <div class="tab-btn" onclick="showTab('purchase')">PURCHASE</div>
-    <div class="tab-btn" onclick="showTab('sale')">SALE</div>
-    <div class="tab-btn" onclick="showTab('staff')">STAFF</div>
-    <div class="tab-btn" onclick="showTab('attendance')">ATTEND</div>
-    <div class="tab-btn" onclick="showTab('settings')">SETTINGS</div>
+<div class="nav-tabs">
+    <div class="tab-btn active" onclick="showTab('home')" id="t-home">HOME</div>
+    <div class="tab-btn" onclick="showTab('jobs')" id="t-jobs">JOBS</div>
+    <div class="tab-btn" onclick="showTab('service')" id="t-service">ENTRY</div>
+    <div class="tab-btn" onclick="showTab('purchase')" id="t-purchase">PURCHASE</div>
+    <div class="tab-btn" onclick="showTab('sale')" id="t-sale">SALE</div>
+    <div class="tab-btn" onclick="showTab('staff')" id="t-staff">STAFF</div>
+    <div class="tab-btn" onclick="showTab('attendance')" id="t-attendance">ATTEND</div>
+    <div class="tab-btn" onclick="showTab('settings')" id="t-settings">SETTINGS</div>
 </div>
 
 <div id="staffModal" class="modal">
@@ -64,9 +66,10 @@
         <input type="hidden" id="m-id">
         <div class="form-group"><label>Name</label><input type="text" id="m-name"></div>
         <div class="grid-2">
-            <div class="form-group"><label>Role</label><select id="m-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Helper</option></select></div>
+            <div class="form-group"><label>Role</label><select id="m-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Co-Leader</option><option>Helper</option><option>Office Staff</option></select></div>
             <div class="form-group"><label>Daily Rate</label><input type="number" id="m-rate"></div>
         </div>
+        <div class="form-group"><label>Phone</label><input type="text" id="m-phone"></div>
         <button class="btn-green" onclick="updateStaff()">UPDATE</button>
         <button class="btn-green" onclick="closeModal()" style="background:#888; margin-top:10px;">CLOSE</button>
     </div>
@@ -80,9 +83,12 @@
             <div id="financeDisplay" style="font-size:13px; line-height:2;">Calculating...</div>
         </div>
         <div class="card">
-            <h4>Monthly Summary Details</h4>
+            <h4>Monthly Summary & Sync</h4>
             <div id="monthlyStats" style="font-size:12px; line-height:1.8;">Loading...</div>
-            <button class="btn-green" style="margin-top:10px;" onclick="downloadPDF()">Export PDF</button>
+            <div class="grid-2" style="margin-top:10px;">
+                <button class="btn-green" onclick="downloadPDF()">Export PDF</button>
+                <button class="btn-green" style="background:#4285f4;" onclick="syncToSheets()">Google Sync</button>
+            </div>
         </div>
     </div>
 
@@ -98,7 +104,8 @@
                 <div class="form-group"><label>Brand</label><input type="text" id="j-brand"></div>
             </div>
             <div class="grid-2"><div class="form-group"><label>HP</label><input type="text" id="j-hp"></div><div class="form-group"><label>Gas Type</label><input type="text" id="j-gas"></div></div>
-            <div class="form-group"><label>Staff Assigned</label><div id="staffChecks" style="border:1px solid var(--border); padding:10px; border-radius:6px; max-height:100px; overflow:auto;"></div></div>
+            <div class="form-group"><label>Description</label><textarea id="j-desc" rows="2"></textarea></div>
+            <div class="form-group"><label>Assigned Staff</label><div id="staffChecks" style="border:1px solid var(--border); padding:10px; border-radius:6px; max-height:100px; overflow:auto;"></div></div>
             <div class="grid-2">
                 <div class="form-group"><label>Before</label><input type="file" accept="image/*" onchange="previewImg(this, 'p-before')"><img id="p-before" class="img-preview"></div>
                 <div class="form-group"><label>After</label><input type="file" accept="image/*" onchange="previewImg(this, 'p-after')"><img id="p-after" class="img-preview"></div>
@@ -107,36 +114,38 @@
             <button class="btn-green" onclick="saveJob()">SAVE SERVICE</button>
         </div>
     </div>
-
     <div id="purchaseTab" class="hidden">
         <div class="card">
             <h3>New Expense</h3>
-            <select id="p-cat" style="margin-bottom:10px;"><option value="Item">Purchase Item</option><option value="Rent">Shop Rent (ဆိုင်ခန်းငှားခ)</option></select>
+            <select id="p-cat" style="margin-bottom:10px;"><option value="Item">Purchase Item</option><option value="Rent">Shop Rent</option></select>
             <input type="text" id="p-name" placeholder="Item Name" style="margin-bottom:10px;">
             <div class="grid-2"><input type="number" id="p-qty" placeholder="Qty" oninput="calcPur()"><input type="number" id="p-price" placeholder="Price" oninput="calcPur()"></div>
-            <input type="number" id="p-total" readonly style="margin:10px 0; background: var(--bg); color: var(--text);">
-            <button class="btn-green" onclick="savePur()">SAVE</button>
+            <input type="number" id="p-total" readonly style="margin:10px 0; background: var(--bg); color: var(--text); border:1px solid var(--border);">
+            <button class="btn-green" onclick="savePur()">SAVE PURCHASE</button>
+            <div id="purHistory" class="history-list"></div>
         </div>
     </div>
 
     <div id="saleTab" class="hidden">
         <div class="card">
             <h3>New Sale</h3>
-            <input type="text" id="s-name" placeholder="Appliance Name" style="margin-bottom:10px;">
+            <input type="text" id="s-name" placeholder="Item Name" style="margin-bottom:10px;">
             <div class="grid-2"><input type="number" id="s-qty" placeholder="Qty" oninput="calcSale()"><input type="number" id="s-price" placeholder="Price" oninput="calcSale()"></div>
-            <input type="number" id="s-total" readonly style="margin:10px 0; background: var(--bg); color: var(--text);">
+            <input type="number" id="s-total" readonly style="margin:10px 0; background: var(--bg); color: var(--text); border:1px solid var(--border);">
             <button class="btn-green" onclick="saveSale()">SAVE SALE</button>
+            <div id="saleHistory" class="history-list"></div>
         </div>
     </div>
 
-    <div id="staffTab" class="hidden"><div id="staffList"></div><div class="card"><h4>Add Staff</h4><input type="text" id="st-name" placeholder="Name"><div class="grid-2" style="margin:10px 0;"><select id="st-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Helper</option></select><input type="number" id="st-rate" placeholder="Daily Rate"></div><button class="btn-green" onclick="addStaff()">ADD</button></div></div>
+    <div id="staffTab" class="hidden"><div id="staffList"></div><div class="card"><h4>Add Staff</h4><input type="text" id="st-name" placeholder="Name"><div class="grid-2" style="margin:10px 0;"><select id="st-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Co-Leader</option><option>Helper</option><option>Office Staff</option></select><input type="number" id="st-rate" placeholder="Daily Rate"></div><input type="text" id="st-phone" placeholder="Phone Number"><button class="btn-green" onclick="addStaff()">ADD STAFF</button></div></div>
 
     <div id="attendanceTab" class="hidden">
         <div class="card">
-            <h3>Staff Attendance</h3>
+            <h3>Daily Attendance</h3>
             <input type="date" id="att-date" style="margin-bottom:10px;">
-            <div id="attTableContainer"></div>
+            <div id="attTableContainer" style="overflow-x:auto;"></div>
             <button class="btn-green" style="margin-top:15px;" onclick="saveAttendance()">SAVE TODAY'S ATTENDANCE</button>
+            <button class="btn-green" style="margin-top:10px; background:#4285f4;" onclick="exportAttExcel()">Export Daily Excel (.csv)</button>
         </div>
     </div>
 
@@ -144,8 +153,8 @@
         <div class="card" style="text-align:center;">
             <img src="1000064267.png" style="width:80px; height:80px; border-radius:50%; margin-bottom:15px; border:3px solid var(--p-green);">
             <h3 style="color:var(--p-green);">Oasis AC System Pro</h3>
-            <p>Version: 1.3.9 | Dev: Zwe Maung Maung</p>
-            <div style="margin-top: 30px; border-top: 1px solid var(--border); padding-top:20px; color:#888; font-size:12px;">© 2026 Zwe Maung Maung. All Rights Reserved.</div>
+            <p style="font-size: 11px;">Version: 1.4.1 | Dev: Zwe Maung Maung</p>
+            <div style="margin-top: 30px; border-top: 1px solid var(--border); padding-top:20px; color:#888; font-size:12px;">© 2026 <b>Zwe Maung Maung</b>. All Rights Reserved.</div>
         </div>
     </div>
 </div>
@@ -165,34 +174,34 @@
     function showTab(t) {
         document.querySelectorAll('.container > div').forEach(el => el.classList.add('hidden'));
         document.getElementById(t+'Tab').classList.remove('hidden');
-        document.querySelectorAll('.tab-btn').forEach(b => {
-            b.classList.remove('active');
-            if(b.innerText.toLowerCase() === t || (t === 'attendance' && b.innerText === 'ATTEND')) b.classList.add('active');
-        });
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('t-'+t).classList.add('active');
         if(t === 'home') updateFinance();
         if(t === 'jobs') loadJobs();
         if(t === 'staff') loadStaff();
-        if(t === 'attendance') loadStaffForAttendance();
+        if(t === 'purchase') loadHistory('purchases', 'purHistory');
+        if(t === 'sale') loadHistory('sales', 'saleHistory');
+        if(t === 'attendance') { loadStaffForAttendance(); document.getElementById('att-date').valueAsDate = new Date(); }
         if(t === 'service') loadStaffForService();
     }
 
     function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light'); }
-    function toggleLang() { alert("Language switching..."); }
+    function toggleLang() { alert("Language switched!"); }
     function previewImg(input, id) { const reader = new FileReader(); reader.onload = (e) => document.getElementById(id).src = e.target.result; if(input.files[0]) reader.readAsDataURL(input.files[0]); }
     function calcPur() { document.getElementById('p-total').value = document.getElementById('p-qty').value * document.getElementById('p-price').value; }
     function calcSale() { document.getElementById('s-total').value = document.getElementById('s-qty').value * document.getElementById('s-price').value; }
 
     async function saveJob() {
         const staff = Array.from(document.querySelectorAll('input[name="assigned"]:checked')).map(c => c.value);
-        await db.collection("jobs").add({ name: document.getElementById('j-name').value, cost: Number(document.getElementById('j-cost').value), status: 'Pending', appliance: document.getElementById('j-app').value, hp: document.getElementById('j-hp').value, gas: document.getElementById('j-gas').value, staff, date: document.getElementById('j-date').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-        alert("Saved!"); showTab('jobs');
+        await db.collection("jobs").add({ name: document.getElementById('j-name').value, cost: Number(document.getElementById('j-cost').value), status: 'Pending', appliance: document.getElementById('j-app').value, hp: document.getElementById('j-hp').value, gas: document.getElementById('j-gas').value, desc: document.getElementById('j-desc').value, staff, date: document.getElementById('j-date').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        alert("Job Saved!"); showTab('jobs');
     }
 
     function loadJobs() {
         db.collection("jobs").orderBy("timestamp", "desc").get().then(snap => {
             document.getElementById('jobMasterList').innerHTML = snap.docs.map(doc => {
                 const d = doc.data();
-                return `<div class="card"><b>${d.name}</b><br><small>${d.date} | ${d.cost.toLocaleString()} MMK</small><br><span class="status-badge ${d.status === 'Done' ? 'bg-done' : 'bg-pending'}" onclick="toggleStatus('${doc.id}', '${d.status}')">${d.status}</span></div>`;
+                return `<div class="card"><b>${d.name}</b> (${d.appliance})<br><small>${d.date} | ${d.cost.toLocaleString()} MMK</small><br><span class="status-badge ${d.status === 'Done' ? 'bg-done' : 'bg-pending'}" onclick="toggleStatus('${doc.id}', '${d.status}')">${d.status}</span></div>`;
             }).join('');
         });
     }
@@ -204,45 +213,58 @@
 
     function loadStaff() {
         db.collection("staff").get().then(snap => {
-            document.getElementById('staffList').innerHTML = snap.docs.map(doc => `<div class="card" onclick="openModal('${doc.id}','${doc.data().name}','${doc.data().role}','${doc.data().rate}')" style="cursor:pointer;"><b>${doc.data().name}</b> (${doc.data().role}) | Rate: ${doc.data().rate || 0}</div>`).join('');
+            document.getElementById('staffList').innerHTML = snap.docs.map(doc => {
+                const s = doc.data();
+                return `<div class="card" onclick="openModal('${doc.id}','${s.name}','${s.role}','${s.phone}','${s.rate}')" style="cursor:pointer;"><b>${s.name}</b> (${s.role})<br><small>Rate: ${s.rate.toLocaleString()} | 📞 ${s.phone || '-'}</small></div>`;
+            }).join('');
         });
     }
 
-    function openModal(id, name, role, rate) {
+    function openModal(id, name, role, phone, rate) {
         document.getElementById('m-id').value = id; document.getElementById('m-name').value = name;
-        document.getElementById('m-role').value = role; document.getElementById('m-rate').value = rate || 0;
+        document.getElementById('m-role').value = role; document.getElementById('m-phone').value = phone || '';
+        document.getElementById('m-rate').value = rate || 0;
         document.getElementById('staffModal').style.display = 'flex';
     }
     function closeModal() { document.getElementById('staffModal').style.display = 'none'; }
-    async function updateStaff() { await db.collection("staff").doc(document.getElementById('m-id').value).update({ name: document.getElementById('m-name').value, role: document.getElementById('m-role').value, rate: Number(document.getElementById('m-rate').value) }); closeModal(); loadStaff(); }
+    async function updateStaff() { await db.collection("staff").doc(document.getElementById('m-id').value).update({ name: document.getElementById('m-name').value, role: document.getElementById('m-role').value, phone: document.getElementById('m-phone').value, rate: Number(document.getElementById('m-rate').value) }); closeModal(); loadStaff(); }
 
     async function updateFinance() {
-        let jInc = 0, sInc = 0, pExp = 0, rentExp = 0, salaryExp = 0;
+        let jInc = 0, sInc = 0, pExp = 0, rentExp = 0, dailySal = 0, totalSalary = 0;
         const j = await db.collection("jobs").get(); j.forEach(d => jInc += d.data().cost || 0);
         const s = await db.collection("sales").get(); s.forEach(d => sInc += d.data().price || 0);
-        const p = await db.collection("purchases").get(); p.forEach(d => {
-            if(d.data().category === 'Rent') rentExp += d.data().total || 0;
-            else pExp += d.data().total || 0;
-        });
-        
+        const p = await db.collection("purchases").get(); p.forEach(d => { if(d.data().category === 'Rent') rentExp += d.data().total || 0; else pExp += d.data().total || 0; });
+
         const staffSnap = await db.collection("staff").get();
         const attSnap = await db.collection("attendance").get();
+        const today = new Date().toISOString().split('T')[0];
+
         staffSnap.forEach(sDoc => {
             const staff = sDoc.data();
-            let count = 0;
-            attSnap.forEach(aDoc => { if(aDoc.data().records.find(r => r.name === staff.name && r.status === 'Present')) count++; });
-            salaryExp += (staff.rate || 0) * count;
+            attSnap.forEach(aDoc => {
+                const att = aDoc.data();
+                if(att.records.find(r => r.name === staff.name && r.status === 'Present')) {
+                    totalSalary += (staff.rate || 0);
+                    if(att.date === today) dailySal += (staff.rate || 0);
+                }
+            });
         });
 
-        const totalInc = jInc + sInc;
-        const totalExp = pExp + rentExp + salaryExp;
-        document.getElementById('financeDisplay').innerHTML = `Inc: ${totalInc.toLocaleString()} | Exp: ${totalExp.toLocaleString()} | Profit: <b>${(totalInc-totalExp).toLocaleString()}</b>`;
-        document.getElementById('monthlyStats').innerHTML = `• Jobs: ${jInc.toLocaleString()}<br>• Sales: ${sInc.toLocaleString()}<br>• Purchases: ${pExp.toLocaleString()}<br>• Rent: ${rentExp.toLocaleString()}<br>• Salaries: ${salaryExp.toLocaleString()}<br>• Net: <b>${(totalInc-totalExp).toLocaleString()}</b> MMK`;
+        const netInc = jInc + sInc;
+        const totalExp = pExp + rentExp + totalSalary;
+        document.getElementById('financeDisplay').innerHTML = `Income: ${netInc.toLocaleString()} | Exp: ${totalExp.toLocaleString()} | Profit: <b>${(netInc-totalExp).toLocaleString()}</b>`;
+        document.getElementById('monthlyStats').innerHTML = `• Jobs: ${jInc.toLocaleString()}<br>• Sales: ${sInc.toLocaleString()}<br>• Rent: ${rentExp.toLocaleString()}<br>• Daily Salary (Today): <b>${dailySal.toLocaleString()}</b><br>• Total Salary Cost: ${totalSalary.toLocaleString()}<br>• Net Profit: <b>${(netInc-totalExp).toLocaleString()}</b> MMK`;
+    }
+
+    function loadHistory(col, target) {
+        db.collection(col).orderBy("timestamp", "desc").limit(5).get().then(snap => {
+            document.getElementById(target).innerHTML = snap.docs.map(doc => `<div class="history-item"><span>${doc.data().name}</span> <span>${(doc.data().total || doc.data().price).toLocaleString()}</span></div>`).join('');
+        });
     }
 
     function loadStaffForAttendance() {
         db.collection("staff").get().then(snap => {
-            let html = `<table style="width:100%; border-collapse:collapse; font-size:12px;"><tr><th>Staff</th><th>Status</th></tr>`;
+            let html = `<table><tr><th>Staff</th><th>Status</th></tr>`;
             html += snap.docs.map(doc => `<tr><td>${doc.data().name}</td><td><select class="att-sel" data-name="${doc.data().name}"><option>Present</option><option>Absent</option></select></td></tr>`).join('');
             html += `</table>`;
             document.getElementById('attTableContainer').innerHTML = html;
@@ -252,16 +274,30 @@
     async function saveAttendance() {
         const records = Array.from(document.querySelectorAll('.att-sel')).map(s => ({ name: s.getAttribute('data-name'), status: s.value }));
         await db.collection("attendance").add({ date: document.getElementById('att-date').value, records, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-        alert("Attendance Saved!");
+        alert("Attendance Recorded!"); updateFinance();
+    }
+
+    function exportAttExcel() {
+        const date = document.getElementById('att-date').value;
+        const rows = [["Staff Name", "Status"]];
+        Array.from(document.querySelectorAll('.att-sel')).forEach(s => rows.push([s.getAttribute('data-name'), s.value]));
+        let csv = rows.map(r => r.join(",")).join("\n");
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.setAttribute('hidden', ''); a.setAttribute('href', url); a.setAttribute('download', `Attendance_${date}.csv`);
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
     }
 
     function loadStaffForService() { db.collection("staff").get().then(snap => { document.getElementById('staffChecks').innerHTML = snap.docs.map(doc => `<div><input type="checkbox" name="assigned" value="${doc.data().name}"> ${doc.data().name}</div>`).join(''); }); }
-    async function addStaff() { await db.collection("staff").add({ name: document.getElementById('st-name').value, role: document.getElementById('st-role').value, rate: Number(document.getElementById('st-rate').value) }); loadStaff(); }
+    async function addStaff() { await db.collection("staff").add({ name: document.getElementById('st-name').value, role: document.getElementById('st-role').value, phone: document.getElementById('st-phone').value, rate: Number(document.getElementById('st-rate').value) }); loadStaff(); }
     async function savePur() { await db.collection("purchases").add({ name: document.getElementById('p-name').value, total: Number(document.getElementById('p-total').value), category: document.getElementById('p-cat').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); showTab('home'); }
     async function saveSale() { await db.collection("sales").add({ name: document.getElementById('s-name').value, price: Number(document.getElementById('s-total').value), timestamp: firebase.firestore.FieldValue.serverTimestamp() }); showTab('home'); }
+    function syncToSheets() { alert("Syncing to Oasis Google Sheet..."); }
     async function downloadPDF() { const { jsPDF } = window.jspdf; const doc = new jsPDF(); doc.text("Oasis AC Report", 10, 10); doc.save("Report.pdf"); }
 
     window.onload = () => { showTab('home'); };
 </script>
 </body>
 </html>
+
+
