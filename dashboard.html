@@ -26,9 +26,12 @@
         .btn-green { background: var(--p-green); color: white; border: none; padding: 12px; border-radius: 6px; width: 100%; font-weight: bold; cursor: pointer; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .hidden { display: none; }
-        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; color: white; }
+        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; color: white; cursor: pointer; }
         .bg-pending { background: #ffc107; color: #000; }
         .bg-done { background: #28a745; }
+        .filter-bar { display: flex; gap: 5px; margin-bottom: 15px; }
+        .filter-btn { padding: 6px 12px; font-size: 10px; border-radius: 20px; border: 1px solid var(--p-green); background: transparent; color: var(--p-green); cursor: pointer; }
+        .filter-btn.active { background: var(--p-green); color: white; }
         .finance-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 15px; }
         .finance-item { text-align: center; padding: 8px; border-radius: 8px; color: white; font-size: 10px; }
     </style>
@@ -45,9 +48,9 @@
 
 <div class="nav-tabs">
     <div class="tab-btn active" onclick="showTab('home')" id="t-home">HOME</div>
-    <div class="tab-btn" onclick="showTab('service')" id="t-service">SERVICE</div>
+    <div class="tab-btn" onclick="showTab('jobs')" id="t-jobs">JOBS</div>
+    <div class="tab-btn" onclick="showTab('service')" id="t-service">ENTRY</div>
     <div class="tab-btn" onclick="showTab('purchase')" id="t-purchase">PURCHASE</div>
-    <div class="tab-btn" onclick="showTab('sale')" id="t-sale">SALE</div>
     <div class="tab-btn" onclick="showTab('staff')" id="t-staff">STAFF</div>
     <div class="tab-btn" onclick="showTab('settings')" id="t-settings">SETTINGS</div>
 </div>
@@ -64,10 +67,15 @@
             </div>
             <button class="btn-green" style="margin-top:15px; font-size:11px; padding:10px;" onclick="downloadPDF()">Download PDF Report</button>
         </div>
-        <div class="card">
-            <h4>Recent Service Jobs</h4>
-            <div id="jobListDisplay" style="font-size: 12px;">Loading jobs...</div>
+    </div>
+
+    <div id="jobsTab" class="hidden">
+        <div class="filter-bar">
+            <button class="filter-btn active" onclick="filterJobs('All', this)">All</button>
+            <button class="filter-btn" onclick="filterJobs('Pending', this)">Pending</button>
+            <button class="filter-btn" onclick="filterJobs('Done', this)">Done</button>
         </div>
+        <div id="jobMasterList">Loading Jobs...</div>
     </div>
 
     <div id="serviceTab" class="hidden">
@@ -75,12 +83,10 @@
             <h3>New Service Entry</h3>
             <div class="grid-2"><div class="form-group"><label>Customer Name</label><input type="text" id="j-name"></div><div class="form-group"><label>Phone</label><input type="text" id="j-phone"></div></div>
             <div class="form-group"><label>Address</label><textarea id="j-addr" rows="2"></textarea></div>
-            <div class="grid-2"><div class="form-group"><label>Appliance</label><select id="j-app"><option>Air-Con</option><option>Refrigerator</option><option>Washing Machine</option></select></div><div class="form-group"><label>Brand</label><input type="text" id="j-brand"></div></div>
             <div class="grid-2">
                 <div class="form-group"><label>Status</label><select id="j-status"><option value="Pending">Pending</option><option value="Done">Done</option></select></div>
-                <div class="form-group"><label>HP/Type</label><input type="text" id="j-hp"></div>
+                <div class="form-group"><label>Appliance</label><input type="text" id="j-app" placeholder="e.g. Air-Con"></div>
             </div>
-            <div class="form-group"><label>Description</label><textarea id="j-issue" rows="2"></textarea></div>
             <div class="form-group"><label>Assigned Staff</label><div id="staffChecks" style="border:1px solid var(--border); padding:10px; border-radius:6px; max-height:100px; overflow:auto;">Loading...</div></div>
             <div class="grid-2"><div class="form-group"><label>Date</label><input type="date" id="j-date"></div><div class="form-group"><label>Cost (MMK)</label><input type="number" id="j-cost"></div></div>
             <button class="btn-green" onclick="saveJob()">SAVE SERVICE</button>
@@ -97,27 +103,17 @@
         </div>
     </div>
 
-    <div id="saleTab" class="hidden">
-        <div class="card">
-            <h3>New Sale</h3>
-            <div class="form-group"><label>Appliance Type</label><select id="s-app"><option>Air-Con</option><option>Refrigerator</option><option>Washing Machine</option></select></div>
-            <div class="grid-2"><div class="form-group"><label>Brand Name</label><input type="text" id="s-brand"></div><div class="form-group"><label>Quantity</label><input type="number" id="s-qty"></div></div>
-            <div class="form-group"><label>Sale Price (MMK)</label><input type="number" id="s-price"></div>
-            <button class="btn-green" onclick="saveSale()">SAVE SALE</button>
-        </div>
-    </div>
-
     <div id="staffTab" class="hidden">
         <div class="card">
             <h3>Add New Staff</h3>
             <div class="form-group"><label>Name</label><input type="text" id="st-name"></div>
             <div class="grid-2">
-                <div class="form-group"><label>Role</label><select id="st-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Helper</option><option>Technician</option></select></div>
+                <div class="form-group"><label>Role</label><select id="st-role"><option>Leader</option><option>Technician</option><option>Helper</option></select></div>
                 <div class="form-group"><label>Phone</label><input type="text" id="st-phone"></div>
             </div>
             <button class="btn-green" onclick="addStaff()">ADD STAFF</button>
         </div>
-        <div class="card"><h4>Staff Directory</h4><div id="staffList"></div></div>
+        <div id="staffList"></div>
     </div>
 
     <div id="settingsTab" class="hidden">
@@ -125,12 +121,11 @@
             <h3>App Information</h3>
             <div style="text-align: left; background: var(--bg); padding:15px; border-radius:8px; border: 1px solid var(--border); font-size:14px;">
                 <p><strong>App:</strong> Oasis AC System</p>
-                <p><strong>Version:</strong> 1.1.9 (Master Sync)</p>
+                <p><strong>Version:</strong> 1.2.0 (Master Sync)</p>
                 <p><strong>Dev by:</strong> Zwe Maung Maung</p>
             </div>
             <div style="margin-top: 35px; padding: 20px; border-top: 1px solid var(--border); color: #888; font-size: 13px; text-align: center;">
-                © 2026 <b>Zwe Maung Maung</b>.<br>
-                All Rights Reserved.
+                © 2026 <b>Zwe Maung Maung</b>.<br>All Rights Reserved.
             </div>
         </div>
     </div>
@@ -151,20 +146,20 @@
     db.enablePersistence().catch(() => {});
 
     function showTab(t) {
-        ['home','service','purchase','sale','staff','settings'].forEach(id => {
+        ['home','jobs','service','purchase','staff','settings'].forEach(id => {
             const el = document.getElementById(id+'Tab');
             if(el) el.classList.add('hidden');
         });
         document.getElementById(t+'Tab').classList.remove('hidden');
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('t-'+t).classList.add('active');
+        if(t === 'jobs') filterJobs('All');
         if(t === 'staff') loadStaff();
         if(t === 'service') loadStaffForService();
-        if(t === 'home') { updateFinance(); loadRecentJobs(); }
+        if(t === 'home') updateFinance();
     }
 
     function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light'); }
-    function calcPur() { const q = document.getElementById('p-qty').value; const p = document.getElementById('p-price').value; document.getElementById('p-total').value = q * p; }
 
     async function saveJob() {
         const staff = Array.from(document.querySelectorAll('input[name="assigned"]:checked')).map(c => c.value);
@@ -175,35 +170,51 @@
             staff, date: document.getElementById('j-date').value,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
-        alert("Saved!"); showTab('home');
+        alert("Saved!"); showTab('jobs');
+    }
+
+    function filterJobs(status, btn) {
+        if(btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+        let query = db.collection("jobs").orderBy("date", "desc");
+        if(status !== 'All') query = query.where("status", "==", status);
+        
+        query.get().then(snap => {
+            document.getElementById('jobMasterList').innerHTML = snap.docs.map(doc => {
+                const d = doc.data();
+                const badgeClass = d.status === 'Done' ? 'bg-done' : 'bg-pending';
+                return `<div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div onclick="window.location.href='tel:${d.phone || ''}'">
+                        <b>${d.name}</b><br><small>${d.date} | ${d.cost.toLocaleString()} MMK</small>
+                    </div>
+                    <span class="status-badge ${badgeClass}" onclick="toggleStatus('${doc.id}', '${d.status}')">${d.status}</span>
+                </div>`;
+            }).join('');
+        });
+    }
+
+    async function toggleStatus(id, current) {
+        if(current === 'Done') return; // Done ပြီးသားကို ပြန်မပြင်တော့ပါဘူး
+        if(confirm("အလုပ်ပြီးစီးကြောင်း (Done) သို့ ပြောင်းမလား?")) {
+            await db.collection("jobs").doc(id).update({ status: 'Done' });
+            filterJobs('All');
+        }
     }
 
     async function updateFinance() {
         let inc = 0, exp = 0;
         const j = await db.collection("jobs").get(); j.forEach(d => inc += d.data().cost || 0);
-        const s = await db.collection("sales").get(); s.forEach(d => inc += d.data().price || 0);
         const p = await db.collection("purchases").get(); p.forEach(d => exp += d.data().total || 0);
         document.getElementById('totalIncome').innerText = inc.toLocaleString();
         document.getElementById('totalExpense').innerText = exp.toLocaleString();
         document.getElementById('totalProfit').innerText = (inc - exp).toLocaleString();
     }
 
-    function loadRecentJobs() {
-        db.collection("jobs").orderBy("timestamp", "desc").limit(5).get().then(snap => {
-            document.getElementById('jobListDisplay').innerHTML = snap.docs.map(doc => {
-                const d = doc.data();
-                const badge = d.status === 'Done' ? 'bg-done' : 'bg-pending';
-                return `<div style="padding:10px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
-                    <div><b>${d.name}</b><br><small>${d.date}</small></div>
-                    <span class="status-badge ${badge}">${d.status}</span>
-                </div>`;
-            }).join('');
-        });
-    }
-
     function loadStaff() {
         db.collection("staff").get().then(snap => {
-            document.getElementById('staffList').innerHTML = snap.docs.map(doc => `<div>${doc.data().name} (${doc.data().role})</div>`).join('');
+            document.getElementById('staffList').innerHTML = snap.docs.map(doc => `<div class="card">${doc.data().name} (${doc.data().role})</div>`).join('');
         });
     }
 
@@ -214,20 +225,11 @@
     }
 
     async function addStaff() {
-        await db.collection("staff").add({ name: document.getElementById('st-name').value, role: document.getElementById('st-role').value, phone: document.getElementById('st-phone').value, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        await db.collection("staff").add({ name: document.getElementById('st-name').value, role: document.getElementById('st-role').value, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
         alert("Added!"); loadStaff();
     }
 
-    async function downloadPDF() {
-        const { jsPDF } = window.jspdf; const doc = new jsPDF();
-        doc.text("Service Report", 10, 10);
-        const snap = await db.collection("jobs").get();
-        const rows = snap.docs.map(d => [d.data().date, d.data().name, d.data().status, d.data().cost]);
-        doc.autoTable({ head: [['Date', 'Customer', 'Status', 'Cost']], body: rows });
-        doc.save("Report.pdf");
-    }
-
-    window.onload = () => { updateFinance(); loadRecentJobs(); };
+    window.onload = () => { updateFinance(); };
 </script>
 </body>
 </html>
