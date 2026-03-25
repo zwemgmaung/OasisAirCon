@@ -26,10 +26,13 @@
         .btn-green { background: var(--p-green); color: white; border: none; padding: 12px; border-radius: 6px; width: 100%; font-weight: bold; cursor: pointer; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .hidden { display: none; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
+        .modal-content { background: var(--card); padding: 20px; border-radius: 12px; width: 100%; max-width: 350px; position: relative; }
+        .close-btn { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; color: #888; }
         .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; color: white; cursor: pointer; }
         .bg-pending { background: #ffc107; color: #000; }
         .bg-done { background: #28a745; }
-        .img-preview { width: 100%; height: 100px; object-fit: cover; border-radius: 6px; margin-top: 5px; background: #eee; border: 1px solid var(--border); }
+        .img-preview { width: 100%; height: 100px; object-fit: cover; border-radius: 6px; margin-top: 5px; background: #eee; }
         .finance-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 15px; }
         .finance-item { text-align: center; padding: 8px; border-radius: 8px; color: white; font-size: 10px; }
     </style>
@@ -55,6 +58,22 @@
     <div class="tab-btn" onclick="showTab('settings')" id="t-settings">SETTINGS</div>
 </div>
 
+<div id="staffModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <h3 id="m-title" style="color:var(--p-green); margin-top:0;">Edit Staff</h3>
+        <input type="hidden" id="m-id">
+        <div class="form-group"><label>Name</label><input type="text" id="m-name"></div>
+        <div class="grid-2">
+            <div class="form-group"><label>Role</label><select id="m-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Co-Leader</option><option>Helper</option><option>Office Staff</option></select></div>
+            <div class="form-group"><label>Phone</label><input type="text" id="m-phone"></div>
+        </div>
+        <div class="form-group"><label>Address</label><input type="text" id="m-addr"></div>
+        <div style="display:flex; gap:10px;"><button class="btn-green" onclick="updateStaff()" style="flex:1;">UPDATE</button><button class="btn-green" id="m-call-btn" style="background:#007bff; flex:none; padding:10px;">CALL</button></div>
+        <button class="btn-green" onclick="deleteStaff()" style="background:#dc3545; margin-top:10px; font-size:11px;">DELETE STAFF</button>
+    </div>
+</div>
+
 <div class="container">
     <div id="homeTab">
         <div class="card" style="text-align: center;">
@@ -74,37 +93,21 @@
         </div>
     </div>
 
-    <div id="jobsTab" class="hidden">
-        <div id="jobMasterList">Loading Jobs...</div>
-    </div>
+    <div id="jobsTab" class="hidden"><div id="jobMasterList">Loading Jobs...</div></div>
 
     <div id="serviceTab" class="hidden">
         <div class="card">
             <h3>New Service Entry</h3>
             <div class="grid-2"><div class="form-group"><label>Customer Name</label><input type="text" id="j-name"></div><div class="form-group"><label>Phone</label><input type="text" id="j-phone"></div></div>
             <div class="form-group"><label>Address</label><textarea id="j-addr" rows="2"></textarea></div>
-            <div class="grid-2">
-                <div class="form-group"><label>Appliance</label><select id="j-app"><option>Air-Con</option><option>Refrigerator</option><option>Washing Machine</option></select></div>
-                <div class="form-group"><label>Brand</label><input type="text" id="j-brand"></div>
-            </div>
-            <div class="grid-2">
-                <div class="form-group"><label>HP</label><input type="text" id="j-hp"></div>
-                <div class="form-group"><label>Gas Type</label><input type="text" id="j-gas"></div>
-            </div>
-            <div class="grid-2">
-                <div class="form-group"><label>Type</label><select id="j-type"><option>Inverter</option><option>Non-Inverter</option></select></div>
-                <div class="form-group"><label>Model</label><select id="j-model"><option>Split</option><option>Ceiling Cassette</option><option>Floor Stand</option><option>Portable</option></select></div>
-            </div>
+            <div class="grid-2"><div class="form-group"><label>Appliance</label><select id="j-app"><option>Air-Con</option><option>Refrigerator</option><option>Washing Machine</option></select></div><div class="form-group"><label>Brand</label><input type="text" id="j-brand"></div></div>
+            <div class="grid-2"><div class="form-group"><label>HP</label><input type="text" id="j-hp"></div><div class="form-group"><label>Gas Type</label><input type="text" id="j-gas"></div></div>
+            <div class="grid-2"><div class="form-group"><label>Type</label><select id="j-type"><option>Inverter</option><option>Non-Inverter</option></select></div><div class="form-group"><label>Model</label><select id="j-model"><option>Split</option><option>Ceiling Cassette</option><option>Floor Stand</option><option>Portable</option></select></div></div>
             <div class="form-group"><label>Description</label><textarea id="j-issue" rows="2"></textarea></div>
             <div class="form-group"><label>Assigned Staff</label><div id="staffChecks" style="border:1px solid var(--border); padding:10px; border-radius:6px; max-height:100px; overflow:auto;">Loading...</div></div>
-            
-            <div class="grid-2">
-                <div class="form-group"><label>Before Photo</label><input type="file" accept="image/*" id="img-before" onchange="previewImg(this, 'p-before')"><img id="p-before" class="img-preview"></div>
-                <div class="form-group"><label>After Photo</label><input type="file" accept="image/*" id="img-after" onchange="previewImg(this, 'p-after')"><img id="p-after" class="img-preview"></div>
-            </div>
-
+            <div class="grid-2"><div class="form-group"><label>Before Photo</label><input type="file" accept="image/*" id="img-before" onchange="previewImg(this, 'p-before')"><img id="p-before" class="img-preview"></div><div class="form-group"><label>After Photo</label><input type="file" accept="image/*" id="img-after" onchange="previewImg(this, 'p-after')"><img id="p-after" class="img-preview"></div></div>
             <div class="grid-2"><div class="form-group"><label>Date</label><input type="date" id="j-date"></div><div class="form-group"><label>Cost (MMK)</label><input type="number" id="j-cost"></div></div>
-            <div class="form-group"><label>Initial Status</label><select id="j-status"><option value="Pending">Pending</option><option value="Done">Done</option></select></div>
+            <div class="form-group"><label>Status</label><select id="j-status"><option value="Pending">Pending</option><option value="Done">Done</option></select></div>
             <button class="btn-green" onclick="saveJob()">SAVE SERVICE</button>
         </div>
     </div>
@@ -118,18 +121,10 @@
         </div>
     </div>
 
-    <div id="purchaseTab" class="hidden">
-        <div class="card"><h3>New Purchase</h3><div class="form-group"><label>Item Name</label><input type="text" id="p-name"></div><div class="grid-2"><div class="form-group"><label>Qty</label><input type="number" id="p-qty" oninput="calcPur()"></div><div class="form-group"><label>Price</label><input type="number" id="p-price" oninput="calcPur()"></div></div><div class="form-group"><label>Total Cost</label><input type="number" id="p-total" readonly></div><button class="btn-green" onclick="savePur()">SAVE PURCHASE</button></div>
-    </div>
-    <div id="saleTab" class="hidden">
-        <div class="card"><h3>New Sale</h3><div class="form-group"><label>Item Name</label><input type="text" id="s-name"></div><div class="grid-2"><div class="form-group"><label>Qty</label><input type="number" id="s-qty" oninput="calcSale()"></div><div class="form-group"><label>Unit Price</label><input type="number" id="s-price" oninput="calcSale()"></div></div><div class="form-group"><label>Total Sale Price</label><input type="number" id="s-total" readonly></div><button class="btn-green" onclick="saveSale()">SAVE SALE</button></div>
-    </div>
-    <div id="staffTab" class="hidden">
-        <div class="card"><h3>Add Staff</h3><div class="form-group"><label>Name</label><input type="text" id="st-name"></div><div class="grid-2"><div class="form-group"><label>Role</label><select id="st-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Co-Leader</option><option>Helper</option><option>Office Staff</option></select></div><div class="form-group"><label>Phone</label><input type="text" id="st-phone"></div></div><div class="form-group"><label>Address</label><input type="text" id="st-addr"></div><button class="btn-green" onclick="addStaff()">ADD STAFF</button></div><div id="staffList"></div>
-    </div>
-    <div id="settingsTab" class="hidden">
-        <div class="card" style="text-align:center;"><h3>App Information</h3><p><strong>Version:</strong> 1.2.5 (Pro Master)</p><p><strong>Dev by:</strong> Zwe Maung Maung</p><div style="margin-top: 35px; color: #888; font-size: 13px; text-align: center;">© 2026 <b>Zwe Maung Maung</b>.<br>All Rights Reserved.</div></div>
-    </div>
+    <div id="purchaseTab" class="hidden"><div class="card"><h3>New Purchase</h3><div class="form-group"><label>Item Name</label><input type="text" id="p-name"></div><div class="grid-2"><div class="form-group"><label>Qty</label><input type="number" id="p-qty" oninput="calcPur()"></div><div class="form-group"><label>Price</label><input type="number" id="p-price" oninput="calcPur()"></div></div><div class="form-group"><label>Total Cost</label><input type="number" id="p-total" readonly></div><button class="btn-green" onclick="savePur()">SAVE PURCHASE</button></div></div>
+    <div id="saleTab" class="hidden"><div class="card"><h3>New Sale</h3><div class="form-group"><label>Item Name</label><input type="text" id="s-name"></div><div class="grid-2"><div class="form-group"><label>Qty</label><input type="number" id="s-qty" oninput="calcSale()"></div><div class="form-group"><label>Unit Price</label><input type="number" id="s-price" oninput="calcSale()"></div></div><div class="form-group"><label>Total Price</label><input type="number" id="s-total" readonly></div><button class="btn-green" onclick="saveSale()">SAVE SALE</button></div></div>
+    <div id="staffTab" class="hidden"><div class="card"><h3>Add Staff</h3><div class="form-group"><label>Name</label><input type="text" id="st-name"></div><div class="grid-2"><div class="form-group"><label>Role</label><select id="st-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Co-Leader</option><option>Helper</option><option>Office Staff</option></select></div><div class="form-group"><label>Phone</label><input type="text" id="st-phone"></div></div><div class="form-group"><label>Address</label><input type="text" id="st-addr"></div><button class="btn-green" onclick="addStaff()">ADD STAFF</button></div><div id="staffList"></div></div>
+    <div id="settingsTab" class="hidden"><div class="card" style="text-align:center;"><h3>App Information</h3><p>Version: 1.2.6 | Dev by: Zwe Maung Maung</p><p>© 2026 Zwe Maung Maung. All Rights Reserved.</p></div></div>
 </div>
 
 <script>
@@ -159,63 +154,48 @@
         if(t === 'service') loadStaffForService();
     }
 
-    function previewImg(input, id) {
-        const reader = new FileReader();
-        reader.onload = (e) => document.getElementById(id).src = e.target.result;
-        if(input.files[0]) reader.readAsDataURL(input.files[0]);
-    }
-
+    function previewImg(input, id) { const reader = new FileReader(); reader.onload = (e) => document.getElementById(id).src = e.target.result; if(input.files[0]) reader.readAsDataURL(input.files[0]); }
     function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light'); }
     function calcPur() { const q = document.getElementById('p-qty').value; const p = document.getElementById('p-price').value; document.getElementById('p-total').value = q * p; }
     function calcSale() { const q = document.getElementById('s-qty').value; const p = document.getElementById('s-price').value; document.getElementById('s-total').value = q * p; }
 
     async function saveJob() {
         const staff = Array.from(document.querySelectorAll('input[name="assigned"]:checked')).map(c => c.value);
-        await db.collection("jobs").add({
-            name: document.getElementById('j-name').value, cost: Number(document.getElementById('j-cost').value),
-            status: document.getElementById('j-status').value, appliance: document.getElementById('j-app').value,
-            hp: document.getElementById('j-hp').value, gas: document.getElementById('j-gas').value,
-            model: document.getElementById('j-model').value, staff, date: document.getElementById('j-date').value,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
+        await db.collection("jobs").add({ name: document.getElementById('j-name').value, cost: Number(document.getElementById('j-cost').value), status: document.getElementById('j-status').value, appliance: document.getElementById('j-app').value, hp: document.getElementById('j-hp').value, gas: document.getElementById('j-gas').value, model: document.getElementById('j-model').value, staff, date: document.getElementById('j-date').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
         alert("Job Saved!"); showTab('jobs');
     }
 
-    function loadStaffForAttendance() {
+    function loadStaff() {
         db.collection("staff").get().then(snap => {
-            document.getElementById('attList').innerHTML = snap.docs.map(doc => `
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid var(--border);">
-                    <b>${doc.data().name}</b>
-                    <select name="att-status" data-name="${doc.data().name}">
-                        <option value="Present">Present</option>
-                        <option value="Absent">Absent</option>
-                        <option value="Leave">Leave</option>
-                    </select>
-                </div>
-            `).join('');
+            document.getElementById('staffList').innerHTML = snap.docs.map(doc => {
+                const s = doc.data();
+                return `<div class="card" style="padding:15px; display:flex; justify-content:space-between; align-items:center;">
+                    <div onclick="openModal('${doc.id}','${s.name}','${s.role}','${s.phone}','${s.addr}')">
+                        <b style="color:var(--p-green); cursor:pointer;">${s.name}</b><br><small>${s.role} | 📞 ${s.phone || '-'}</small>
+                    </div>
+                </div>`;
+            }).join('');
         });
     }
 
-    async function saveAttendance() {
-        const date = document.getElementById('att-date').value;
-        const records = Array.from(document.querySelectorAll('select[name="att-status"]')).map(s => ({
-            name: s.getAttribute('data-name'),
-            status: s.value
-        }));
-        await db.collection("attendance").add({ date, records, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-        alert("Attendance Recorded!"); showTab('home');
+    function openModal(id, name, role, phone, addr) {
+        document.getElementById('m-id').value = id;
+        document.getElementById('m-name').value = name;
+        document.getElementById('m-role').value = role;
+        document.getElementById('m-phone').value = phone || '';
+        document.getElementById('m-addr').value = addr || '';
+        document.getElementById('m-call-btn').onclick = () => window.location.href = "tel:" + phone;
+        document.getElementById('staffModal').style.display = 'flex';
     }
+    function closeModal() { document.getElementById('staffModal').style.display = 'none'; }
 
-    async function updateFinance() {
-        let inc = 0, exp = 0, jobCount = 0;
-        const j = await db.collection("jobs").get(); j.forEach(d => { inc += d.data().cost || 0; jobCount++; });
-        const s = await db.collection("sales").get(); s.forEach(d => inc += d.data().price || 0);
-        const p = await db.collection("purchases").get(); p.forEach(d => exp += d.data().total || 0);
-        document.getElementById('totalIncome').innerText = inc.toLocaleString();
-        document.getElementById('totalExpense').innerText = exp.toLocaleString();
-        document.getElementById('totalProfit').innerText = (inc - exp).toLocaleString();
-        document.getElementById('monthlyStats').innerHTML = `<b>Report Summary:</b><br>Jobs: ${jobCount} | Profit: ${(inc - exp).toLocaleString()} MMK`;
+    async function updateStaff() {
+        await db.collection("staff").doc(document.getElementById('m-id').value).update({ name: document.getElementById('m-name').value, role: document.getElementById('m-role').value, phone: document.getElementById('m-phone').value, addr: document.getElementById('m-addr').value });
+        alert("Updated!"); closeModal(); loadStaff();
     }
+    async function deleteStaff() { if(confirm("Delete staff?")) { await db.collection("staff").doc(document.getElementById('m-id').value).delete(); closeModal(); loadStaff(); } }
+
+    async function addStaff() { await db.collection("staff").add({ name: document.getElementById('st-name').value, role: document.getElementById('st-role').value, phone: document.getElementById('st-phone').value, addr: document.getElementById('st-addr').value }); alert("Added!"); loadStaff(); }
 
     function loadJobs() {
         db.collection("jobs").orderBy("timestamp", "desc").get().then(snap => {
@@ -227,40 +207,19 @@
         });
     }
 
-    function loadStaff() {
-        db.collection("staff").get().then(snap => {
-            document.getElementById('staffList').innerHTML = snap.docs.map(doc => `<div class="card"><b>${doc.data().name}</b> (${doc.data().role})</div>`).join('');
-        });
+    async function updateFinance() {
+        let inc = 0, exp = 0, jobCount = 0;
+        const j = await db.collection("jobs").get(); j.forEach(d => { inc += d.data().cost || 0; jobCount++; });
+        const s = await db.collection("sales").get(); s.forEach(d => inc += d.data().price || 0);
+        const p = await db.collection("purchases").get(); p.forEach(d => exp += d.data().total || 0);
+        document.getElementById('totalIncome').innerText = inc.toLocaleString();
+        document.getElementById('totalExpense').innerText = exp.toLocaleString();
+        document.getElementById('totalProfit').innerText = (inc - exp).toLocaleString();
+        document.getElementById('monthlyStats').innerHTML = `Jobs: ${jobCount} | Profit: ${(inc - exp).toLocaleString()} MMK`;
     }
 
-    function loadStaffForService() {
-        db.collection("staff").get().then(snap => {
-            document.getElementById('staffChecks').innerHTML = snap.docs.map(doc => `<div><input type="checkbox" name="assigned" value="${doc.data().name}"> ${doc.data().name}</div>`).join('');
-        });
-    }
-
-    async function addStaff() {
-        await db.collection("staff").add({ name: document.getElementById('st-name').value, role: document.getElementById('st-role').value, phone: document.getElementById('st-phone').value, addr: document.getElementById('st-addr').value });
-        alert("Added!"); loadStaff();
-    }
-
-    async function syncToGoogleSheets() {
-        const snap = await db.collection("jobs").get();
-        const data = snap.docs.map(doc => doc.data());
-        console.log("Syncing to Sheets...", data);
-        alert("Data extracted for Sync! ကိုကို့ရဲ့ Google Apps Script URL နဲ့ ချိတ်ဆက်ဖို့ အဆင်သင့်ပါပဲ။");
-    }
-
-    async function downloadPDF() {
-        const { jsPDF } = window.jspdf; const doc = new jsPDF();
-        doc.text("Monthly Report", 10, 10);
-        const j = await db.collection("jobs").get();
-        const rows = j.docs.map(d => [d.data().date, d.data().name, d.data().cost]);
-        doc.autoTable({ head: [['Date', 'Customer', 'Income']], body: rows });
-        doc.save("Report.pdf");
-    }
-
-    window.onload = () => { updateFinance(); };
-</script>
-</body>
-</html>
+    function loadStaffForAttendance() { db.collection("staff").get().then(snap => { document.getElementById('attList').innerHTML = snap.docs.map(doc => `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid var(--border);"><b>${doc.data().name}</b><select name="att-status" data-name="${doc.data().name}"><option value="Present">Present</option><option value="Absent">Absent</option><option value="Leave">Leave</option></select></div>`).join(''); }); }
+    async function saveAttendance() { const date = document.getElementById('att-date').value; const records = Array.from(document.querySelectorAll('select[name="att-status"]')).map(s => ({ name: s.getAttribute('data-name'), status: s.value })); await db.collection("attendance").add({ date, records, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Recorded!"); showTab('home'); }
+    function loadStaffForService() { db.collection("staff").get().then(snap => { document.getElementById('staffChecks').innerHTML = snap.docs.map(doc => `<div><input type="checkbox" name="assigned" value="${doc.data().name}"> ${doc.data().name}</div>`).join(''); }); }
+    async function savePur() { await db.collection("purchases").add({ name: document.getElementById('p-name').value, total: Number(document.getElementById('p-total').value), timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); showTab('home'); }
+    async function saveSale() { await db.collection("sales").add({ name: document.getElementById('s-name').value, price: Number(document.getElementById('s-total').value), timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); 
