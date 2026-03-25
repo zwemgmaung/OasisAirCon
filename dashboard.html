@@ -29,6 +29,7 @@
         .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; color: white; cursor: pointer; }
         .bg-pending { background: #ffc107; color: #000; }
         .bg-done { background: #28a745; }
+        .img-preview { width: 100%; height: 100px; object-fit: cover; border-radius: 6px; margin-top: 5px; background: #eee; border: 1px solid var(--border); }
         .finance-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 15px; }
         .finance-item { text-align: center; padding: 8px; border-radius: 8px; color: white; font-size: 10px; }
     </style>
@@ -63,7 +64,11 @@
                 <div class="finance-item" style="background:#dc3545;">Expense<br><span id="totalExpense">0</span></div>
                 <div class="finance-item" style="background:#007bff;">Profit<br><span id="totalProfit">0</span></div>
             </div>
-            <button class="btn-green" style="margin-top:15px; font-size:11px; padding:10px;" onclick="downloadPDF()">Download PDF Report</button>
+        </div>
+        <div class="card">
+            <h4>Monthly Report (လချုပ်စာရင်း)</h4>
+            <div id="monthlyStats" style="font-size:13px; line-height:1.6;">Calculating Report...</div>
+            <button class="btn-green" style="margin-top:10px; font-size:11px; padding:10px;" onclick="downloadPDF()">Download PDF Report</button>
         </div>
     </div>
 
@@ -90,6 +95,12 @@
             </div>
             <div class="form-group"><label>Description</label><textarea id="j-issue" rows="2"></textarea></div>
             <div class="form-group"><label>Assigned Staff</label><div id="staffChecks" style="border:1px solid var(--border); padding:10px; border-radius:6px; max-height:100px; overflow:auto;">Loading...</div></div>
+            
+            <div class="grid-2">
+                <div class="form-group"><label>Before Photo</label><input type="file" accept="image/*" id="img-before" onchange="previewImg(this, 'p-before')"><img id="p-before" class="img-preview"></div>
+                <div class="form-group"><label>After Photo</label><input type="file" accept="image/*" id="img-after" onchange="previewImg(this, 'p-after')"><img id="p-after" class="img-preview"></div>
+            </div>
+
             <div class="grid-2"><div class="form-group"><label>Date</label><input type="date" id="j-date"></div><div class="form-group"><label>Cost (MMK)</label><input type="number" id="j-cost"></div></div>
             <div class="form-group"><label>Initial Status</label><select id="j-status"><option value="Pending">Pending</option><option value="Done">Done</option></select></div>
             <button class="btn-green" onclick="saveJob()">SAVE SERVICE</button>
@@ -133,7 +144,7 @@
     <div id="settingsTab" class="hidden">
         <div class="card" style="text-align:center;">
             <h3>App Information</h3>
-            <p><strong>Version:</strong> 1.2.3 (Master Sync)</p>
+            <p><strong>Version:</strong> 1.2.4 (Everything Master)</p>
             <p><strong>Dev by:</strong> Zwe Maung Maung</p>
             <div style="margin-top: 35px; color: #888; font-size: 13px; text-align: center;">© 2026 <b>Zwe Maung Maung</b>.<br>All Rights Reserved.</div>
         </div>
@@ -166,6 +177,12 @@
         if(t === 'service') loadStaffForService();
     }
 
+    function previewImg(input, id) {
+        const reader = new FileReader();
+        reader.onload = (e) => document.getElementById(id).src = e.target.result;
+        if(input.files[0]) reader.readAsDataURL(input.files[0]);
+    }
+
     function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light'); }
     function calcPur() { const q = document.getElementById('p-qty').value; const p = document.getElementById('p-price').value; document.getElementById('p-total').value = q * p; }
     function calcSale() { const q = document.getElementById('s-qty').value; const p = document.getElementById('s-price').value; document.getElementById('s-total').value = q * p; }
@@ -191,13 +208,22 @@
     }
 
     async function updateFinance() {
-        let inc = 0, exp = 0;
-        const j = await db.collection("jobs").get(); j.forEach(d => inc += d.data().cost || 0);
+        let inc = 0, exp = 0, jobCount = 0;
+        const j = await db.collection("jobs").get(); j.forEach(d => { inc += d.data().cost || 0; jobCount++; });
         const s = await db.collection("sales").get(); s.forEach(d => inc += d.data().price || 0);
         const p = await db.collection("purchases").get(); p.forEach(d => exp += d.data().total || 0);
         document.getElementById('totalIncome').innerText = inc.toLocaleString();
         document.getElementById('totalExpense').innerText = exp.toLocaleString();
         document.getElementById('totalProfit').innerText = (inc - exp).toLocaleString();
+        
+        document.getElementById('monthlyStats').innerHTML = `
+            <b>ယခုလအတွက် အနှစ်ချုပ်:</b><br>
+            • အလုပ်စုစုပေါင်း: ${jobCount} ခု<br>
+            • အရောင်းစုစုပေါင်း: ${s.size} ခု<br>
+            • စုစုပေါင်းဝင်ငွေ: ${inc.toLocaleString()} MMK<br>
+            • စုစုပေါင်းထွက်ငွေ: ${exp.toLocaleString()} MMK<br>
+            • အသားတင်အမြတ်: <b>${(inc - exp).toLocaleString()} MMK</b>
+        `;
     }
 
     function loadJobs() {
@@ -205,14 +231,14 @@
             document.getElementById('jobMasterList').innerHTML = snap.docs.map(doc => {
                 const d = doc.data();
                 const badge = d.status === 'Done' ? 'bg-done' : 'bg-pending';
-                return `<div class="card"><b>${d.name}</b> (${d.appliance})<br><small>${d.date} | ${d.cost.toLocaleString()} MMK</small><br><span class="status-badge ${badge}" onclick="toggleStatus('${doc.id}', '${d.status}')">${d.status}</span></div>`;
+                return `<div class="card"><b>${d.name}</b> (${d.appliance})<br><small>${d.date} | ${d.cost.toLocaleString()} MMK</small><br><small>Type: ${d.model || '-'}</small><br><span class="status-badge ${badge}" onclick="toggleStatus('${doc.id}', '${d.status}')">${d.status}</span></div>`;
             }).join('');
         });
     }
 
     async function toggleStatus(id, current) {
         if(current === 'Done') return;
-        if(confirm("Done ပြောင်းမလား?")) {
+        if(confirm("အလုပ်ပြီးစီးကြောင်း (Done) ပြောင်းမလား?")) {
             await db.collection("jobs").doc(id).update({ status: 'Done' });
             loadJobs();
         }
@@ -240,11 +266,11 @@
 
     async function downloadPDF() {
         const { jsPDF } = window.jspdf; const doc = new jsPDF();
-        doc.text("Oasis AC Service Report", 10, 10);
+        doc.text("Oasis AC Service Monthly Report", 10, 10);
         const j = await db.collection("jobs").get();
-        const rows = j.docs.map(d => [d.data().date, d.data().name, d.data().cost]);
-        doc.autoTable({ head: [['Date', 'Customer', 'Income']], body: rows });
-        doc.save("Report.pdf");
+        const rows = j.docs.map(d => [d.data().date, d.data().name, d.data().cost.toLocaleString()]);
+        doc.autoTable({ head: [['Date', 'Customer', 'Income (MMK)']], body: rows });
+        doc.save("Monthly_Report.pdf");
     }
 
     window.onload = () => { updateFinance(); };
