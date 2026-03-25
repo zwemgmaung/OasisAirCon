@@ -165,8 +165,7 @@
 
     if (!firebase.apps.length) { 
         firebase.initializeApp(firebaseConfig); 
-        // Sync Offline Persistence
-        firebase.firestore().enablePersistence().catch(err => console.log("Offline Persistence Error", err));
+        firebase.firestore().enablePersistence().catch(err => console.log("Sync Error", err));
     }
     const db = firebase.firestore();
 
@@ -190,23 +189,26 @@
 
     async function savePur() {
         await db.collection("purchases").add({ name: document.getElementById('p-name').value, total: Number(document.getElementById('p-total').value), timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-        alert("Saved!"); location.reload();
+        alert("Saved!"); updateFinance();
     }
     async function saveSale() {
         await db.collection("sales").add({ brand: document.getElementById('s-brand').value, price: Number(document.getElementById('s-price').value), timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-        alert("Saved!"); location.reload();
+        alert("Saved!"); updateFinance();
     }
     async function saveJob() {
         const staff = Array.from(document.querySelectorAll('input[name="assigned"]:checked')).map(c => c.value);
         await db.collection("jobs").add({ name: document.getElementById('j-name').value, cost: Number(document.getElementById('j-cost').value), staff, date: document.getElementById('j-date').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-        alert("Saved!"); location.reload();
+        alert("Saved!"); updateFinance();
     }
 
     async function updateFinance() {
-        let inc = 0;
+        let inc = 0, exp = 0;
         const j = await db.collection("jobs").get(); j.forEach(d => inc += d.data().cost || 0);
+        const s = await db.collection("sales").get(); s.forEach(d => inc += d.data().price || 0);
+        const p = await db.collection("purchases").get(); p.forEach(d => exp += d.data().total || 0);
         document.getElementById('totalIncome').innerText = inc.toLocaleString();
-        document.getElementById('totalProfit').innerText = inc.toLocaleString();
+        document.getElementById('totalExpense').innerText = exp.toLocaleString();
+        document.getElementById('totalProfit').innerText = (inc - exp).toLocaleString();
     }
 
     function loadStaff() {
@@ -245,7 +247,24 @@
     async function deleteStaff() { if(confirm("Delete staff?")) { await db.collection("staff").doc(document.getElementById('m-id').value).delete(); closeModal(); loadStaff(); } }
     async function addStaff() { await db.collection("staff").add({ name: document.getElementById('st-name').value, role: document.getElementById('st-role').value, phone: document.getElementById('st-phone').value, addr: document.getElementById('st-addr').value, remark: document.getElementById('st-remark').value, createdAt: firebase.firestore.FieldValue.serverTimestamp() }); alert("Added!"); loadStaff(); }
 
-    window.onload = () => { if(!localStorage.getItem('isLoggedIn')) location.href='index.html'; updateFinance(); };
+    async function downloadPDF() {
+        const { jsPDF } = window.jspdf; const doc = new jsPDF('l', 'mm', 'a4');
+        doc.text("Oasis AC Service Report", 14, 20);
+        const snap = await db.collection("jobs").get();
+        const rows = snap.docs.map(d => [d.data().date, d.data().name, d.data().cost]);
+        doc.autoTable({ startY: 30, head: [['Date', 'Customer', 'Cost']], body: rows });
+        doc.save("Report.pdf");
+    }
+
+    window.onload = () => {
+        const loginStatus = localStorage.getItem('isLoggedIn');
+        if (loginStatus !== 'true') {
+            window.location.href = 'index.html';
+        } else {
+            updateFinance();
+        }
+    };
 </script>
 </body>
-</html>
+            </html>
+            
