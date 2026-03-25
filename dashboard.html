@@ -19,16 +19,19 @@
         .tab-btn { padding: 15px; flex: none; text-align: center; cursor: pointer; font-weight: bold; font-size: 11px; color: #666; border-bottom: 3px solid transparent; }
         .tab-btn.active { color: var(--p-green); border-bottom-color: var(--p-green); }
         .container { padding: 15px; max-width: 800px; margin: auto; }
-        .card { background: var(--card); padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--border); }
+        .card { background: var(--card); padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--border); position: relative; }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 13px; color: var(--p-green); }
         input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); box-sizing: border-box; }
         .btn-green { background: var(--p-green); color: white; border: none; padding: 12px; border-radius: 6px; width: 100%; font-weight: bold; cursor: pointer; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .hidden { display: none; }
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
-        .modal-content { background: var(--card); padding: 20px; border-radius: 12px; width: 100%; max-width: 350px; position: relative; }
-        .close-btn { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; color: #888; }
+        .hidden { display: none !important; }
+        
+        /* Modal Styles - Updated for Clickability */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 9999; }
+        .modal-content { background: var(--card); padding: 20px; border-radius: 12px; width: 90%; max-width: 350px; }
+        .close-btn { float: right; font-size: 24px; cursor: pointer; color: #888; }
+        
         .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; color: white; cursor: pointer; }
         .bg-pending { background: #ffc107; color: #000; }
         .bg-done { background: #28a745; }
@@ -61,7 +64,7 @@
 <div id="staffModal" class="modal">
     <div class="modal-content">
         <span class="close-btn" onclick="closeModal()">&times;</span>
-        <h3 id="m-title" style="color:var(--p-green); margin-top:0;">Edit Staff</h3>
+        <h3 style="color:var(--p-green); margin-top:0;">Edit Staff</h3>
         <input type="hidden" id="m-id">
         <div class="form-group"><label>Name</label><input type="text" id="m-name"></div>
         <div class="grid-2">
@@ -77,8 +80,8 @@
 <div class="container">
     <div id="homeTab">
         <div class="card" style="text-align: center;">
-            <h3 id="lbl-dash">Dashboard Summary</h3>
-            <p style="font-size: 11px; color: var(--p-green); margin-bottom: 12px; font-weight:bold;">Developed by Zwe Maung Maung</p>
+            <h3>Dashboard Summary</h3>
+            <p style="font-size: 11px; color: var(--p-green); font-weight:bold;">Developed by Zwe Maung Maung</p>
             <div class="finance-grid">
                 <div class="finance-item" style="background:#28a745;">Income<br><span id="totalIncome">0</span></div>
                 <div class="finance-item" style="background:#dc3545;">Expense<br><span id="totalExpense">0</span></div>
@@ -86,10 +89,9 @@
             </div>
         </div>
         <div class="card">
-            <h4>Monthly Report & Sync</h4>
-            <div id="monthlyStats" style="font-size:13px; line-height:1.6;">Calculating Report...</div>
-            <button class="btn-green" style="margin-top:10px; font-size:11px; padding:10px;" onclick="downloadPDF()">Download PDF Report</button>
-            <button class="btn-green" style="margin-top:10px; font-size:11px; padding:10px; background:#4285f4;" onclick="syncToGoogleSheets()">Sync to Google Sheets</button>
+            <h4>Monthly Stats</h4>
+            <div id="monthlyStats" style="font-size:13px;">Calculating...</div>
+            <button class="btn-green" style="margin-top:10px; font-size:11px;" onclick="downloadPDF()">Download PDF</button>
         </div>
     </div>
 
@@ -104,27 +106,19 @@
             <div class="grid-2"><div class="form-group"><label>HP</label><input type="text" id="j-hp"></div><div class="form-group"><label>Gas Type</label><input type="text" id="j-gas"></div></div>
             <div class="grid-2"><div class="form-group"><label>Type</label><select id="j-type"><option>Inverter</option><option>Non-Inverter</option></select></div><div class="form-group"><label>Model</label><select id="j-model"><option>Split</option><option>Ceiling Cassette</option><option>Floor Stand</option><option>Portable</option></select></div></div>
             <div class="form-group"><label>Description</label><textarea id="j-issue" rows="2"></textarea></div>
-            <div class="form-group"><label>Assigned Staff</label><div id="staffChecks" style="border:1px solid var(--border); padding:10px; border-radius:6px; max-height:100px; overflow:auto;">Loading...</div></div>
-            <div class="grid-2"><div class="form-group"><label>Before Photo</label><input type="file" accept="image/*" id="img-before" onchange="previewImg(this, 'p-before')"><img id="p-before" class="img-preview"></div><div class="form-group"><label>After Photo</label><input type="file" accept="image/*" id="img-after" onchange="previewImg(this, 'p-after')"><img id="p-after" class="img-preview"></div></div>
-            <div class="grid-2"><div class="form-group"><label>Date</label><input type="date" id="j-date"></div><div class="form-group"><label>Cost (MMK)</label><input type="number" id="j-cost"></div></div>
+            <div class="form-group"><label>Staff</label><div id="staffChecks" style="border:1px solid var(--border); padding:10px; border-radius:6px; max-height:100px; overflow:auto;"></div></div>
+            <div class="grid-2"><div class="form-group"><label>Before</label><input type="file" accept="image/*" onchange="previewImg(this, 'p-before')"><img id="p-before" class="img-preview"></div><div class="form-group"><label>After</label><input type="file" accept="image/*" onchange="previewImg(this, 'p-after')"><img id="p-after" class="img-preview"></div></div>
+            <div class="grid-2"><div class="form-group"><label>Date</label><input type="date" id="j-date"></div><div class="form-group"><label>Cost</label><input type="number" id="j-cost"></div></div>
             <div class="form-group"><label>Status</label><select id="j-status"><option value="Pending">Pending</option><option value="Done">Done</option></select></div>
             <button class="btn-green" onclick="saveJob()">SAVE SERVICE</button>
         </div>
     </div>
 
-    <div id="attendanceTab" class="hidden">
-        <div class="card">
-            <h3>Staff Attendance</h3>
-            <div class="form-group"><label>Date</label><input type="date" id="att-date"></div>
-            <div id="attList" style="margin-top:10px;">Loading...</div>
-            <button class="btn-green" style="margin-top:15px;" onclick="saveAttendance()">SAVE ATTENDANCE</button>
-        </div>
-    </div>
-
-    <div id="purchaseTab" class="hidden"><div class="card"><h3>New Purchase</h3><div class="form-group"><label>Item Name</label><input type="text" id="p-name"></div><div class="grid-2"><div class="form-group"><label>Qty</label><input type="number" id="p-qty" oninput="calcPur()"></div><div class="form-group"><label>Price</label><input type="number" id="p-price" oninput="calcPur()"></div></div><div class="form-group"><label>Total Cost</label><input type="number" id="p-total" readonly></div><button class="btn-green" onclick="savePur()">SAVE PURCHASE</button></div></div>
-    <div id="saleTab" class="hidden"><div class="card"><h3>New Sale</h3><div class="form-group"><label>Item Name</label><input type="text" id="s-name"></div><div class="grid-2"><div class="form-group"><label>Qty</label><input type="number" id="s-qty" oninput="calcSale()"></div><div class="form-group"><label>Unit Price</label><input type="number" id="s-price" oninput="calcSale()"></div></div><div class="form-group"><label>Total Price</label><input type="number" id="s-total" readonly></div><button class="btn-green" onclick="saveSale()">SAVE SALE</button></div></div>
-    <div id="staffTab" class="hidden"><div class="card"><h3>Add Staff</h3><div class="form-group"><label>Name</label><input type="text" id="st-name"></div><div class="grid-2"><div class="form-group"><label>Role</label><select id="st-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Co-Leader</option><option>Helper</option><option>Office Staff</option></select></div><div class="form-group"><label>Phone</label><input type="text" id="st-phone"></div></div><div class="form-group"><label>Address</label><input type="text" id="st-addr"></div><button class="btn-green" onclick="addStaff()">ADD STAFF</button></div><div id="staffList"></div></div>
-    <div id="settingsTab" class="hidden"><div class="card" style="text-align:center;"><h3>App Information</h3><p>Version: 1.2.8 | Dev by: Zwe Maung Maung</p><p>© 2026 Zwe Maung Maung. All Rights Reserved.</p></div></div>
+    <div id="purchaseTab" class="hidden"><div class="card"><h3>New Purchase</h3><div class="form-group"><label>Item</label><input type="text" id="p-name"></div><div class="grid-2"><div class="form-group"><label>Qty</label><input type="number" id="p-qty" oninput="calcPur()"></div><div class="form-group"><label>Price</label><input type="number" id="p-price" oninput="calcPur()"></div></div><input type="number" id="p-total" readonly hidden><button class="btn-green" onclick="savePur()">SAVE PURCHASE</button></div></div>
+    <div id="saleTab" class="hidden"><div class="card"><h3>New Sale</h3><div class="form-group"><label>Item</label><input type="text" id="s-name"></div><div class="grid-2"><div class="form-group"><label>Qty</label><input type="number" id="s-qty" oninput="calcSale()"></div><div class="form-group"><label>Price</label><input type="number" id="s-price" oninput="calcSale()"></div></div><input type="number" id="s-total" readonly hidden><button class="btn-green" onclick="saveSale()">SAVE SALE</button></div></div>
+    <div id="staffTab" class="hidden"><div class="card"><h3>Add Staff</h3><div class="form-group"><label>Name</label><input type="text" id="st-name"></div><div class="grid-2"><div class="form-group"><label>Role</label><select id="st-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Helper</option></select></div><div class="form-group"><label>Phone</label><input type="text" id="st-phone"></div></div><input type="text" id="st-addr" placeholder="Address"><button class="btn-green" onclick="addStaff()" style="margin-top:10px;">ADD STAFF</button></div><div id="staffList"></div></div>
+    <div id="attendanceTab" class="hidden"><div class="card"><h3>Staff Attendance</h3><input type="date" id="att-date"><div id="attList" style="margin-top:10px;"></div><button class="btn-green" style="margin-top:15px;" onclick="saveAttendance()">SAVE ATTENDANCE</button></div></div>
+    <div id="settingsTab" class="hidden"><div class="card" style="text-align:center;"><h3>Settings</h3><p>Version: 1.2.9 | Dev by: Zwe Maung Maung</p></div></div>
 </div>
 
 <script>
@@ -140,24 +134,21 @@
     const db = firebase.firestore();
 
     function showTab(t) {
-        ['home','jobs','service','purchase','sale','staff','attendance','settings'].forEach(id => {
-            const el = document.getElementById(id+'Tab');
-            if(el) el.classList.add('hidden');
-        });
+        document.querySelectorAll('.container > div').forEach(el => el.classList.add('hidden'));
         document.getElementById(t+'Tab').classList.remove('hidden');
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('t-'+t).classList.add('active');
         if(t === 'home') updateFinance();
         if(t === 'jobs') loadJobs();
         if(t === 'staff') loadStaff();
-        if(t === 'attendance') { loadStaffForAttendance(); document.getElementById('att-date').valueAsDate = new Date(); }
+        if(t === 'attendance') loadStaffForAttendance();
         if(t === 'service') loadStaffForService();
     }
 
     function previewImg(input, id) { const reader = new FileReader(); reader.onload = (e) => document.getElementById(id).src = e.target.result; if(input.files[0]) reader.readAsDataURL(input.files[0]); }
     function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light'); }
-    function calcPur() { const q = document.getElementById('p-qty').value; const p = document.getElementById('p-price').value; document.getElementById('p-total').value = q * p; }
-    function calcSale() { const q = document.getElementById('s-qty').value; const p = document.getElementById('s-price').value; document.getElementById('s-total').value = q * p; }
+    function calcPur() { document.getElementById('p-total').value = document.getElementById('p-qty').value * document.getElementById('p-price').value; }
+    function calcSale() { document.getElementById('s-total').value = document.getElementById('s-qty').value * document.getElementById('s-price').value; }
 
     async function saveJob() {
         const staff = Array.from(document.querySelectorAll('input[name="assigned"]:checked')).map(c => c.value);
@@ -170,27 +161,22 @@
             document.getElementById('jobMasterList').innerHTML = snap.docs.map(doc => {
                 const d = doc.data();
                 const badge = d.status === 'Done' ? 'bg-done' : 'bg-pending';
-                return `<div class="card"><b>${d.name}</b> (${d.appliance})<br><small>${d.date} | Cost: ${d.cost.toLocaleString()}</small><br><span class="status-badge ${badge}" onclick="toggleStatus('${doc.id}', '${d.status}')">${d.status}</span></div>`;
+                return `<div class="card"><b>${d.name}</b> (${d.appliance})<br><small>${d.date} | ${d.cost.toLocaleString()} MMK</small><br><span class="status-badge ${badge}" onclick="toggleStatus('${doc.id}', '${d.status}')">${d.status}</span></div>`;
             }).join('');
         });
     }
 
     async function toggleStatus(id, current) {
         if(current === 'Done') return;
-        if(confirm("အလုပ်ပြီးစီးကြောင်း (Done) ပြောင်းမလား?")) {
-            await db.collection("jobs").doc(id).update({ status: 'Done' });
-            loadJobs();
-        }
+        if(confirm("Change to Done?")) { await db.collection("jobs").doc(id).update({ status: 'Done' }); loadJobs(); }
     }
 
     function loadStaff() {
         db.collection("staff").get().then(snap => {
             document.getElementById('staffList').innerHTML = snap.docs.map(doc => {
                 const s = doc.data();
-                return `<div class="card" style="padding:15px; display:flex; justify-content:space-between; align-items:center;">
-                    <div onclick="openModal('${doc.id}','${s.name}','${s.role}','${s.phone}','${s.addr}')">
-                        <b style="color:var(--p-green); cursor:pointer;">${s.name}</b><br><small>${s.role} | 📞 ${s.phone || '-'}</small>
-                    </div>
+                return `<div class="card" onclick="openModal('${doc.id}','${s.name}','${s.role}','${s.phone}','${s.addr}')">
+                    <b style="color:var(--p-green); cursor:pointer;">${s.name}</b><br><small>${s.role} | 📞 ${s.phone || '-'}</small>
                 </div>`;
             }).join('');
         });
@@ -202,15 +188,12 @@
         document.getElementById('m-role').value = role;
         document.getElementById('m-phone').value = phone || '';
         document.getElementById('m-addr').value = addr || '';
-        document.getElementById('m-call-btn').onclick = () => window.location.href = "tel:" + phone;
+        document.getElementById('m-call-btn').onclick = (e) => { e.stopPropagation(); window.location.href = "tel:" + phone; };
         document.getElementById('staffModal').style.display = 'flex';
     }
     function closeModal() { document.getElementById('staffModal').style.display = 'none'; }
 
-    async function updateStaff() {
-        await db.collection("staff").doc(document.getElementById('m-id').value).update({ name: document.getElementById('m-name').value, role: document.getElementById('m-role').value, phone: document.getElementById('m-phone').value, addr: document.getElementById('m-addr').value });
-        alert("Updated!"); closeModal(); loadStaff();
-    }
+    async function updateStaff() { await db.collection("staff").doc(document.getElementById('m-id').value).update({ name: document.getElementById('m-name').value, role: document.getElementById('m-role').value, phone: document.getElementById('m-phone').value, addr: document.getElementById('m-addr').value }); alert("Updated!"); closeModal(); loadStaff(); }
     async function deleteStaff() { if(confirm("Delete staff?")) { await db.collection("staff").doc(document.getElementById('m-id').value).delete(); closeModal(); loadStaff(); } }
     async function addStaff() { await db.collection("staff").add({ name: document.getElementById('st-name').value, role: document.getElementById('st-role').value, phone: document.getElementById('st-phone').value, addr: document.getElementById('st-addr').value }); alert("Added!"); loadStaff(); }
 
@@ -225,7 +208,13 @@
         document.getElementById('monthlyStats').innerHTML = `Jobs: ${jobCount} | Profit: ${(inc - exp).toLocaleString()} MMK`;
     }
 
-    function loadStaffForAttendance() { db.collection("staff").get().then(snap => { document.getElementById('attList').innerHTML = snap.docs.map(doc => `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid var(--border);"><b>${doc.data().name}</b><select name="att-status" data-name="${doc.data().name}"><option value="Present">Present</option><option value="Absent">Absent</option><option value="Leave">Leave</option></select></div>`).join(''); }); }
-    async function saveAttendance() { const date = document.getElementById('att-date').value; const records = Array.from(document.querySelectorAll('select[name="att-status"]')).map(s => ({ name: s.getAttribute('data-name'), status: s.value })); await db.collection("attendance").add({ date, records, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Recorded!"); showTab('home'); }
+    function loadStaffForAttendance() { db.collection("staff").get().then(snap => { document.getElementById('attList').innerHTML = snap.docs.map(doc => `<div style="display:flex; justify-content:space-between; margin-bottom:5px;"><b>${doc.data().name}</b><select name="att-status" data-name="${doc.data().name}"><option>Present</option><option>Absent</option><option>Leave</option></select></div>`).join(''); }); }
+    async function saveAttendance() { const records = Array.from(document.querySelectorAll('select[name="att-status"]')).map(s => ({ name: s.getAttribute('data-name'), status: s.value })); await db.collection("attendance").add({ date: document.getElementById('att-date').value, records, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Recorded!"); }
     function loadStaffForService() { db.collection("staff").get().then(snap => { document.getElementById('staffChecks').innerHTML = snap.docs.map(doc => `<div><input type="checkbox" name="assigned" value="${doc.data().name}"> ${doc.data().name}</div>`).join(''); }); }
-    async function savePur() { await db.collection("purchases").add({ name: document.getElementById('p-name').value, total: Number(document.getElementById('p-total').value), timestamp: firebase.firestore.FieldVal
+    async function savePur() { await db.collection("purchases").add({ name: document.getElementById('p-name').value, total: Number(document.getElementById('p-total').value), timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); }
+    async function saveSale() { await db.collection("sales").add({ name: document.getElementById('s-name').value, price: Number(document.getElementById('s-total').value), timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); }
+
+    window.onload = () => { updateFinance(); };
+</script>
+</body>
+</html>
