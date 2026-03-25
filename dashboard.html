@@ -41,10 +41,6 @@
         <span style="font-weight:bold; font-size:11px;">KO HTAY AUNG (OASIS) AC SALES & SERVICE</span>
     </div>
     <div style="display:flex; gap:8px; align-items:center;">
-        <select id="langBtn" onchange="toggleLang()" style="padding:2px; font-size:10px; width:auto; border:1px solid white; background:transparent; color:white;">
-            <option value="en">ENG</option>
-            <option value="mm">MM</option>
-        </select>
         <button onclick="toggleTheme()" style="background:none; border:none; cursor:pointer; font-size:18px;">🌓</button>
     </div>
 </div>
@@ -145,10 +141,13 @@
             <h3>App Information</h3>
             <div style="text-align: left; background: var(--bg); padding:15px; border-radius:8px; border: 1px solid var(--border); font-size:14px;">
                 <p><strong>App:</strong> Oasis AC System</p>
-                <p><strong>Version:</strong> 1.1.7 (Master Sync)</p>
+                <p><strong>Version:</strong> 1.1.8 (Master Sync)</p>
                 <p><strong>Dev by:</strong> Zwe Maung Maung</p>
             </div>
-            <button class="btn-green" onclick="logout()" style="background:#dc3545; margin-top:15px;">LOGOUT</button>
+            <div style="margin-top: 35px; padding: 20px; border-top: 1px solid var(--border); color: #888; font-size: 13px; text-align: center;">
+                © 2026 <b>Zwe Maung Maung</b>.<br>
+                All Rights Reserved.
+            </div>
         </div>
     </div>
 </div>
@@ -183,7 +182,6 @@
     }
 
     function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light'); }
-    function logout() { localStorage.removeItem('isLoggedIn'); location.href = 'index.html'; }
 
     function calcPur() { const q = document.getElementById('p-qty').value; const p = document.getElementById('p-price').value; document.getElementById('p-total').value = q * p; }
 
@@ -257,10 +255,8 @@
     }
 
     window.onload = () => {
-    updateFinance();
-};
-    
+        updateFinance();
+    };
 </script>
 </body>
-            </html>
-            
+</html>
