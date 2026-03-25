@@ -124,7 +124,7 @@
     <div id="purchaseTab" class="hidden"><div class="card"><h3>New Purchase</h3><div class="form-group"><label>Item Name</label><input type="text" id="p-name"></div><div class="grid-2"><div class="form-group"><label>Qty</label><input type="number" id="p-qty" oninput="calcPur()"></div><div class="form-group"><label>Price</label><input type="number" id="p-price" oninput="calcPur()"></div></div><div class="form-group"><label>Total Cost</label><input type="number" id="p-total" readonly></div><button class="btn-green" onclick="savePur()">SAVE PURCHASE</button></div></div>
     <div id="saleTab" class="hidden"><div class="card"><h3>New Sale</h3><div class="form-group"><label>Item Name</label><input type="text" id="s-name"></div><div class="grid-2"><div class="form-group"><label>Qty</label><input type="number" id="s-qty" oninput="calcSale()"></div><div class="form-group"><label>Unit Price</label><input type="number" id="s-price" oninput="calcSale()"></div></div><div class="form-group"><label>Total Price</label><input type="number" id="s-total" readonly></div><button class="btn-green" onclick="saveSale()">SAVE SALE</button></div></div>
     <div id="staffTab" class="hidden"><div class="card"><h3>Add Staff</h3><div class="form-group"><label>Name</label><input type="text" id="st-name"></div><div class="grid-2"><div class="form-group"><label>Role</label><select id="st-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Co-Leader</option><option>Helper</option><option>Office Staff</option></select></div><div class="form-group"><label>Phone</label><input type="text" id="st-phone"></div></div><div class="form-group"><label>Address</label><input type="text" id="st-addr"></div><button class="btn-green" onclick="addStaff()">ADD STAFF</button></div><div id="staffList"></div></div>
-    <div id="settingsTab" class="hidden"><div class="card" style="text-align:center;"><h3>App Information</h3><p>Version: 1.2.7 | Dev by: Zwe Maung Maung</p><p>© 2026 Zwe Maung Maung. All Rights Reserved.</p></div></div>
+    <div id="settingsTab" class="hidden"><div class="card" style="text-align:center;"><h3>App Information</h3><p>Version: 1.2.8 | Dev by: Zwe Maung Maung</p><p>© 2026 Zwe Maung Maung. All Rights Reserved.</p></div></div>
 </div>
 
 <script>
@@ -187,7 +187,7 @@
         db.collection("staff").get().then(snap => {
             document.getElementById('staffList').innerHTML = snap.docs.map(doc => {
                 const s = doc.data();
-                return `<div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                return `<div class="card" style="padding:15px; display:flex; justify-content:space-between; align-items:center;">
                     <div onclick="openModal('${doc.id}','${s.name}','${s.role}','${s.phone}','${s.addr}')">
                         <b style="color:var(--p-green); cursor:pointer;">${s.name}</b><br><small>${s.role} | 📞 ${s.phone || '-'}</small>
                     </div>
@@ -212,7 +212,6 @@
         alert("Updated!"); closeModal(); loadStaff();
     }
     async function deleteStaff() { if(confirm("Delete staff?")) { await db.collection("staff").doc(document.getElementById('m-id').value).delete(); closeModal(); loadStaff(); } }
-
     async function addStaff() { await db.collection("staff").add({ name: document.getElementById('st-name').value, role: document.getElementById('st-role').value, phone: document.getElementById('st-phone').value, addr: document.getElementById('st-addr').value }); alert("Added!"); loadStaff(); }
 
     async function updateFinance() {
@@ -229,4 +228,4 @@
     function loadStaffForAttendance() { db.collection("staff").get().then(snap => { document.getElementById('attList').innerHTML = snap.docs.map(doc => `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid var(--border);"><b>${doc.data().name}</b><select name="att-status" data-name="${doc.data().name}"><option value="Present">Present</option><option value="Absent">Absent</option><option value="Leave">Leave</option></select></div>`).join(''); }); }
     async function saveAttendance() { const date = document.getElementById('att-date').value; const records = Array.from(document.querySelectorAll('select[name="att-status"]')).map(s => ({ name: s.getAttribute('data-name'), status: s.value })); await db.collection("attendance").add({ date, records, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Recorded!"); showTab('home'); }
     function loadStaffForService() { db.collection("staff").get().then(snap => { document.getElementById('staffChecks').innerHTML = snap.docs.map(doc => `<div><input type="checkbox" name="assigned" value="${doc.data().name}"> ${doc.data().name}</div>`).join(''); }); }
-    async function savePur() { await db.collection("purchases").add({ name: document.getElementById('p-name').value, total: Number(document.getElementById('p-total').value), timestamp: firebase.firestore.FieldValue.serverTime
+    async function savePur() { await db.collection("purchases").add({ name: document.getElementById('p-name').value, total: Number(document.getElementById('p-total').value), timestamp: firebase.firestore.FieldVal
