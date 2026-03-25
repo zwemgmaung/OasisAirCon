@@ -87,7 +87,7 @@
         </div>
         <div class="card">
             <h4>Monthly Stats Summary</h4>
-            <div id="monthlyStats" style="font-size:13px; line-height:1.6;">Calculating...</div>
+            <div id="monthlyStats" style="font-size:13px; line-height:1.8;">Loading Stats...</div>
             <div class="grid-2" style="margin-top:10px;">
                 <button class="btn-green" style="font-size:11px;" onclick="downloadPDF()">Export PDF</button>
                 <button class="btn-green" style="font-size:11px; background:#4285f4;" onclick="syncToSheets()">Sync Sheets</button>
@@ -140,14 +140,13 @@
         <div class="card" style="text-align:center;">
             <h3 style="color:var(--p-green);">Oasis Master Settings</h3>
             <div style="text-align: left; background: var(--bg); padding:15px; border-radius:8px; border: 1px solid var(--border); font-size:14px;">
-                <p><b>App Version:</b> 1.3.0 (Ultimate Sync)</p>
+                <p><b>App Version:</b> 1.3.1 (Ultimate Sync)</p>
                 <p><b>Developer:</b> Zwe Maung Maung</p>
                 <p><b>Business:</b> Ko Htay Aung (Oasis) AC</p>
                 <p><b>System:</b> Firebase Master Pro</p>
             </div>
             <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border); color: #888; font-size: 13px; text-align: center;">
-                © 2026 <b>Zwe Maung Maung</b>.<br>
-                All Rights Reserved.
+                © 2026 <b>Zwe Maung Maung</b>.<br>All Rights Reserved.
             </div>
         </div>
     </div>
@@ -200,15 +199,15 @@
 
     async function toggleStatus(id, current) {
         if(current === 'Done') return;
-        if(confirm("Change to Done?")) { await db.collection("jobs").doc(id).update({ status: 'Done' }); loadJobs(); }
+        if(confirm("Change to Done?")) { await db.collection("jobs").doc(id).update({ status: 'Done' }); loadJobs(); updateFinance(); }
     }
 
     function loadStaff() {
         db.collection("staff").get().then(snap => {
             document.getElementById('staffList').innerHTML = snap.docs.map(doc => {
                 const s = doc.data();
-                return `<div class="card" onclick="openModal('${doc.id}','${s.name}','${s.role}','${s.phone}','${s.addr}')">
-                    <b style="color:var(--p-green); cursor:pointer;">${s.name}</b><br><small>${s.role} | 📞 ${s.phone || '-'}</small>
+                return `<div class="card" onclick="openModal('${doc.id}','${s.name}','${s.role}','${s.phone}','${s.addr}')" style="cursor:pointer;">
+                    <b style="color:var(--p-green);">${s.name}</b><br><small>${s.role} | 📞 ${s.phone || '-'}</small>
                 </div>`;
             }).join('');
         });
@@ -230,18 +229,25 @@
     async function addStaff() { await db.collection("staff").add({ name: document.getElementById('st-name').value, role: document.getElementById('st-role').value, phone: document.getElementById('st-phone').value, addr: document.getElementById('st-addr').value }); alert("Added!"); loadStaff(); }
 
     async function updateFinance() {
-        let inc = 0, exp = 0, jobCount = 0;
-        const j = await db.collection("jobs").get(); j.forEach(d => { inc += d.data().cost || 0; jobCount++; });
-        const s = await db.collection("sales").get(); s.forEach(d => inc += d.data().price || 0);
-        const p = await db.collection("purchases").get(); p.forEach(d => exp += d.data().total || 0);
-        document.getElementById('totalIncome').innerText = inc.toLocaleString();
-        document.getElementById('totalExpense').innerText = exp.toLocaleString();
-        document.getElementById('totalProfit').innerText = (inc - exp).toLocaleString();
-        document.getElementById('monthlyStats').innerHTML = `Jobs: ${jobCount} | Net Profit: <b>${(inc - exp).toLocaleString()} MMK</b>`;
+        let jobIncome = 0, saleIncome = 0, purExpense = 0;
+        const j = await db.collection("jobs").get(); j.forEach(d => jobIncome += d.data().cost || 0);
+        const s = await db.collection("sales").get(); s.forEach(d => saleIncome += d.data().price || 0);
+        const p = await db.collection("purchases").get(); p.forEach(d => purExpense += d.data().total || 0);
+        
+        const totalInc = jobIncome + saleIncome;
+        document.getElementById('totalIncome').innerText = totalInc.toLocaleString();
+        document.getElementById('totalExpense').innerText = purExpense.toLocaleString();
+        document.getElementById('totalProfit').innerText = (totalInc - purExpense).toLocaleString();
+        
+        document.getElementById('monthlyStats').innerHTML = `
+            • အလုပ်မှရငွေ: <b>${jobIncome.toLocaleString()}</b> MMK<br>
+            • အရောင်းမှရငွေ: <b>${saleIncome.toLocaleString()}</b> MMK<br>
+            • ဝယ်ယူမှုကုန်ကျငွေ: <b>${purExpense.toLocaleString()}</b> MMK<br>
+            • အသားတင်အမြတ်: <b>${(totalInc - purExpense).toLocaleString()}</b> MMK
+        `;
     }
 
     function loadStaffForAttendance() { db.collection("staff").get().then(snap => { document.getElementById('attList').innerHTML = snap.docs.map(doc => `<div style="display:flex; justify-content:space-between; margin-bottom:5px;"><b>${doc.data().name}</b><select name="att-status" data-name="${doc.data().name}"><option>Present</option><option>Absent</option></select></div>`).join(''); }); }
     async function saveAttendance() { const records = Array.from(document.querySelectorAll('select[name="att-status"]')).map(s => ({ name: s.getAttribute('data-name'), status: s.value })); await db.collection("attendance").add({ date: document.getElementById('att-date').value, records, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Recorded!"); }
     function loadStaffForService() { db.collection("staff").get().then(snap => { document.getElementById('staffChecks').innerHTML = snap.docs.map(doc => `<div><input type="checkbox" name="assigned" value="${doc.data().name}"> ${doc.data().name}</div>`).join(''); }); }
-    async function savePur() { await db.collection("purchases").add({ name: document.getElementById('p-name').value, total: Number(document.getElementById('p-total').value), timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); showTab('home'); }
-    async function saveSale() { await db.collection("sales").add({ name: document.getElementById('s-name').value, price: Number(document.getElementById('s-total').va
+    async function savePur() { await db.collection("purchases").add({ name:
