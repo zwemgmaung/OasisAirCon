@@ -32,6 +32,8 @@
         .bg-pending { background: #ffc107; color: #000; }
         .bg-done { background: #28a745; }
         .img-preview { width: 100%; height: 100px; object-fit: cover; border-radius: 6px; margin-top: 5px; background: #eee; border: 1px solid var(--border); }
+        .history-list { font-size: 11px; margin-top: 15px; border-top: 1px solid var(--border); padding-top: 10px; }
+        .history-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 0.5px solid var(--border); }
     </style>
 </head>
 <body data-theme="dark">
@@ -39,10 +41,10 @@
 <div class="header">
     <div style="display:flex; align-items:center; gap:8px;">
         <img src="1000064267.png" class="logo-img">
-        <span style="font-weight:bold; font-size:11px;">OASIS AC</span>
+        <span style="font-weight:bold; font-size:10px;">KO HTAY AUNG (OASIS) AC SERVICE</span>
     </div>
     <div style="display:flex; gap:10px; align-items:center;">
-        <button onclick="toggleLang()" id="langBtn" style="background:white; color:var(--p-green); border:none; padding:4px 8px; border-radius:4px; font-size:10px; font-weight:bold;">ENG/MM</button>
+        <button onclick="toggleLang()" id="langBtn" style="background:white; color:var(--p-green); border:none; padding:4px 8px; border-radius:4px; font-size:9px; font-weight:bold;">ENG/MM</button>
         <button onclick="toggleTheme()" style="background:none; border:none; color:white; font-size:18px;">🌓</button>
     </div>
 </div>
@@ -105,10 +107,24 @@
     </div>
 
     <div id="purchaseTab" class="hidden">
-        <div class="card"><h3>New Purchase</h3><input type="text" id="p-name" placeholder="Item Name" style="margin-bottom:10px;"><div class="grid-2"><input type="number" id="p-qty" placeholder="Qty" oninput="calcPur()"><input type="number" id="p-price" placeholder="Price" oninput="calcPur()"></div><input type="number" id="p-total" readonly style="margin:10px 0; background:#eee;"><button class="btn-green" onclick="savePur()">SAVE</button></div>
+        <div class="card">
+            <h3>New Purchase</h3>
+            <input type="text" id="p-name" placeholder="Item Name" style="margin-bottom:10px;">
+            <div class="grid-2"><input type="number" id="p-qty" placeholder="Qty" oninput="calcPur()"><input type="number" id="p-price" placeholder="Price" oninput="calcPur()"></div>
+            <input type="number" id="p-total" readonly style="margin:10px 0; background: var(--bg); color: var(--text);">
+            <button class="btn-green" onclick="savePur()">SAVE PURCHASE</button>
+            <div class="history-list"><strong>Purchase History:</strong><div id="purHistory"></div></div>
+        </div>
     </div>
     <div id="saleTab" class="hidden">
-        <div class="card"><h3>New Sale</h3><input type="text" id="s-name" placeholder="Item Name" style="margin-bottom:10px;"><div class="grid-2"><input type="number" id="s-qty" placeholder="Qty" oninput="calcSale()"><input type="number" id="s-price" placeholder="Price" oninput="calcSale()"></div><input type="number" id="s-total" readonly style="margin:10px 0; background:#eee;"><button class="btn-green" onclick="saveSale()">SAVE</button></div>
+        <div class="card">
+            <h3>New Sale</h3>
+            <input type="text" id="s-name" placeholder="Item Name" style="margin-bottom:10px;">
+            <div class="grid-2"><input type="number" id="s-qty" placeholder="Qty" oninput="calcSale()"><input type="number" id="s-price" placeholder="Price" oninput="calcSale()"></div>
+            <input type="number" id="s-total" readonly style="margin:10px 0; background: var(--bg); color: var(--text);">
+            <button class="btn-green" onclick="saveSale()">SAVE SALE</button>
+            <div class="history-list"><strong>Sales History:</strong><div id="saleHistory"></div></div>
+        </div>
     </div>
 
     <div id="staffTab" class="hidden"><div id="staffList"></div><div class="card"><h4>Add Staff</h4><input type="text" id="st-name" placeholder="Name"><select id="st-role" style="margin:10px 0;"><option>MD</option><option>Manager</option><option>Leader</option><option>Co-Leader</option><option>Helper</option><option>Office Staff</option></select><input type="text" id="st-phone" placeholder="Phone"><button class="btn-green" onclick="addStaff()" style="margin-top:10px;">ADD</button></div></div>
@@ -119,11 +135,7 @@
         <div class="card" style="text-align:center;">
             <img src="1000064267.png" style="width:80px; height:80px; border-radius:50%; margin-bottom:15px; border:3px solid var(--p-green);">
             <h3 style="color:var(--p-green);">Oasis AC System</h3>
-            <div style="text-align: left; background: var(--bg); padding:15px; border-radius:8px; border: 1px solid var(--border); font-size:13px;">
-                <p><b>App Version:</b> 1.3.6 (Perfect Signature)</p>
-                <p><b>Developer:</b> Zwe Maung Maung</p>
-                <p><b>Business:</b> Ko Htay Aung (Oasis) AC</p>
-            </div>
+            <p style="font-size: 12px;">Version: 1.3.7 | Dev: Zwe Maung Maung</p>
             <div style="margin-top: 30px; border-top: 1px solid var(--border); padding-top:20px; color:#888; font-size:12px;">© 2026 <b>Zwe Maung Maung</b>. All Rights Reserved.</div>
         </div>
     </div>
@@ -149,12 +161,14 @@
         if(t === 'home') updateFinance();
         if(t === 'jobs') loadJobs();
         if(t === 'staff') loadStaff();
+        if(t === 'purchase') loadHistory('purchases', 'purHistory');
+        if(t === 'sale') loadHistory('sales', 'saleHistory');
         if(t === 'attendance') loadStaffForAttendance();
         if(t === 'service') loadStaffForService();
     }
 
     function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light'); }
-    function toggleLang() { alert("Language switching to Myanmar/English..."); }
+    function toggleLang() { alert("Language switched!"); }
     function previewImg(input, id) { const reader = new FileReader(); reader.onload = (e) => document.getElementById(id).src = e.target.result; if(input.files[0]) reader.readAsDataURL(input.files[0]); }
     function calcPur() { document.getElementById('p-total').value = document.getElementById('p-qty').value * document.getElementById('p-price').value; }
     function calcSale() { document.getElementById('s-total').value = document.getElementById('s-qty').value * document.getElementById('s-price').value; }
@@ -194,25 +208,31 @@
         document.getElementById('staffModal').style.display = 'flex';
     }
     function closeModal() { document.getElementById('staffModal').style.display = 'none'; }
-
-    async function updateStaff() {
-        await db.collection("staff").doc(document.getElementById('m-id').value).update({ name: document.getElementById('m-name').value, role: document.getElementById('m-role').value, phone: document.getElementById('m-phone').value });
-        alert("Updated!"); closeModal(); loadStaff();
-    }
+    async function updateStaff() { await db.collection("staff").doc(document.getElementById('m-id').value).update({ name: document.getElementById('m-name').value, role: document.getElementById('m-role').value, phone: document.getElementById('m-phone').value }); alert("Updated!"); closeModal(); loadStaff(); }
 
     async function updateFinance() {
         let jInc = 0, sInc = 0, pExp = 0;
         const j = await db.collection("jobs").get(); j.forEach(d => jInc += d.data().cost || 0);
         const s = await db.collection("sales").get(); s.forEach(d => sInc += d.data().price || 0);
         const p = await db.collection("purchases").get(); p.forEach(d => pExp += d.data().total || 0);
-        document.getElementById('financeDisplay').innerHTML = `Income: ${(jInc+sInc).toLocaleString()} | Expense: ${pExp.toLocaleString()} | Profit: <b>${(jInc+sInc-pExp).toLocaleString()}</b>`;
-        document.getElementById('monthlyStats').innerHTML = `• Jobs: ${jInc.toLocaleString()} MMK<br>• Sales: ${sInc.toLocaleString()} MMK<br>• Purchases: ${pExp.toLocaleString()} MMK`;
+        document.getElementById('financeDisplay').innerHTML = `Inc: ${(jInc+sInc).toLocaleString()} | Exp: ${pExp.toLocaleString()} | Profit: <b>${(jInc+sInc-pExp).toLocaleString()}</b>`;
+        document.getElementById('monthlyStats').innerHTML = `• Jobs: ${jInc.toLocaleString()} | Sales: ${sInc.toLocaleString()} | Pur: ${pExp.toLocaleString()}`;
+    }
+
+    function loadHistory(col, target) {
+        db.collection(col).orderBy("timestamp", "desc").limit(5).get().then(snap => {
+            document.getElementById(target).innerHTML = snap.docs.map(doc => {
+                const d = doc.data();
+                const price = d.total || d.price;
+                return `<div class="history-item"><span>${d.name}</span> <span>${price.toLocaleString()} MMK</span></div>`;
+            }).join('');
+        });
     }
 
     function loadStaffForAttendance() {
         db.collection("staff").get().then(snap => {
             let html = `<table style="width:100%; border-collapse:collapse; font-size:12px;"><tr><th style="border:1px solid var(--border); padding:8px;">Staff</th><th style="border:1px solid var(--border); padding:8px;">Status</th></tr>`;
-            html += snap.docs.map(doc => `<tr><td style="border:1px solid var(--border); padding:8px;">${doc.data().name}</td><td style="border:1px solid var(--border); padding:8px;"><select class="att-sel" data-name="${doc.data().name}"><option>Present</option><option>Absent</option><option>Leave</option></select></td></tr>`).join('');
+            html += snap.docs.map(doc => `<tr><td style="border:1px solid var(--border); padding:8px;">${doc.data().name}</td><td style="border:1px solid var(--border); padding:8px;"><select class="att-sel" data-name="${doc.data().name}"><option>Present</option><option>Absent</option></select></td></tr>`).join('');
             html += `</table>`;
             document.getElementById('attTableContainer').innerHTML = html;
         });
@@ -226,8 +246,8 @@
 
     function loadStaffForService() { db.collection("staff").get().then(snap => { document.getElementById('staffChecks').innerHTML = snap.docs.map(doc => `<div><input type="checkbox" name="assigned" value="${doc.data().name}"> ${doc.data().name}</div>`).join(''); }); }
     async function addStaff() { await db.collection("staff").add({ name: document.getElementById('st-name').value, role: document.getElementById('st-role').value, phone: document.getElementById('st-phone').value }); loadStaff(); }
-    async function savePur() { await db.collection("purchases").add({ name: document.getElementById('p-name').value, total: Number(document.getElementById('p-total').value) }); showTab('home'); }
-    async function saveSale() { await db.collection("sales").add({ name: document.getElementById('s-name').value, price: Number(document.getElementById('s-total').value) }); showTab('home'); }
+    async function savePur() { await db.collection("purchases").add({ name: document.getElementById('p-name').value, total: Number(document.getElementById('p-total').value), timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); showTab('purchase'); }
+    async function saveSale() { await db.collection("sales").add({ name: document.getElementById('s-name').value, price: Number(document.getElementById('s-total').value), timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); showTab('sale'); }
     async function downloadPDF() { const { jsPDF } = window.jspdf; const doc = new jsPDF(); doc.text("Oasis AC Report", 10, 10); const j = await db.collection("jobs").get(); const rows = j.docs.map(d => [d.data().date, d.data().name, d.data().cost.toLocaleString()]); doc.autoTable({ head: [['Date', 'Customer', 'Income']], body: rows }); doc.save("Report.pdf"); }
 
     window.onload = () => { showTab('home'); };
