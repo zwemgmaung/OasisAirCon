@@ -26,12 +26,11 @@
         .btn-green { background: var(--p-green); color: white; border: none; padding: 12px; border-radius: 6px; width: 100%; font-weight: bold; cursor: pointer; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .hidden { display: none; }
+        .finance-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 15px; }
+        .finance-item { text-align: center; padding: 8px; border-radius: 8px; color: white; font-size: 10px; }
         .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; color: white; cursor: pointer; }
         .bg-pending { background: #ffc107; color: #000; }
         .bg-done { background: #28a745; }
-        .img-preview { width: 100%; height: 100px; object-fit: cover; border-radius: 6px; margin-top: 5px; background: #eee; }
-        .finance-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 15px; }
-        .finance-item { text-align: center; padding: 8px; border-radius: 8px; color: white; font-size: 10px; }
     </style>
 </head>
 <body data-theme="dark">
@@ -49,6 +48,7 @@
     <div class="tab-btn" onclick="showTab('jobs')" id="t-jobs">JOBS</div>
     <div class="tab-btn" onclick="showTab('service')" id="t-service">ENTRY</div>
     <div class="tab-btn" onclick="showTab('purchase')" id="t-purchase">PURCHASE</div>
+    <div class="tab-btn" onclick="showTab('sale')" id="t-sale">SALE</div>
     <div class="tab-btn" onclick="showTab('staff')" id="t-staff">STAFF</div>
     <div class="tab-btn" onclick="showTab('settings')" id="t-settings">SETTINGS</div>
 </div>
@@ -63,7 +63,11 @@
                 <div class="finance-item" style="background:#dc3545;">Expense<br><span id="totalExpense">0</span></div>
                 <div class="finance-item" style="background:#007bff;">Profit<br><span id="totalProfit">0</span></div>
             </div>
-            <button class="btn-green" style="margin-top:15px; font-size:11px; padding:10px;" onclick="downloadPDF()">Download PDF Report</button>
+        </div>
+        <div class="card">
+            <h4 style="margin-top:0;">Monthly Report (လချုပ်)</h4>
+            <div id="monthlyReport" style="font-size:13px;">Calculating...</div>
+            <button class="btn-green" style="margin-top:10px; font-size:11px; padding:10px;" onclick="downloadPDF()">Download PDF Report</button>
         </div>
     </div>
 
@@ -75,50 +79,44 @@
         <div class="card">
             <h3>New Service Entry</h3>
             <div class="grid-2"><div class="form-group"><label>Customer Name</label><input type="text" id="j-name"></div><div class="form-group"><label>Phone</label><input type="text" id="j-phone"></div></div>
-            <div class="form-group"><label>Address</label><textarea id="j-addr" rows="2"></textarea></div>
-            
             <div class="grid-2">
-                <div class="form-group"><label>Appliance</label><select id="j-app" onchange="toggleACFields()"><option>Air-Con</option><option>Refrigerator</option><option>Washing Machine</option></select></div>
+                <div class="form-group"><label>Appliance</label><select id="j-app"><option>Air-Con</option><option>Refrigerator</option><option>Washing Machine</option></select></div>
                 <div class="form-group"><label>Brand</label><input type="text" id="j-brand"></div>
             </div>
-
-            <div id="ac-details">
-                <div class="grid-2">
-                    <div class="form-group"><label>HP</label><input type="text" id="j-hp"></div>
-                    <div class="form-group"><label>Gas Type</label><input type="text" id="j-gas"></div>
-                </div>
-                <div class="grid-2">
-                    <div class="form-group"><label>Inverter</label><select id="j-inv"><option>Inverter</option><option>Non-Inverter</option></select></div>
-                    <div class="form-group"><label>Model</label><select id="j-model"><option>Split</option><option>Ceiling Cassette</option><option>Floor Stand</option><option>Portable</option></select></div>
-                </div>
+            <div class="grid-2">
+                <div class="form-group"><label>HP/Gas</label><input type="text" id="j-hp"></div>
+                <div class="form-group"><label>Status</label><select id="j-status"><option value="Pending">Pending</option><option value="Done">Done</option></select></div>
             </div>
-
             <div class="form-group"><label>Description</label><textarea id="j-issue" rows="2"></textarea></div>
-            <div class="form-group"><label>Assigned Staff</label><div id="staffChecks" style="border:1px solid var(--border); padding:10px; border-radius:6px; max-height:100px; overflow:auto;">Loading...</div></div>
-
-            <div class="grid-2">
-                <div class="form-group"><label>Before Photo</label><input type="file" accept="image/*" id="img-before" onchange="previewImg(this, 'p-before')"><img id="p-before" class="img-preview"></div>
-                <div class="form-group"><label>After Photo</label><input type="file" accept="image/*" id="img-after" onchange="previewImg(this, 'p-after')"><img id="p-after" class="img-preview"></div>
-            </div>
-
-            <div class="grid-2">
-                <div class="form-group"><label>Date</label><input type="date" id="j-date"></div>
-                <div class="form-group"><label>Cost (MMK)</label><input type="number" id="j-cost"></div>
-            </div>
-            <div class="form-group"><label>Initial Status</label><select id="j-status"><option value="Pending">Pending</option><option value="Done">Done</option></select></div>
-            
+            <div class="grid-2"><div class="form-group"><label>Date</label><input type="date" id="j-date"></div><div class="form-group"><label>Cost (MMK)</label><input type="number" id="j-cost"></div></div>
             <button class="btn-green" onclick="saveJob()">SAVE SERVICE</button>
+        </div>
+    </div>
+
+    <div id="purchaseTab" class="hidden">
+        <div class="card">
+            <h3>New Purchase (ဝယ်ယူမှု)</h3>
+            <div class="form-group"><label>Item Name</label><input type="text" id="p-name"></div>
+            <div class="grid-2"><div class="form-group"><label>Qty</label><input type="number" id="p-qty" oninput="calcPur()"></div><div class="form-group"><label>Price</label><input type="number" id="p-price" oninput="calcPur()"></div></div>
+            <div class="form-group"><label>Total Cost</label><input type="number" id="p-total" readonly></div>
+            <button class="btn-green" onclick="savePur()">SAVE PURCHASE</button>
+        </div>
+    </div>
+
+    <div id="saleTab" class="hidden">
+        <div class="card">
+            <h3>New Sale (ရောင်းချမှု)</h3>
+            <div class="form-group"><label>Item/Appliance</label><input type="text" id="s-name"></div>
+            <div class="grid-2"><div class="form-group"><label>Qty</label><input type="number" id="s-qty"></div><div class="form-group"><label>Price</label><input type="number" id="s-price"></div></div>
+            <button class="btn-green" onclick="saveSale()">SAVE SALE</button>
         </div>
     </div>
 
     <div id="staffTab" class="hidden">
         <div class="card">
-            <h3>Add New Staff</h3>
+            <h3>Staff Management</h3>
             <div class="form-group"><label>Name</label><input type="text" id="st-name"></div>
-            <div class="grid-2">
-                <div class="form-group"><label>Role</label><select id="st-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Co-Leader</option><option>Helper</option><option>Office Staff</option></select></div>
-                <div class="form-group"><label>Phone</label><input type="text" id="st-phone"></div>
-            </div>
+            <div class="form-group"><label>Role</label><select id="st-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Co-Leader</option><option>Helper</option><option>Office Staff</option></select></div>
             <button class="btn-green" onclick="addStaff()">ADD STAFF</button>
         </div>
         <div id="staffList"></div>
@@ -127,14 +125,9 @@
     <div id="settingsTab" class="hidden">
         <div class="card" style="text-align:center;">
             <h3>App Information</h3>
-            <div style="text-align: left; background: var(--bg); padding:15px; border-radius:8px; border: 1px solid var(--border); font-size:14px;">
-                <p><strong>App:</strong> Oasis AC System</p>
-                <p><strong>Version:</strong> 1.2.1 (Full Master)</p>
-                <p><strong>Dev by:</strong> Zwe Maung Maung</p>
-            </div>
-            <div style="margin-top: 35px; padding: 20px; border-top: 1px solid var(--border); color: #888; font-size: 13px; text-align: center;">
-                © 2026 <b>Zwe Maung Maung</b>.<br>All Rights Reserved.
-            </div>
+            <p><strong>Version:</strong> 1.2.2 (Full Master)</p>
+            <p><strong>Dev by:</strong> Zwe Maung Maung</p>
+            <div style="margin-top: 30px; color: #888; font-size: 12px;">© 2026 Zwe Maung Maung. All Rights Reserved.</div>
         </div>
     </div>
 </div>
@@ -148,81 +141,62 @@
       messagingSenderId: "1039018990829",
       appId: "1:1039018990829:web:bffe0ea0269bfbded780e4"
     };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
     function showTab(t) {
-        ['home','jobs','service','purchase','staff','settings'].forEach(id => {
+        ['home','jobs','service','purchase','sale','staff','settings'].forEach(id => {
             const el = document.getElementById(id+'Tab');
             if(el) el.classList.add('hidden');
         });
         document.getElementById(t+'Tab').classList.remove('hidden');
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('t-'+t).classList.add('active');
-        if(t === 'jobs') loadAllJobs();
-        if(t === 'staff') loadStaff();
-        if(t === 'service') loadStaffForService();
         if(t === 'home') updateFinance();
-    }
-
-    function toggleACFields() {
-        const app = document.getElementById('j-app').value;
-        document.getElementById('ac-details').style.display = (app === 'Air-Con') ? 'block' : 'none';
-    }
-
-    function previewImg(input, id) {
-        const reader = new FileReader();
-        reader.onload = (e) => document.getElementById(id).src = e.target.result;
-        reader.readAsDataURL(input.files[0]);
+        if(t === 'jobs') loadJobs();
+        if(t === 'staff') loadStaff();
     }
 
     function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light'); }
+    function calcPur() { const q = document.getElementById('p-qty').value; const p = document.getElementById('p-price').value; document.getElementById('p-total').value = q * p; }
 
+    async function savePur() {
+        await db.collection("purchases").add({ name: document.getElementById('p-name').value, total: Number(document.getElementById('p-total').value), date: new Date().toISOString().split('T')[0], timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        alert("Purchase Saved!"); showTab('home');
+    }
+    async function saveSale() {
+        await db.collection("sales").add({ name: document.getElementById('s-name').value, price: Number(document.getElementById('s-price').value) * Number(document.getElementById('s-qty').value), date: new Date().toISOString().split('T')[0], timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        alert("Sale Saved!"); showTab('home');
+    }
     async function saveJob() {
-        const staff = Array.from(document.querySelectorAll('input[name="assigned"]:checked')).map(c => c.value);
-        await db.collection("jobs").add({
-            name: document.getElementById('j-name').value,
-            cost: Number(document.getElementById('j-cost').value),
-            status: document.getElementById('j-status').value,
-            appliance: document.getElementById('j-app').value,
-            hp: document.getElementById('j-hp').value,
-            gas: document.getElementById('j-gas').value,
-            model: document.getElementById('j-model').value,
-            staff, date: document.getElementById('j-date').value,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        alert("Saved!"); showTab('jobs');
-    }
-
-    function loadAllJobs() {
-        db.collection("jobs").orderBy("timestamp", "desc").get().then(snap => {
-            document.getElementById('jobMasterList').innerHTML = snap.docs.map(doc => {
-                const d = doc.data();
-                const badgeClass = d.status === 'Done' ? 'bg-done' : 'bg-pending';
-                return `<div class="card">
-                    <b>${d.name}</b> (${d.appliance})<br>
-                    <small>${d.date} | ${d.cost.toLocaleString()} MMK</small><br>
-                    <small>Type: ${d.model || '-'} | Gas: ${d.gas || '-'}</small><br>
-                    <span class="status-badge ${badgeClass}" onclick="toggleStatus('${doc.id}', '${d.status}')">${d.status}</span>
-                </div>`;
-            }).join('');
-        });
-    }
-
-    async function toggleStatus(id, current) {
-        if(current === 'Done') return;
-        if(confirm("အလုပ်ပြီးစီးကြောင်း Done ပြောင်းမလား?")) {
-            await db.collection("jobs").doc(id).update({ status: 'Done' });
-            loadAllJobs();
-        }
+        await db.collection("jobs").add({ name: document.getElementById('j-name').value, cost: Number(document.getElementById('j-cost').value), status: document.getElementById('j-status').value, appliance: document.getElementById('j-app').value, date: document.getElementById('j-date').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        alert("Job Saved!"); showTab('jobs');
     }
 
     async function updateFinance() {
-        let inc = 0, exp = 0;
-        const j = await db.collection("jobs").get(); j.forEach(d => inc += d.data().cost || 0);
+        let inc = 0, exp = 0, jobCount = 0;
+        const j = await db.collection("jobs").get(); j.forEach(d => { inc += d.data().cost || 0; jobCount++; });
+        const s = await db.collection("sales").get(); s.forEach(d => inc += d.data().price || 0);
+        const p = await db.collection("purchases").get(); p.forEach(d => exp += d.data().total || 0);
         document.getElementById('totalIncome').innerText = inc.toLocaleString();
-        document.getElementById('totalProfit').innerText = inc.toLocaleString();
+        document.getElementById('totalExpense').innerText = exp.toLocaleString();
+        document.getElementById('totalProfit').innerText = (inc - exp).toLocaleString();
+        
+        document.getElementById('monthlyReport').innerHTML = `
+            <p>Total Jobs: ${jobCount}</p>
+            <p>Total Sales: ${s.size}</p>
+            <p>Net Profit: <b>${(inc - exp).toLocaleString()} MMK</b></p>
+        `;
+    }
+
+    function loadJobs() {
+        db.collection("jobs").orderBy("timestamp", "desc").get().then(snap => {
+            document.getElementById('jobMasterList').innerHTML = snap.docs.map(doc => {
+                const d = doc.data();
+                const badge = d.status === 'Done' ? 'bg-done' : 'bg-pending';
+                return `<div class="card"><b>${d.name}</b> (${d.appliance})<br><small>${d.date} | ${d.cost.toLocaleString()} MMK</small><br><span class="status-badge ${badge}">${d.status}</span></div>`;
+            }).join('');
+        });
     }
 
     function loadStaff() {
@@ -231,15 +205,18 @@
         });
     }
 
-    function loadStaffForService() {
-        db.collection("staff").get().then(snap => {
-            document.getElementById('staffChecks').innerHTML = snap.docs.map(doc => `<div><input type="checkbox" name="assigned" value="${doc.data().name}"> ${doc.data().name}</div>`).join('');
-        });
+    async function addStaff() {
+        await db.collection("staff").add({ name: document.getElementById('st-name').value, role: document.getElementById('st-role').value });
+        alert("Staff Added!"); loadStaff();
     }
 
-    async function addStaff() {
-        await db.collection("staff").add({ name: document.getElementById('st-name').value, role: document.getElementById('st-role').value, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-        alert("Added!"); loadStaff();
+    async function downloadPDF() {
+        const { jsPDF } = window.jspdf; const doc = new jsPDF();
+        doc.text("Oasis AC Monthly Report", 10, 10);
+        const j = await db.collection("jobs").get();
+        const rows = j.docs.map(d => [d.data().date, d.data().name, d.data().cost]);
+        doc.autoTable({ head: [['Date', 'Customer', 'Income']], body: rows });
+        doc.save("Monthly_Report.pdf");
     }
 
     window.onload = () => { updateFinance(); };
