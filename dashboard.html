@@ -31,8 +31,6 @@
         .bg-pending { background: #ffc107; color: #000; }
         .bg-done { background: #28a745; }
         .img-preview { width: 100%; height: 100px; object-fit: cover; border-radius: 6px; margin-top: 5px; background: #eee; border: 1px solid var(--border); }
-        .history-list { font-size: 11px; margin-top: 15px; border-top: 1px solid var(--border); padding-top: 10px; }
-        .history-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 0.5px solid var(--border); }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
         th, td { border: 1px solid var(--border); padding: 8px; text-align: left; }
         th { background: var(--p-green); color: white; }
@@ -89,7 +87,7 @@
             <div id="monthlyStats" style="font-size:12px; line-height:1.8;">Loading...</div>
             <div class="grid-2" style="margin-top:10px;">
                 <button class="btn-green" onclick="downloadPDF()">Export PDF</button>
-                <button class="btn-green" style="background:#4285f4;" onclick="alert('Syncing...')">Google Sync</button>
+                <button class="btn-green" style="background:#4285f4;" onclick="alert('Google Sync initialized')">Google Sync</button>
             </div>
         </div>
     </div>
@@ -108,7 +106,10 @@
             <div class="grid-2"><div class="form-group"><label>HP</label><input type="text" id="j-hp"></div><div class="form-group"><label>Gas Type</label><input type="text" id="j-gas"></div></div>
             <div class="form-group"><label>Remark / Job Description</label><textarea id="j-remark" rows="2"></textarea></div>
             <div class="form-group"><label>Assigned Staff</label><div id="staffChecks" style="border:1px solid var(--border); padding:10px; border-radius:6px; max-height:100px; overflow:auto;"></div></div>
-            <div class="grid-2"><div class="form-group"><label>Before</label><input type="file" accept="image/*"><img id="p-before" class="img-preview"></div><div class="form-group"><label>After</label><input type="file" accept="image/*"><img id="p-after" class="img-preview"></div></div>
+            <div class="grid-2">
+                <div class="form-group"><label>Before</label><input type="file" accept="image/*" onchange="previewImg(this, 'p-before')"><img id="p-before" class="img-preview"></div>
+                <div class="form-group"><label>After</label><input type="file" accept="image/*" onchange="previewImg(this, 'p-after')"><img id="p-after" class="img-preview"></div>
+            </div>
             <div class="grid-2"><div class="form-group"><label>Date</label><input type="date" id="j-date"></div><div class="form-group"><label>Cost</label><input type="number" id="j-cost"></div></div>
             <button class="btn-green" onclick="saveJob()">SAVE SERVICE</button>
         </div>
@@ -138,15 +139,15 @@
 
     <div id="staffTab" class="hidden"><div id="staffList"></div><div class="card"><h4>Add Staff</h4><input type="text" id="st-name" placeholder="Name"><div class="grid-2" style="margin:10px 0;"><select id="st-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Co-Leader</option><option>Helper</option><option>Office Staff</option></select><input type="number" id="st-rate" placeholder="Daily Rate"></div><input type="text" id="st-phone" placeholder="Phone Number"><button class="btn-green" onclick="addStaff()">ADD STAFF</button></div></div>
 
-    <div id="attendanceTab" class="hidden"><div class="card"><h3>Staff Attendance</h3><input type="date" id="att-date" style="margin-bottom:10px;"><div id="attTableContainer" style="overflow-x:auto;"></div><button class="btn-green" style="margin-top:15px;" onclick="saveAttendance()">SAVE TODAY</button><button class="btn-green" style="margin-top:10px; background:#4285f4;" onclick="exportAttExcel()">Export Daily Excel</button></div></div>
+    <div id="attendanceTab" class="hidden"><div class="card"><h3>Daily Attendance</h3><input type="date" id="att-date" style="margin-bottom:10px;"><div id="attTableContainer" style="overflow-x:auto;"></div><button class="btn-green" style="margin-top:15px;" onclick="saveAttendance()">SAVE TODAY</button><button class="btn-green" style="margin-top:10px; background:#4285f4;" onclick="exportAttExcel()">Export Daily Excel</button></div></div>
 
     <div id="settingsTab" class="hidden">
         <div class="card" style="text-align:center;">
             <img src="1000064267.png" style="width:80px; height:80px; border-radius:50%; margin-bottom:15px; border:3px solid var(--p-green);">
-            <h3 style="color:var(--p-green);">Oasis AC Master Pro</h3>
+            <h3 style="color:var(--p-green);">Oasis AC System Pro</h3>
             <div style="text-align: left; background: var(--bg); padding:15px; border-radius:8px; border: 1px solid var(--border); font-size:13px;">
-                <p><b>Version:</b> 1.4.4 (Master Update)</p>
-                <div class="form-group"><label>Support Number</label><input type="text" id="cfg-phone" placeholder="09-xxxxxxxxx"><button class="btn-green" onclick="saveConfig()" style="padding:5px; margin-top:5px; font-size:10px;">Save Number</button></div>
+                <p><b>Version:</b> 1.4.5 (Sorted)</p>
+                <div class="form-group"><label>Support Phone</label><input type="text" id="cfg-phone" placeholder="09-xxxxxxxxx"><button class="btn-green" onclick="saveConfig()" style="padding:5px; margin-top:5px; font-size:10px;">Save Number</button></div>
             </div>
             <div style="margin-top: 30px; border-top: 1px solid var(--border); padding-top:20px; color:#888; font-size:12px;">© 2026 <b>Zwe Maung Maung</b>. All Rights Reserved.</div>
         </div>
@@ -165,11 +166,17 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    const roleOrder = { "MD": 1, "Manager": 2, "Leader": 3, "Co-Leader": 4, "Helper": 5, "Office Staff": 6 };
+
+    function sortStaff(staffArray) {
+        return staffArray.sort((a, b) => (roleOrder[a.role] || 99) - (roleOrder[b.role] || 99));
+    }
+
     function showTab(t) {
         document.querySelectorAll('.container > div').forEach(el => el.classList.add('hidden'));
         document.getElementById(t+'Tab').classList.remove('hidden');
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('t-'+t).classList.add('active');
+        document.getElementById('t-'+t === 't-attendance' ? 't-attendance' : 't-'+t).classList.add('active');
         if(t === 'home') updateFinance();
         if(t === 'jobs') loadJobs();
         if(t === 'staff') loadStaff();
@@ -181,15 +188,23 @@
     }
 
     function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light'); }
-    function toggleLang() { alert("Language switched!"); }
+    function toggleLang() { alert("Language switch logic here"); }
+    function previewImg(input, id) { const reader = new FileReader(); reader.onload = (e) => document.getElementById(id).src = e.target.result; if(input.files[0]) reader.readAsDataURL(input.files[0]); }
     function calcPur() { document.getElementById('p-total').value = document.getElementById('p-qty').value * document.getElementById('p-price').value; }
     function calcSale() { document.getElementById('s-total').value = document.getElementById('s-qty').value * document.getElementById('s-price').value; }
 
-    async function saveJob() { await db.collection("jobs").add({ name: document.getElementById('j-name').value, cost: Number(document.getElementById('j-cost').value), status: 'Pending', appliance: document.getElementById('j-app').value, hp: document.getElementById('j-hp').value, gas: document.getElementById('j-gas').value, remark: document.getElementById('j-remark').value, date: document.getElementById('j-date').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Job Saved!"); showTab('jobs'); }
+    async function saveJob() { await db.collection("jobs").add({ name: document.getElementById('j-name').value, cost: Number(document.getElementById('j-cost').value), status: 'Pending', appliance: document.getElementById('j-app').value, hp: document.getElementById('j-hp').value, gas: document.getElementById('j-gas').value, remark: document.getElementById('j-remark').value, date: document.getElementById('j-date').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); showTab('jobs'); }
     function loadJobs() { db.collection("jobs").orderBy("timestamp", "desc").get().then(snap => { document.getElementById('jobMasterList').innerHTML = snap.docs.map(doc => `<div class="card"><b>${doc.data().name}</b> (${doc.data().appliance})<br><small>${doc.data().date}</small><br><span class="status-badge ${doc.data().status === 'Done' ? 'bg-done' : 'bg-pending'}" onclick="toggleStatus('${doc.id}', '${doc.data().status}')">${doc.data().status}</span></div>`).join(''); }); }
-    async function toggleStatus(id, current) { if(current === 'Done') return; if(confirm("Change to Done?")) { await db.collection("jobs").doc(id).update({ status: 'Done' }); loadJobs(); updateFinance(); } }
+    async function toggleStatus(id, current) { if(current === 'Done') return; if(confirm("Mark as Done?")) { await db.collection("jobs").doc(id).update({ status: 'Done' }); loadJobs(); updateFinance(); } }
 
-    function loadStaff() { db.collection("staff").get().then(snap => { document.getElementById('staffList').innerHTML = snap.docs.map(doc => `<div class="card" onclick="openModal('${doc.id}','${doc.data().name}','${doc.data().role}','${doc.data().phone}','${doc.data().rate}')" style="cursor:pointer;"><b>${doc.data().name}</b> (${doc.data().role})<br><small>📞 ${doc.data().phone || '-'}</small></div>`).join(''); }); }
+    function loadStaff() {
+        db.collection("staff").get().then(snap => {
+            const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            const sorted = sortStaff(data);
+            document.getElementById('staffList').innerHTML = sorted.map(s => `<div class="card" onclick="openModal('${s.id}','${s.name}','${s.role}','${s.phone}','${s.rate}')" style="cursor:pointer;"><b>${s.name}</b> (${s.role})<br><small>📞 ${s.phone || '-'}</small></div>`).join('');
+        });
+    }
+
     function openModal(id, name, role, phone, rate) { document.getElementById('m-id').value = id; document.getElementById('m-name').value = name; document.getElementById('m-role').value = role; document.getElementById('m-phone').value = phone || ''; document.getElementById('m-rate').value = rate || 0; document.getElementById('staffModal').style.display = 'flex'; }
     function closeModal() { document.getElementById('staffModal').style.display = 'none'; }
     async function updateStaff() { await db.collection("staff").doc(document.getElementById('m-id').value).update({ name: document.getElementById('m-name').value, role: document.getElementById('m-role').value, phone: document.getElementById('m-phone').value, rate: Number(document.getElementById('m-rate').value) }); closeModal(); loadStaff(); }
@@ -202,17 +217,23 @@
         const p = await db.collection("purchases").get(); p.forEach(d => { if(d.data().category === 'Rent') rentExp += d.data().total || 0; else pExp += d.data().total || 0; });
         const staffSnap = await db.collection("staff").get(); const attSnap = await db.collection("attendance").get();
         staffSnap.forEach(sDoc => { attSnap.forEach(aDoc => { if(aDoc.data().records.find(r => r.name === sDoc.data().name && r.status === 'Present')) totalSalary += (sDoc.data().rate || 0); }); });
-        document.getElementById('financeDisplay').innerHTML = `Income: ${(jInc+sInc).toLocaleString()} | Expense: ${(pExp+rentExp+totalSalary).toLocaleString()} | Profit: <b>${(jInc+sInc-pExp-rentExp-totalSalary).toLocaleString()}</b>`;
+        document.getElementById('financeDisplay').innerHTML = `Inc: ${(jInc+sInc).toLocaleString()} | Exp: ${(pExp+rentExp+totalSalary).toLocaleString()} | Profit: <b>${(jInc+sInc-pExp-rentExp-totalSalary).toLocaleString()}</b>`;
         document.getElementById('monthlyStats').innerHTML = `• Jobs: ${jInc.toLocaleString()}<br>• Sales: ${sInc.toLocaleString()}<br>• Purchases: ${pExp.toLocaleString()}<br>• Salaries: ${totalSalary.toLocaleString()}`;
     }
 
     function loadHistory(col, target) { db.collection(col).orderBy("timestamp", "desc").limit(10).get().then(snap => { document.getElementById(target).innerHTML = snap.docs.map(doc => `<div class="history-item"><span>${doc.data().name}</span> <span>${(doc.data().total || doc.data().price).toLocaleString()} MMK</span></div>`).join(''); }); }
-    function loadStaffForAttendance() { db.collection("staff").get().then(snap => { document.getElementById('attTableContainer').innerHTML = `<table><tr><th>Staff</th><th>Status</th></tr>` + snap.docs.map(doc => `<tr><td>${doc.data().name}</td><td><select class="att-sel" data-name="${doc.data().name}"><option>Present</option><option>Absent</option></select></td></tr>`).join('') + `</table>`; }); }
-    async function saveAttendance() { const records = Array.from(document.querySelectorAll('.att-sel')).map(s => ({ name: s.getAttribute('data-name'), status: s.value })); await db.collection("attendance").add({ date: document.getElementById('att-date').value, records, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Recorded!"); updateFinance(); }
     
+    function loadStaffForAttendance() {
+        db.collection("staff").get().then(snap => {
+            const data = snap.docs.map(doc => ({ ...doc.data() }));
+            const sorted = sortStaff(data);
+            document.getElementById('attTableContainer').innerHTML = `<table><tr><th>Staff</th><th>Status</th></tr>` + sorted.map(s => `<tr><td>${s.name}</td><td><select class="att-sel" data-name="${s.name}"><option>Present</option><option>Absent</option></select></td></tr>`).join('') + `</table>`;
+        });
+    }
+
+    async function saveAttendance() { const records = Array.from(document.querySelectorAll('.att-sel')).map(s => ({ name: s.getAttribute('data-name'), status: s.value })); await db.collection("attendance").add({ date: document.getElementById('att-date').value, records, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Recorded!"); updateFinance(); }
     function saveConfig() { localStorage.setItem('support_phone', document.getElementById('cfg-phone').value); alert("Phone Saved!"); }
     function loadConfig() { document.getElementById('cfg-phone').value = localStorage.getItem('support_phone') || ''; }
-
     function loadStaffForService() { db.collection("staff").get().then(snap => { document.getElementById('staffChecks').innerHTML = snap.docs.map(doc => `<div><input type="checkbox" name="assigned" value="${doc.data().name}"> ${doc.data().name}</div>`).join(''); }); }
     async function savePur() { await db.collection("purchases").add({ name: document.getElementById('p-name').value, total: Number(document.getElementById('p-total').value), category: document.getElementById('p-cat').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); showTab('purchase'); }
     async function saveSale() { await db.collection("sales").add({ name: document.getElementById('s-name').value, price: Number(document.getElementById('s-total').value), timestamp: firebase.firestore.FieldValue.serverTimestamp() }); showTab('sale'); }
