@@ -41,11 +41,11 @@
         <span style="font-weight:bold; font-size:11px;">KO HTAY AUNG (OASIS) AC SALES & SERVICE</span>
     </div>
     <div style="display:flex; gap:8px; align-items:center;">
-        <select id="langBtn" onchange="toggleLang()" style="padding:2px; font-size:10px; border:1px solid white; background:transparent; color:white; width:auto;">
+        <select id="langBtn" onchange="toggleLang()" style="padding:2px; font-size:10px; width:auto; border:1px solid white; background:transparent; color:white;">
             <option value="en">ENG</option>
             <option value="mm">MM</option>
         </select>
-        <button onclick="toggleTheme()" style="background:none; border:none; cursor:pointer; font-size:16px;">🌓</button>
+        <button onclick="toggleTheme()" style="background:none; border:none; cursor:pointer; font-size:18px;">🌓</button>
     </div>
 </div>
 
@@ -61,7 +61,7 @@
 <div id="staffModal" class="modal">
     <div class="modal-content">
         <span class="close-btn" onclick="closeModal()">&times;</span>
-        <h3 id="m-title" style="color:var(--p-green); margin-top:0;">Edit Staff</h3>
+        <h3 id="m-title" style="color:var(--p-green); margin-top:0;">Staff Details</h3>
         <input type="hidden" id="m-id">
         <div class="form-group"><label>Name</label><input type="text" id="m-name"></div>
         <div class="grid-2">
@@ -71,7 +71,7 @@
         <div class="form-group"><label>Address</label><input type="text" id="m-addr"></div>
         <div class="form-group"><label>Remark</label><textarea id="m-remark" rows="2"></textarea></div>
         <div style="display:flex; gap:10px;"><button class="btn-green" onclick="updateStaff()" style="flex:1;">UPDATE</button><button class="btn-green" id="m-call-btn" style="background:#007bff; flex:none; padding:10px;">CALL</button></div>
-        <button class="btn-green" onclick="deleteStaff()" style="background:#dc3545; margin-top:10px; font-size:11px;">DELETE</button>
+        <button class="btn-green" onclick="deleteStaff()" style="background:#dc3545; margin-top:10px; font-size:11px;">DELETE STAFF</button>
     </div>
 </div>
 
@@ -92,7 +92,7 @@
 
     <div id="serviceTab" class="hidden">
         <div class="card">
-            <h3>New Service Entry</h3>
+            <h3 id="lbl-srv-new">New Service Entry</h3>
             <div class="grid-2"><div class="form-group"><label>Customer Name</label><input type="text" id="j-name"></div><div class="form-group"><label>Phone</label><input type="text" id="j-phone"></div></div>
             <div class="form-group"><label>Address</label><textarea id="j-addr" rows="2"></textarea></div>
             <div class="grid-2"><div class="form-group"><label>Appliance</label><select id="j-app"><option>Air-Con</option><option>Refrigerator</option><option>Washing Machine</option></select></div><div class="form-group"><label>Brand</label><input type="text" id="j-brand"></div></div>
@@ -108,28 +108,28 @@
 
     <div id="purchaseTab" class="hidden">
         <div class="card">
-            <h3>New Purchase</h3>
+            <h3 id="lbl-pur">New Purchase</h3>
             <div class="form-group"><label>Item Name</label><input type="text" id="p-name"></div>
-            <div class="grid-2"><div class="form-group"><label>Quantity</label><input type="number" id="p-qty" oninput="calcPur()"></div><div class="form-group"><label>Unit Price</label><input type="number" id="p-price" oninput="calcPur()"></div></div>
-            <div class="form-group"><label>Total Cost</label><input type="number" id="p-total" readonly style="background:#eee;"></div>
+            <div class="grid-2"><div class="form-group"><label>Qty</label><input type="number" id="p-qty" oninput="calcPur()"></div><div class="form-group"><label>Unit Price</label><input type="number" id="p-price" oninput="calcPur()"></div></div>
+            <div class="form-group"><label>Total</label><input type="number" id="p-total" readonly style="background:#eee;"></div>
             <button class="btn-green" onclick="savePur()">SAVE PURCHASE</button>
         </div>
     </div>
 
     <div id="saleTab" class="hidden">
         <div class="card">
-            <h3>New Sale</h3>
-            <div class="form-group"><label>Appliance Type</label><select id="s-app"><option>Air-Con</option><option>Refrigerator</option><option>Washing Machine</option></select></div>
-            <div class="grid-2"><div class="form-group"><label>Brand Name</label><input type="text" id="s-brand"></div><div class="form-group"><label>Model</label><input type="text" id="s-model"></div></div>
-            <div class="grid-2"><div class="form-group"><label>HP</label><input type="text" id="s-hp"></div><div class="form-group"><label>Quantity</label><input type="number" id="s-qty"></div></div>
-            <div class="form-group"><label>Sale Price (MMK)</label><input type="number" id="s-price"></div>
+            <h3 id="lbl-sale">New Sale</h3>
+            <div class="form-group"><label>Appliance</label><select id="s-app"><option>Air-Con</option><option>Refrigerator</option><option>Washing Machine</option></select></div>
+            <div class="grid-2"><div class="form-group"><label>Brand</label><input type="text" id="s-brand"></div><div class="form-group"><label>Model</label><input type="text" id="s-model"></div></div>
+            <div class="grid-2"><div class="form-group"><label>HP</label><input type="text" id="s-hp"></div><div class="form-group"><label>Qty</label><input type="number" id="s-qty"></div></div>
+            <div class="form-group"><label>Price (MMK)</label><input type="number" id="s-price"></div>
             <button class="btn-green" onclick="saveSale()">SAVE SALE</button>
         </div>
     </div>
 
     <div id="staffTab" class="hidden">
         <div class="card">
-            <h3>Add New Staff</h3>
+            <h3 id="lbl-stf-add">Add New Staff</h3>
             <div class="form-group"><label>Name</label><input type="text" id="st-name"></div>
             <div class="grid-2">
                 <div class="form-group"><label>Role</label><select id="st-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Second-Leader</option><option>Helper</option><option>Technician</option><option value="Office Staff">Office Staff</option></select></div>
@@ -146,11 +146,14 @@
         <div class="card" style="text-align:center;">
             <h3>App Information</h3>
             <img src="1000064267.png" style="width:70px; height:70px; border-radius:50%; border:3px solid var(--p-green); margin-bottom:10px; object-fit:cover;">
-            <div style="text-align: left; background: var(--bg); padding:15px; border-radius:8px; border:1px solid var(--border); font-size:14px;">
+            <div style="text-align: left; background: var(--bg); padding:15px; border-radius:8px; border:1px solid var(--border); font-size:14px; line-height:1.8;">
                 <p><strong>App:</strong> Oasis AC System</p>
-                <p><strong>Version:</strong> 1.1.5 (Final)</p>
+                <p><strong>Version:</strong> 1.1.5 (Professional Sync)</p>
                 <p><strong>Dev by:</strong> Zwe Maung Maung</p>
                 <p><strong>Org:</strong> Ko Htay Aung (Oasis) AC</p>
+            </div>
+            <div style="margin-top:20px; font-size:11px; color:#999; border-top:1px dashed var(--border); padding-top:10px;">
+                <p>© 2026 <strong>Zwe Maung Maung</strong>. All Rights Reserved.</p>
             </div>
             <button class="btn-green" onclick="logout()" style="background:#dc3545; margin-top:15px;">LOGOUT</button>
         </div>
@@ -166,8 +169,23 @@
       messagingSenderId: "1039018990829",
       appId: "1:1039018990829:web:bffe0ea0269bfbded780e4"
     };
-    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+    
+    // OFFLINE PERSISTENCE ENABLE
+    if (!firebase.apps.length) { 
+        firebase.initializeApp(firebaseConfig); 
+        firebase.firestore().enablePersistence().catch(err => console.log("Offline failed", err));
+    }
     const db = firebase.firestore();
+
+    const lang = {
+        en: { dash: "Dashboard Summary", srv: "New Service Entry", name: "Customer Name", phone: "Phone", addr: "Address", assign: "Assigned Staff", save: "SAVE RECORD", stf_add: "Add Staff", stf_name: "Name", role: "Role", stf_phone: "Phone", stf_addr: "Address", remark: "Remark", btn_stf: "ADD STAFF", dir: "Staff Directory", set: "App Information", pur: "New Purchase", sale: "New Sale", issue: "Description" },
+        mm: { dash: "အနှစ်ချုပ် ဇယား", srv: "ပြုပြင်ရေး မှတ်တမ်းအသစ်", name: "အမည်", phone: "ဖုန်း", addr: "လိပ်စာ", assign: "တာဝန်ကျဝန်ထမ်းများ", save: "မှတ်တမ်းသိမ်းမည်", stf_add: "ဝန်ထမ်းအသစ်သွင်းရန်", stf_name: "အမည်", role: "ရာထူး", stf_phone: "ဖုန်း", stf_addr: "လိပ်စာ", remark: "မှတ်ချက်", btn_stf: "ဝန်ထမ်းသိမ်းမည်", dir: "ဝန်ထမ်းစာရင်း", set: "ဆော့ဝဲလ် အချက်အလက်", pur: "ပစ္စည်းဝယ်ယူမှု မှတ်တမ်း", sale: "အရောင်းမှတ်တမ်းအသစ်", issue: "အကြောင်းအရာ" }
+    };
+
+    function toggleLang() {
+        const l = document.getElementById('langBtn').value;
+        Object.keys(lang[l]).forEach(k => { const el = document.getElementById('lbl-'+k); if(el) el.innerText = lang[l][k]; });
+    }
 
     function showTab(t) {
         ['home','service','purchase','sale','staff','settings'].forEach(id => document.getElementById(id+'Tab').classList.add('hidden'));
@@ -195,7 +213,7 @@
     }
     function closeModal() { document.getElementById('staffModal').style.display = 'none'; }
 
-    // LOGIC
+    // DATA LOGIC
     function calcPur() { const q = document.getElementById('p-qty').value; const p = document.getElementById('p-price').value; document.getElementById('p-total').value = q * p; }
 
     async function savePur() {
@@ -240,8 +258,7 @@
     }
 
     async function updateStaff() {
-        const id = document.getElementById('m-id').value;
-        await db.collection("staff").doc(id).update({ name: document.getElementById('m-name').value, role: document.getElementById('m-role').value, phone: document.getElementById('m-phone').value, addr: document.getElementById('m-addr').value, remark: document.getElementById('m-remark').value });
+        await db.collection("staff").doc(document.getElementById('m-id').value).update({ name: document.getElementById('m-name').value, role: document.getElementById('m-role').value, phone: document.getElementById('m-phone').value, addr: document.getElementById('m-addr').value, remark: document.getElementById('m-remark').value });
         alert("Updated!"); closeModal(); loadStaff();
     }
 
@@ -252,9 +269,4 @@
     async function addStaff() {
         await db.collection("staff").add({ name: document.getElementById('st-name').value, role: document.getElementById('st-role').value, phone: document.getElementById('st-phone').value, addr: document.getElementById('st-addr').value, remark: document.getElementById('st-remark').value, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
         alert("Added!"); loadStaff();
-    }
 
-    window.onload = () => { if(!localStorage.getItem('isLoggedIn')) location.href='index.html'; updateFinance(); };
-</script>
-</body>
-</html>
