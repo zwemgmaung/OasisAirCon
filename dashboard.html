@@ -87,7 +87,7 @@
             <div id="monthlyStats" style="font-size:12px; line-height:1.8;">Loading...</div>
             <div class="grid-2" style="margin-top:10px;">
                 <button class="btn-green" onclick="downloadPDF()">Export PDF</button>
-                <button class="btn-green" style="background:#4285f4;" onclick="alert('Google Sync initialized')">Google Sync</button>
+                <button class="btn-green" style="background:#4285f4;" onclick="alert('Google Sync Ready!')">Google Sync</button>
             </div>
         </div>
     </div>
@@ -114,7 +114,7 @@
             <button class="btn-green" onclick="saveJob()">SAVE SERVICE</button>
         </div>
     </div>
-        <div id="purchaseTab" class="hidden">
+    <div id="purchaseTab" class="hidden">
         <div class="card">
             <h3>New Purchase / Expense</h3>
             <select id="p-cat" style="margin-bottom:10px;"><option value="Item">Purchase Item</option><option value="Rent">Shop Rent</option></select>
@@ -144,10 +144,13 @@
     <div id="settingsTab" class="hidden">
         <div class="card" style="text-align:center;">
             <img src="1000064267.png" style="width:80px; height:80px; border-radius:50%; margin-bottom:15px; border:3px solid var(--p-green);">
-            <h3 style="color:var(--p-green);">Oasis AC System Pro</h3>
-            <div style="text-align: left; background: var(--bg); padding:15px; border-radius:8px; border: 1px solid var(--border); font-size:13px;">
-                <p><b>Version:</b> 1.4.5 (Sorted)</p>
-                <div class="form-group"><label>Support Phone</label><input type="text" id="cfg-phone" placeholder="09-xxxxxxxxx"><button class="btn-green" onclick="saveConfig()" style="padding:5px; margin-top:5px; font-size:10px;">Save Number</button></div>
+            <h3 style="color:var(--p-green);">Ko Htay Aung (Oasis) AC Sales and Service</h3>
+            <div style="text-align: left; background: var(--bg); padding:15px; border-radius:10px; border: 1px solid var(--border); font-size:13px; line-height:1.6;">
+                <p style="margin:5px 0;"><b>App Version:</b> 1.4.6 (Master Pro)</p>
+                <p style="margin:5px 0;"><b>Developed by:</b> Zwe Maung Maung</p>
+                <p style="margin:5px 0;"><b>System Type:</b> Cloud Master Sync</p>
+                <p style="margin:5px 0;"><b>Database:</b> Firebase Real-time</p>
+                <p style="margin:5px 0;"><b>Features:</b> Daily Salary & Sorting</p>
             </div>
             <div style="margin-top: 30px; border-top: 1px solid var(--border); padding-top:20px; color:#888; font-size:12px;">© 2026 <b>Zwe Maung Maung</b>. All Rights Reserved.</div>
         </div>
@@ -167,10 +170,7 @@
     const db = firebase.firestore();
 
     const roleOrder = { "MD": 1, "Manager": 2, "Leader": 3, "Co-Leader": 4, "Helper": 5, "Office Staff": 6 };
-
-    function sortStaff(staffArray) {
-        return staffArray.sort((a, b) => (roleOrder[a.role] || 99) - (roleOrder[b.role] || 99));
-    }
+    function sortStaff(staffArray) { return staffArray.sort((a, b) => (roleOrder[a.role] || 99) - (roleOrder[b.role] || 99)); }
 
     function showTab(t) {
         document.querySelectorAll('.container > div').forEach(el => el.classList.add('hidden'));
@@ -184,11 +184,10 @@
         if(t === 'sale') loadHistory('sales', 'saleHistory');
         if(t === 'attendance') { loadStaffForAttendance(); document.getElementById('att-date').valueAsDate = new Date(); }
         if(t === 'service') loadStaffForService();
-        if(t === 'settings') loadConfig();
     }
 
     function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light'); }
-    function toggleLang() { alert("Language switch logic here"); }
+    function toggleLang() { alert("Branding & Sorting Logic Updated!"); }
     function previewImg(input, id) { const reader = new FileReader(); reader.onload = (e) => document.getElementById(id).src = e.target.result; if(input.files[0]) reader.readAsDataURL(input.files[0]); }
     function calcPur() { document.getElementById('p-total').value = document.getElementById('p-qty').value * document.getElementById('p-price').value; }
     function calcSale() { document.getElementById('s-total').value = document.getElementById('s-qty').value * document.getElementById('s-price').value; }
@@ -232,8 +231,6 @@
     }
 
     async function saveAttendance() { const records = Array.from(document.querySelectorAll('.att-sel')).map(s => ({ name: s.getAttribute('data-name'), status: s.value })); await db.collection("attendance").add({ date: document.getElementById('att-date').value, records, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Recorded!"); updateFinance(); }
-    function saveConfig() { localStorage.setItem('support_phone', document.getElementById('cfg-phone').value); alert("Phone Saved!"); }
-    function loadConfig() { document.getElementById('cfg-phone').value = localStorage.getItem('support_phone') || ''; }
     function loadStaffForService() { db.collection("staff").get().then(snap => { document.getElementById('staffChecks').innerHTML = snap.docs.map(doc => `<div><input type="checkbox" name="assigned" value="${doc.data().name}"> ${doc.data().name}</div>`).join(''); }); }
     async function savePur() { await db.collection("purchases").add({ name: document.getElementById('p-name').value, total: Number(document.getElementById('p-total').value), category: document.getElementById('p-cat').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); showTab('purchase'); }
     async function saveSale() { await db.collection("sales").add({ name: document.getElementById('s-name').value, price: Number(document.getElementById('s-total').value), timestamp: firebase.firestore.FieldValue.serverTimestamp() }); showTab('sale'); }
