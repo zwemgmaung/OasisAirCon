@@ -257,13 +257,15 @@
     }
 
     window.onload = () => {
-        const loginStatus = localStorage.getItem('isLoggedIn');
-        if (loginStatus !== 'true') {
-            window.location.href = 'index.html';
-        } else {
-            updateFinance();
-        }
-    };
+    // index.html က သိမ်းထားတဲ့ နာမည် (isLoggedIn) နဲ့ အတိအကျ ပြန်စစ်တာပါ
+    const checkStatus = localStorage.getItem('isLoggedIn');
+    
+    if (checkStatus === 'true') {
+        updateFinance(); // Login မှန်ရင် Dashboard မှာ ဆက်နေမယ်
+    } else {
+        window.location.href = 'index.html'; // မမှန်ရင် Index ကို ပြန်သွားမယ်
+    }
+};
 </script>
 </body>
             </html>
