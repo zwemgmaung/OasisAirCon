@@ -59,20 +59,20 @@
     <div class="tab-btn" onclick="showTab('settings')" id="t-settings">SETTINGS</div>
 </div>
 
-<div id="jobModal" class="modal"><div class="modal-content"><h3 id="edit-title">Edit Job</h3><input type="hidden" id="edit-j-id"><div class="form-group"><label>Customer</label><input type="text" id="edit-j-name"></div><div class="form-group"><label>Cost</label><input type="number" id="edit-j-cost"></div><div class="form-group"><label>Status</label><select id="edit-j-status"><option value="Pending">Pending</option><option value="Done">Done</option></select></div><button class="btn-green" onclick="updateJob()">UPDATE</button><button class="btn-green" onclick="deleteJob()" style="background:#dc3545; margin-top:10px;">DELETE</button><button class="btn-green" onclick="closeJobModal()" style="background:#888; margin-top:10px;">CLOSE</button></div></div>
+<div id="jobModal" class="modal"><div class="modal-content"><h3>Edit Job</h3><input type="hidden" id="edit-j-id"><div class="form-group"><label>Customer</label><input type="text" id="edit-j-name"></div><div class="form-group"><label>Cost</label><input type="number" id="edit-j-cost"></div><div class="form-group"><label>Status</label><select id="edit-j-status"><option value="Pending">Pending</option><option value="Done">Done</option></select></div><button class="btn-green" onclick="updateJob()">UPDATE</button><button class="btn-green" onclick="deleteJob()" style="background:#dc3545; margin-top:10px;">DELETE</button><button class="btn-green" onclick="closeJobModal()" style="background:#888; margin-top:10px;">CLOSE</button></div></div>
 
 <div id="staffModal" class="modal"><div class="modal-content"><h3>Edit Staff</h3><input type="hidden" id="m-id"><div class="form-group"><label>Name</label><input type="text" id="m-name"></div><div class="grid-2"><div class="form-group"><label>Role</label><select id="m-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Co-Leader</option><option>Helper</option><option>Office Staff</option></select></div><div class="form-group"><label>Daily Rate</label><input type="number" id="m-rate"></div></div><div class="form-group"><label>Phone</label><input type="text" id="m-phone"></div><button class="btn-green" onclick="updateStaff()">UPDATE</button><button class="btn-green" onclick="closeModal()" style="background:#888; margin-top:10px;">CLOSE</button></div></div>
 <div class="container">
     <div id="homeTab">
         <div class="card" style="text-align: center;">
-            <h3>Dashboard Summary</h3>
-            <p style="font-size: 11px; color: var(--p-green); font-weight:bold;">Developed by Zwe Maung Maung</p>
-            <div id="financeDisplay" style="font-size:13px; line-height:2;">Calculating...</div>
+            <h3>Daily Dashboard Summary</h3>
+            <p style="font-size: 11px; color: var(--p-green); font-weight:bold;">Today: <span id="currentDateDisp"></span></p>
+            <div id="dailyFinanceDisplay" style="font-size:12px; line-height:2.2; text-align: left; padding: 10px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border);">Calculating Daily Stats...</div>
         </div>
         <div class="card">
             <h4>Monthly Summary & Sync</h4>
             <div id="monthlyStats" style="font-size:12px; line-height:1.8;">Loading...</div>
-            <div class="grid-2" style="margin-top:10px;"><button class="btn-green" onclick="downloadPDF()">Export PDF</button><button class="btn-green" style="background:#4285f4;" onclick="alert('Syncing...')">Google Sync</button></div>
+            <div class="grid-2" style="margin-top:10px;"><button class="btn-green" onclick="downloadPDF()">Export PDF</button><button class="btn-green" style="background:#4285f4;" onclick="alert('Google Sync Ready!')">Google Sync</button></div>
         </div>
     </div>
 
@@ -83,10 +83,13 @@
             <h3>New Service Entry</h3>
             <div class="grid-2"><div class="form-group"><label>Customer</label><input type="text" id="j-name"></div><div class="form-group"><label>Phone</label><input type="text" id="j-phone"></div></div>
             <div class="form-group"><label>Address</label><textarea id="j-addr" rows="2"></textarea></div>
-            <div class="grid-2"><div class="form-group"><label>Appliance</label><select id="j-app"><option>Air-Con</option><option>Refrigerator</option><option>Washing Machine</option></select></div><div class="form-group"><label>Brand</label><input type="text" id="j-brand"></div></div>
+            <div class="grid-2">
+                <div class="form-group"><label>Appliance</label><select id="j-app"><option>Air-Con</option><option>Refrigerator</option><option>Washing Machine</option></select></div>
+                <div class="form-group"><label>Brand</label><input type="text" id="j-brand"></div>
+            </div>
             <div class="grid-2"><div class="form-group"><label>HP</label><input type="text" id="j-hp"></div><div class="form-group"><label>Gas Type</label><input type="text" id="j-gas"></div></div>
-            <div class="form-group"><label>Description</label><textarea id="j-desc" rows="2" placeholder="အလုပ်အကြောင်းအရာ"></textarea></div>
-            <div class="form-group"><label>Assigned Staff (MD မပါ)</label><div id="staffChecks" style="border:1px solid var(--border); padding:10px; border-radius:6px; max-height:120px; overflow-y:auto;"></div></div>
+            <div class="form-group"><label>Description</label><textarea id="j-desc" rows="2"></textarea></div>
+            <div class="form-group"><label>Assigned Staff</label><div id="staffChecks" style="border:1px solid var(--border); padding:10px; border-radius:6px; max-height:120px; overflow-y:auto;"></div></div>
             <div class="grid-2">
                 <div class="form-group"><label>Before Photo</label><input type="file" accept="image/*" onchange="previewImg(this, 'p-before')"><img id="p-before" class="img-preview"></div>
                 <div class="form-group"><label>After Photo</label><input type="file" accept="image/*" onchange="previewImg(this, 'p-after')"><img id="p-after" class="img-preview"></div>
@@ -99,17 +102,16 @@
 
     <div id="purchaseTab" class="hidden"><div class="card"><h3>New Expense</h3><select id="p-cat" style="margin-bottom:10px;"><option value="Item">Purchase Item</option><option value="Rent">Shop Rent</option></select><input type="text" id="p-name" placeholder="Item Name"><div class="grid-2" style="margin-top:10px;"><input type="number" id="p-qty" placeholder="Qty" oninput="calcPur()"><input type="number" id="p-price" placeholder="Price" oninput="calcPur()"></div><input type="number" id="p-total" readonly style="margin:10px 0; background:var(--bg); color:var(--text);"><button class="btn-green" onclick="savePur()">SAVE</button><div id="purHistory" class="history-list"></div></div></div>
     <div id="saleTab" class="hidden"><div class="card"><h3>New Sale</h3><input type="text" id="s-name" placeholder="Item Name"><div class="grid-2" style="margin-top:10px;"><input type="number" id="s-qty" placeholder="Qty" oninput="calcSale()"><input type="number" id="s-price" placeholder="Price" oninput="calcSale()"></div><input type="number" id="s-total" readonly style="margin:10px 0; background:var(--bg); color:var(--text);"><button class="btn-green" onclick="saveSale()">SAVE</button><div id="saleHistory" class="history-list"></div></div></div>
-    <div id="staffTab" class="hidden"><div id="staffList"></div><div class="card"><h4>Add Staff</h4><input type="text" id="st-name" placeholder="Name"><div class="grid-2" style="margin:10px 0;"><select id="st-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Co-Leader</option><option>Helper</option></select><input type="number" id="st-rate" placeholder="Daily Rate"></div><input type="text" id="st-phone" placeholder="Phone"><button class="btn-green" onclick="addStaff()" style="margin-top:10px;">ADD</button></div></div>
-    <div id="attendanceTab" class="hidden"><div class="card"><h3>Attendance</h3><input type="date" id="att-date" style="margin-bottom:10px;"><div id="attTableContainer"></div><button class="btn-green" style="margin-top:15px;" onclick="saveAttendance()">SAVE TODAY</button></div></div>
+    <div id="staffTab" class="hidden"><div id="staffList"></div><div class="card"><h4>Add Staff</h4><input type="text" id="st-name" placeholder="Name"><div class="grid-2" style="margin:10px 0;"><select id="st-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Co-Leader</option><option>Helper</option></select><input type="number" id="st-rate" placeholder="Daily Rate"></div><input type="text" id="st-phone" placeholder="Phone"><button class="btn-green" onclick="addStaff()" style="margin-top:10px;">ADD STAFF</button></div></div>
+    <div id="attendanceTab" class="hidden"><div class="card"><h3>Daily Attendance</h3><input type="date" id="att-date" style="margin-bottom:10px;"><div id="attTableContainer"></div><button class="btn-green" style="margin-top:15px;" onclick="saveAttendance()">SAVE TODAY</button></div></div>
 
     <div id="settingsTab" class="hidden">
         <div class="card" style="text-align:center;">
             <img src="1000064267.png" style="width:80px; height:80px; border-radius:50%; margin-bottom:15px; border:3px solid var(--p-green);">
             <h3 style="color:var(--p-green);">Ko Htay Aung (Oasis) AC Sales and Service</h3>
-            <div style="text-align: left; background: var(--bg); padding:15px; border-radius:10px; border: 1px solid var(--border); font-size:13px; line-height:1.6;">
-                <p><b>App Version:</b> 1.4.8 (Entry Perfection)</p>
+            <div style="text-align: left; background: var(--bg); padding:15px; border-radius:10px; border: 1px solid var(--border); font-size:13px;">
+                <p><b>App Version:</b> 1.4.9 (Master Pro)</p>
                 <p><b>Developed by:</b> Zwe Maung Maung</p>
-                <p><b>System:</b> Cloud Pro Sync</p>
             </div>
             <div style="margin-top: 30px; border-top: 1px solid var(--border); padding-top:20px; color:#888; font-size:12px;">© 2026 <b>Zwe Maung Maung</b>. All Rights Reserved.</div>
         </div>
@@ -139,10 +141,68 @@
     }
 
     function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light'); }
-    function toggleLang() { alert("Perfect Entry Restore!"); }
     function previewImg(input, id) { const reader = new FileReader(); reader.onload = (e) => document.getElementById(id).src = e.target.result; if(input.files[0]) reader.readAsDataURL(input.files[0]); }
     function calcPur() { document.getElementById('p-total').value = document.getElementById('p-qty').value * document.getElementById('p-price').value; }
     function calcSale() { document.getElementById('s-total').value = document.getElementById('s-qty').value * document.getElementById('s-price').value; }
+
+    async function updateFinance() {
+        const todayStr = new Date().toISOString().split('T')[0];
+        document.getElementById('currentDateDisp').innerText = todayStr;
+        
+        let jInc = 0, sInc = 0, pExp = 0, rentExp = 0, totalSalary = 0;
+        let dJobInc = 0, dSaleInc = 0, dPurExp = 0, dSalary = 0;
+
+        const jobs = await db.collection("jobs").get();
+        jobs.forEach(d => {
+            const data = d.data();
+            if(data.status === 'Done') jInc += data.cost || 0;
+            if(data.date === todayStr && data.status === 'Done') dJobInc += data.cost || 0;
+        });
+
+        const sales = await db.collection("sales").get();
+        sales.forEach(d => {
+            sInc += d.data().price || 0;
+            if(d.data().timestamp && d.data().timestamp.toDate().toISOString().split('T')[0] === todayStr) dSaleInc += d.data().price || 0;
+        });
+
+        const purs = await db.collection("purchases").get();
+        purs.forEach(d => {
+            const val = d.data().total || 0;
+            if(d.data().category === 'Rent') rentExp += val; else pExp += val;
+            if(d.data().timestamp && d.data().timestamp.toDate().toISOString().split('T')[0] === todayStr) dPurExp += val;
+        });
+
+        const staffSnap = await db.collection("staff").get();
+        const attSnap = await db.collection("attendance").get();
+        staffSnap.forEach(sDoc => {
+            const staff = sDoc.data();
+            attSnap.forEach(aDoc => {
+                const att = aDoc.data();
+                if(att.records.find(r => r.name === staff.name && r.status === 'Present')) {
+                    totalSalary += (staff.rate || 0);
+                    if(att.date === todayStr) dSalary += (staff.rate || 0);
+                }
+            });
+        });
+
+        const dailyInc = dJobInc + dSaleInc;
+        const dailyExp = dPurExp + dSalary;
+        document.getElementById('dailyFinanceDisplay').innerHTML = `
+            Daily Income: <b>${dailyInc.toLocaleString()}</b> MMK<br>
+            Daily Expense: <b>${dPurExp.toLocaleString()}</b> MMK<br>
+            Daily Salary: <b>${dSalary.toLocaleString()}</b> MMK<br>
+            Daily Profit: <b style="color:var(--p-green);">${(dailyInc - dailyExp).toLocaleString()}</b> MMK
+        `;
+
+        const totalInc = jInc + sInc;
+        const totalExp = pExp + rentExp + totalSalary;
+        document.getElementById('monthlyStats').innerHTML = `
+            • Total Jobs (Done): ${jInc.toLocaleString()}<br>
+            • Total Sales: ${sInc.toLocaleString()}<br>
+            • Total Expenses: ${totalExp.toLocaleString()}<br>
+            • Monthly Profit: <b style="color:var(--p-green); font-size:14px;">${(totalInc - totalExp).toLocaleString()}</b> MMK
+        `;
+    }
 
     async function saveJob() {
         const staff = Array.from(document.querySelectorAll('input[name="assigned"]:checked')).map(c => c.value);
@@ -170,23 +230,14 @@
     async function updateStaff() { await db.collection("staff").doc(document.getElementById('m-id').value).update({ name: document.getElementById('m-name').value, role: document.getElementById('m-role').value, phone: document.getElementById('m-phone').value, rate: Number(document.getElementById('m-rate').value) }); closeModal(); loadStaff(); }
     async function addStaff() { await db.collection("staff").add({ name: document.getElementById('st-name').value, role: document.getElementById('st-role').value, phone: document.getElementById('st-phone').value, rate: Number(document.getElementById('st-rate').value) }); alert("Added!"); loadStaff(); }
 
-    async function updateFinance() {
-        let jInc = 0, sInc = 0, pExp = 0, totalSalary = 0;
-        const j = await db.collection("jobs").get(); j.forEach(d => { if(d.data().status === 'Done') jInc += d.data().cost || 0; });
-        const s = await db.collection("sales").get(); s.forEach(d => sInc += d.data().price || 0);
-        const p = await db.collection("purchases").get(); p.forEach(d => pExp += d.data().total || 0);
-        const staffSnap = await db.collection("staff").get(); const attSnap = await db.collection("attendance").get();
-        staffSnap.forEach(sDoc => { attSnap.forEach(aDoc => { if(aDoc.data().records.find(r => r.name === sDoc.data().name && r.status === 'Present')) totalSalary += (sDoc.data().rate || 0); }); });
-        document.getElementById('financeDisplay').innerHTML = `Inc: ${(jInc+sInc).toLocaleString()} | Exp: ${(pExp+totalSalary).toLocaleString()} | Profit: <b>${(jInc+sInc-pExp-totalSalary).toLocaleString()}</b>`;
-        document.getElementById('monthlyStats').innerHTML = `• Jobs (Done): ${jInc.toLocaleString()}<br>• Sales: ${sInc.toLocaleString()}<br>• Expenses: ${(pExp+totalSalary).toLocaleString()}`;
-    }
-
     function loadHistory(col, target) { db.collection(col).orderBy("timestamp", "desc").limit(10).get().then(snap => { document.getElementById(target).innerHTML = snap.docs.map(doc => `<div class="history-item"><span>${doc.data().name}</span> <span>${(doc.data().total || doc.data().price).toLocaleString()}</span></div>`).join(''); }); }
     function loadStaffForAttendance() { db.collection("staff").get().then(snap => { const sorted = sortStaff(snap.docs.map(doc => doc.data())).filter(s => s.role !== 'MD'); document.getElementById('attTableContainer').innerHTML = `<table><tr><th>Staff</th><th>Status</th></tr>` + sorted.map(s => `<tr><td>${s.name}</td><td><select class="att-sel" data-name="${s.name}"><option>Present</option><option>Absent</option></select></td></tr>`).join('') + `</table>`; }); }
     async function saveAttendance() { const records = Array.from(document.querySelectorAll('.att-sel')).map(s => ({ name: s.getAttribute('data-name'), status: s.value })); await db.collection("attendance").add({ date: document.getElementById('att-date').value, records, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); updateFinance(); }
     function loadStaffForService() { db.collection("staff").get().then(snap => { const sorted = sortStaff(snap.docs.map(doc => doc.data())).filter(s => s.role !== 'MD'); document.getElementById('staffChecks').innerHTML = sorted.map(s => `<div><input type="checkbox" name="assigned" value="${s.name}"> ${s.name} (${s.role})</div>`).join(''); }); }
     async function savePur() { await db.collection("purchases").add({ name: document.getElementById('p-name').value, total: Number(document.getElementById('p-total').value), category: document.getElementById('p-cat').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); showTab('purchase'); }
     async function saveSale() { await db.collection("sales").add({ name: document.getElementById('s-name').value, price: Number(document.getElementById('s-total').value), timestamp: firebase.firestore.FieldValue.serverTimestamp() }); showTab('sale'); }
+    function toggleLang() { alert("Perfect Daily Restore!"); }
+    async function downloadPDF() { const { jsPDF } = window.jspdf; const doc = new jsPDF(); doc.text("Oasis AC Report", 10, 10); doc.save("Report.pdf"); }
 
     window.onload = () => { showTab('home'); };
 </script>
