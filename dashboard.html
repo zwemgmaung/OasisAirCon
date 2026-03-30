@@ -71,7 +71,19 @@
     <div id="jobsTab" class="hidden"><div id="jobMasterList"></div><div class="footer-copy">© 2026 Zwe Maung Maung</div></div>
 
     <div id="serviceTab" class="hidden">
-        <div class="card"><h3>New Service Entry</h3><div class="grid-2"><input type="text" id="j-name" placeholder="Customer Name"><input type="text" id="j-phone" placeholder="Phone"></div><textarea id="j-addr" rows="2" placeholder="Address"></textarea><div class="grid-2"><select id="j-app"><option>Air-Con</option><option>Refrigerator</option><option>Washing Machine</option></select><input type="text" id="j-brand" placeholder="Brand"></div><div class="grid-2"><input type="text" id="j-hp" placeholder="HP/Model"><input type="text" id="j-gas" placeholder="Gas Type"></div><textarea id="j-desc" rows="2" placeholder="Remark / Problem"></textarea><label>Staff</label><div id="staffChecks" style="border:1px solid var(--border); padding:10px; border-radius:8px; max-height:150px; overflow-y:auto; margin-bottom:10px; background:var(--bg);"></div><div class="grid-2"><input type="date" id="j-date"><input type="number" id="j-cost" placeholder="Cost"></div><select id="j-status"><option value="Pending">Pending</option><option value="Done">Done</option></select><button class="btn-green" onclick="saveJob()">SAVE SERVICE</button></div>
+        <div class="card">
+            <h3>New Service Entry</h3>
+            <div class="grid-2"><input type="text" id="j-name" placeholder="Customer Name"><input type="text" id="j-phone" placeholder="Phone"></div>
+            <textarea id="j-addr" rows="2" placeholder="Address"></textarea>
+            <div class="grid-2"><select id="j-app"><option>Air-Con</option><option>Refrigerator</option><option>Washing Machine</option></select><input type="text" id="j-brand" placeholder="Brand"></div>
+            <div class="grid-2"><input type="text" id="j-hp" placeholder="HP/Model"><input type="text" id="j-gas" placeholder="Gas Type"></div>
+            <textarea id="j-desc" rows="2" placeholder="Remark / Problem"></textarea>
+            <label>Staff</label>
+            <div id="staffChecks" style="border:1px solid var(--border); padding:10px; border-radius:8px; max-height:150px; overflow-y:auto; margin-bottom:10px; background:var(--bg);"></div>
+            <div class="grid-2"><input type="date" id="j-date"><input type="number" id="j-cost" placeholder="Cost"></div>
+            <select id="j-status"><option value="Pending">Pending</option><option value="Done">Done</option></select>
+            <button class="btn-green" onclick="saveJob()">SAVE SERVICE</button>
+        </div>
         <div class="footer-copy">© 2026 Zwe Maung Maung</div>
     </div>
 
@@ -80,7 +92,7 @@
 
     <div id="staffTab" class="hidden"><div id="staffList"></div><div class="card"><h4>Add Staff</h4><input type="text" id="st-name" placeholder="Name"><div class="grid-2"><select id="st-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Co-Leader</option><option>Helper</option></select><input type="number" id="st-rate" placeholder="Rate"></div><input type="text" id="st-phone" placeholder="Phone"><button class="btn-green" onclick="addStaff()">ADD STAFF</button></div><div class="footer-copy">© 2026 Zwe Maung Maung</div></div>
 
-    <div id="attendanceTab" class="hidden"><div class="card"><h3>Daily Attendance</h3><input type="date" id="att-date" onchange="loadStaffForAttendance()"><div id="attTableContainer" style="margin-top:15px;"></div><button class="btn-green" id="saveAttBtn" style="margin-top:15px;" onclick="saveAttendance()">SAVE TODAY</button></div><div class="footer-copy">© 2026 Zwe Maung Maung</div></div>
+    <div id="attendanceTab" class="hidden"><div class="card"><h3>Daily Attendance</h3><input type="date" id="att-date" onchange="checkAttLock()"><div id="attTableContainer" style="margin-top:15px;"></div><div id="attStatusMsg" style="text-align:center; color:orange; font-size:12px; margin-top:10px;"></div><button class="btn-green" id="saveAttBtn" style="margin-top:15px;" onclick="saveAttendance()">SAVE TODAY</button></div><div class="footer-copy">© 2026 Zwe Maung Maung</div></div>
 
     <div id="settingsTab" class="hidden">
         <div class="card" style="padding:20px;">
@@ -106,7 +118,7 @@
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById('t-'+t).classList.add('active');
         if(t==='home') updateFinance(); if(t==='jobs') loadJobs(); if(t==='staff') loadStaff();
         if(t==='purchase') loadHistory('purchases', 'purHistory'); if(t==='sale') loadHistory('sales', 'saleHistory');
-        if(t==='attendance') { document.getElementById('att-date').valueAsDate = new Date(); loadStaffForAttendance(); }
+        if(t==='attendance') { document.getElementById('att-date').valueAsDate = new Date(); checkAttLock(); }
         if(t==='service') loadStaffForService();
     }
 
@@ -123,6 +135,20 @@
         document.getElementById('monthlyStats').innerHTML = `<div class="st-row"><span>Total Income:</span> <b>${(jInc+sInc).toLocaleString()}</b></div><div class="st-row"><span>Total Expense:</span> <b>${(pExp+tSal).toLocaleString()}</b></div><div class="profit-line"><span>Net Profit:</span> <span class="profit-text">${(jInc+sInc-pExp-tSal).toLocaleString()}</span></div>`;
     }
 
+    async function checkAttLock() {
+        const selDate = document.getElementById('att-date').value;
+        const snap = await db.collection("attendance").where("date", "==", selDate).get();
+        if (!snap.empty) {
+            document.getElementById('saveAttBtn').style.display = 'none';
+            document.getElementById('attStatusMsg').innerText = "✅ Attendance already saved for this date.";
+            document.getElementById('attTableContainer').innerHTML = ""; 
+        } else {
+            document.getElementById('saveAttBtn').style.display = 'block';
+            document.getElementById('attStatusMsg').innerText = "";
+            loadStaffForAttendance();
+        }
+    }
+
     function loadStaff() { db.collection("staff").get().then(snap => {
         let sArr = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => (rOrder[a.role]||9) - (rOrder[b.role]||9));
         document.getElementById('staffList').innerHTML = sArr.map(s => `<div class="card" onclick="openStaffModal('${s.id}')"><div style="display:flex;justify-content:space-between;align-items:center;"><b>${s.name}</b><a href="tel:${s.phone}" style="color:var(--p-green);text-decoration:none;">📞 Call</a></div><small>${s.role}</small></div>`).join('');
@@ -134,15 +160,7 @@
     function loadJobs() { db.collection("jobs").orderBy("timestamp", "desc").get().then(snap => {
         document.getElementById('jobMasterList').innerHTML = snap.docs.map(doc => {
             const d = doc.data();
-            return `<div class="card" onclick="openJobDetail('${doc.id}')">
-                <div style="display:flex;justify-content:space-between;align-items:start;">
-                    <b style="color:var(--p-green)">${d.name} , ${d.brand || '-'}</b>
-                    <span class="status-badge ${d.status==='Done'?'bg-done':'bg-pending'}">${d.status}</span>
-                </div>
-                <div style="font-size:12px; color:var(--text); margin-top:5px;">🛠️ ${d.appliance || '-'} | HP: ${d.hp || '-'} | Gas: ${d.gas || '-'}</div>
-                <div style="font-size:12px; color:orange; margin-top:3px;">📝 Prob: ${d.desc || '-'}</div>
-                <div style="font-size:11px; color:#888; margin-top:5px; border-top:0.5px solid var(--border); padding-top:5px;">📅 ${d.date || '-'} | 📞 ${d.phone || '-'} | 👤 ${d.staff?.join(', ') || '-'}</div>
-            </div>`;
+            return `<div class="card" onclick="openJobDetail('${doc.id}')"><div style="display:flex;justify-content:space-between;align-items:start;"><b style="color:var(--p-green)">${d.name} , ${d.brand || '-'}</b><span class="status-badge ${d.status==='Done'?'bg-done':'bg-pending'}">${d.status}</span></div><div style="font-size:12px; color:var(--text); margin-top:5px;">🛠️ ${d.appliance || '-'} | HP: ${d.hp || '-'} | Gas: ${d.gas || '-'}</div><div style="font-size:12px; color:orange; margin-top:3px;">📝 Prob: ${d.desc || '-'}</div><div style="font-size:11px; color:#888; margin-top:5px; border-top:0.5px solid var(--border); padding-top:5px;">📅 ${d.date || '-'} | 📞 ${d.phone || '-'} | 👤 ${d.staff?.join(', ') || '-'}</div></div>`;
         }).join('');
     }); }
     function openJobDetail(id) { db.collection("jobs").doc(id).get().then(doc => { const d = doc.data(); window.currentJobId = id; document.getElementById('jobDetailView').innerHTML = `<b>Customer:</b> ${d.name}<br><b>Staff:</b> ${d.staff?.join(', ') || '-'}`; document.getElementById('edit-j-cost').value = d.cost; document.getElementById('edit-j-status').value = d.status; document.getElementById('jobModal').style.display = 'flex'; }); }
@@ -165,37 +183,29 @@
     async function savePur() { await db.collection("purchases").add({ name: document.getElementById('p-name').value, total: Number(document.getElementById('p-total').value), timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); updateFinance(); loadHistory('purchases', 'purHistory'); }
     async function saveSale() { await db.collection("sales").add({ name: document.getElementById('s-name').value, price: Number(document.getElementById('s-total').value), timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); updateFinance(); loadHistory('sales', 'saleHistory'); }
     async function addStaff() { await db.collection("staff").add({ name: document.getElementById('st-name').value, role: document.getElementById('st-role').value, rate: Number(document.getElementById('st-rate').value), phone: document.getElementById('st-phone').value }); alert("Added!"); loadStaff(); }
-    async function saveAttendance() { const records = []; document.querySelectorAll('.att-sel').forEach(s => records.push({name: s.dataset.name, status: s.value})); await db.collection("attendance").add({ date: document.getElementById('att-date').value, records, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); }
+    async function saveAttendance() { 
+        const records = []; document.querySelectorAll('.att-sel').forEach(s => records.push({name: s.dataset.name, status: s.value})); 
+        await db.collection("attendance").add({ date: document.getElementById('att-date').value, records, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); 
+        alert("Saved!"); checkAttLock(); updateFinance();
+    }
 
     async function exportMasterPDF() {
         const { jsPDF } = window.jspdf; const doc = new jsPDF();
-        doc.setFontSize(18); doc.setTextColor(40, 167, 69); doc.text("OASIS AC SERVICE - FULL MASTER REPORT", 14, 15);
-        doc.setFontSize(10); doc.setTextColor(100); doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 22);
-
+        doc.setFontSize(18); doc.setTextColor(40, 167, 69); doc.text("OASIS AC SERVICE - MASTER REPORT", 14, 15);
         const jSn = await db.collection("jobs").orderBy("date", "desc").get();
         const jBody = jSn.docs.map(d => { const v = d.data(); return [v.date, v.name, v.brand||'-', v.hp||'-', v.staff?.join(', ')||'-', v.cost.toLocaleString(), v.status]; });
-        doc.autoTable({ head: [['Date', 'Customer', 'Brand', 'HP', 'Staff', 'Cost', 'Status']], body: jBody, startY: 30, headStyles: { fillColor: [40, 167, 69] }, columnStyles: { 5: { halign: 'right' } } });
-
+        doc.autoTable({ head: [['Date', 'Customer', 'Brand', 'HP', 'Staff', 'Cost', 'Status']], body: jBody, startY: 25, headStyles: { fillColor: [40, 167, 69] }, columnStyles: { 5: { halign: 'right' } } });
         const pSn = await db.collection("purchases").get();
         const pBody = pSn.docs.map(d => [d.data().name, d.data().total.toLocaleString()]);
-        doc.autoTable({ head: [['Expense Item', 'Amount (MMK)']], body: pBody, startY: doc.lastAutoTable.finalY + 10, headStyles: { fillColor: [220, 53, 69] }, columnStyles: { 1: { halign: 'right' } } });
-
+        doc.autoTable({ head: [['Expense Item', 'Amount (MMK)']], body: pBody, startY: doc.lastAutoTable.finalY + 10, columnStyles: { 1: { halign: 'right' } } });
         const sSn = await db.collection("sales").get();
         const sBody = sSn.docs.map(d => [d.data().name, d.data().price.toLocaleString()]);
-        doc.autoTable({ head: [['Sale Item', 'Amount (MMK)']], body: sBody, startY: doc.lastAutoTable.finalY + 10, headStyles: { fillColor: [0, 123, 255] }, columnStyles: { 1: { halign: 'right' } } });
-
-        const aSn = await db.collection("attendance").orderBy("date", "desc").limit(10).get();
-        const aBody = aSn.docs.map(d => [d.data().date, d.data().records.map(r => `${r.name}(${r.status})`).join(', ')]);
-        doc.autoTable({ head: [['Date', 'Attendance Records']], body: aBody, startY: doc.lastAutoTable.finalY + 10, headStyles: { fillColor: [255, 193, 7] }, columnStyles: { 1: { cellWidth: 130 } } });
-
+        doc.autoTable({ head: [['Sale Item', 'Amount (MMK)']], body: sBody, startY: doc.lastAutoTable.finalY + 10, columnStyles: { 1: { halign: 'right' } } });
         const b64 = doc.output('datauristring');
-        if (window.ReactNativeWebView) window.ReactNativeWebView.postMessage(b64); else doc.save('Oasis_Full_Report.pdf');
+        if (window.ReactNativeWebView) window.ReactNativeWebView.postMessage(b64); else doc.save('Report.pdf');
     }
 
     function calcPur() { document.getElementById('p-total').value = (document.getElementById('p-qty').value||0) * (document.getElementById('p-price').value||0); }
     function calcSale() { document.getElementById('s-total').value = (document.getElementById('s-qty').value||0) * (document.getElementById('s-price').value||0); }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-    function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme')==='dark'?'light':'dark'); }
-    updateFinance();
-</script>
-</body></html>
+    function toggleTheme() { document.body.setAttribute('data-theme', document.bo
