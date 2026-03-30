@@ -71,42 +71,16 @@
     <div id="jobsTab" class="hidden"><div id="jobMasterList"></div><div class="footer-copy">© 2026 Zwe Maung Maung</div></div>
 
     <div id="serviceTab" class="hidden">
-        <div class="card">
-            <h3>New Service Entry</h3>
-            <div class="grid-2"><input type="text" id="j-name" placeholder="Customer Name"><input type="text" id="j-phone" placeholder="Phone"></div>
-            <textarea id="j-addr" rows="2" placeholder="Address"></textarea>
-            <div class="grid-2"><select id="j-app"><option>Air-Con</option><option>Refrigerator</option><option>Washing Machine</option></select><input type="text" id="j-brand" placeholder="Brand"></div>
-            <div class="grid-2"><input type="text" id="j-hp" placeholder="HP/Model"><input type="text" id="j-gas" placeholder="Gas Type"></div>
-            <textarea id="j-desc" rows="2" placeholder="Remark / Problem"></textarea>
-            <label>Staff</label>
-            <div id="staffChecks" style="border:1px solid var(--border); padding:10px; border-radius:8px; max-height:150px; overflow-y:auto; margin-bottom:10px; background:var(--bg);"></div>
-            <div class="grid-2"><input type="date" id="j-date"><input type="number" id="j-cost" placeholder="Cost"></div>
-            <select id="j-status"><option value="Pending">Pending</option><option value="Done">Done</option></select>
-            <button class="btn-green" onclick="saveJob()">SAVE SERVICE</button>
-        </div>
+        <div class="card"><h3>New Service Entry</h3><div class="grid-2"><input type="text" id="j-name" placeholder="Customer Name"><input type="text" id="j-phone" placeholder="Phone"></div><textarea id="j-addr" rows="2" placeholder="Address"></textarea><div class="grid-2"><select id="j-app"><option>Air-Con</option><option>Refrigerator</option><option>Washing Machine</option></select><input type="text" id="j-brand" placeholder="Brand"></div><div class="grid-2"><input type="text" id="j-hp" placeholder="HP/Model"><input type="text" id="j-gas" placeholder="Gas Type"></div><textarea id="j-desc" rows="2" placeholder="Remark / Problem"></textarea><label>Staff</label><div id="staffChecks" style="border:1px solid var(--border); padding:10px; border-radius:8px; max-height:150px; overflow-y:auto; margin-bottom:10px; background:var(--bg);"></div><div class="grid-2"><input type="date" id="j-date"><input type="number" id="j-cost" placeholder="Cost"></div><select id="j-status"><option value="Pending">Pending</option><option value="Done">Done</option></select><button class="btn-green" onclick="saveJob()">SAVE SERVICE</button></div>
         <div class="footer-copy">© 2026 Zwe Maung Maung</div>
     </div>
 
-    <div id="purchaseTab" class="hidden">
-        <div class="card"><h3>Expense Entry</h3><input type="text" id="p-name" placeholder="Item Name"><div class="grid-2"><input type="number" id="p-qty" placeholder="Qty" oninput="calcPur()"><input type="number" id="p-price" placeholder="Price" oninput="calcPur()"></div><input type="number" id="p-total" readonly placeholder="Total"><button class="btn-green" onclick="savePur()">SAVE</button><div id="purHistory" style="margin-top:15px;"></div></div>
-        <div class="footer-copy">© 2026 Zwe Maung Maung</div>
-    </div>
+    <div id="purchaseTab" class="hidden"><div class="card"><h3>Expense Entry</h3><input type="text" id="p-name" placeholder="Item Name"><div class="grid-2"><input type="number" id="p-qty" placeholder="Qty" oninput="calcPur()"><input type="number" id="p-price" placeholder="Price" oninput="calcPur()"></div><input type="number" id="p-total" readonly placeholder="Total"><button class="btn-green" onclick="savePur()">SAVE</button><div id="purHistory" style="margin-top:15px;"></div></div><div class="footer-copy">© 2026 Zwe Maung Maung</div></div>
+    <div id="saleTab" class="hidden"><div class="card"><h3>Sale Entry</h3><input type="text" id="s-name" placeholder="Item Name"><div class="grid-2"><input type="number" id="s-qty" placeholder="Qty" oninput="calcSale()"><input type="number" id="s-price" placeholder="Price" oninput="calcSale()"></div><input type="number" id="s-total" readonly placeholder="Total"><button class="btn-green" onclick="saveSale()">SAVE</button><div id="saleHistory" style="margin-top:15px;"></div></div><div class="footer-copy">© 2026 Zwe Maung Maung</div></div>
 
-    <div id="saleTab" class="hidden">
-        <div class="card"><h3>Sale Entry</h3><input type="text" id="s-name" placeholder="Item Name"><div class="grid-2"><input type="number" id="s-qty" placeholder="Qty" oninput="calcSale()"><input type="number" id="s-price" placeholder="Price" oninput="calcSale()"></div><input type="number" id="s-total" readonly placeholder="Total"><button class="btn-green" onclick="saveSale()">SAVE</button><div id="saleHistory" style="margin-top:15px;"></div></div>
-        <div class="footer-copy">© 2026 Zwe Maung Maung</div>
-    </div>
+    <div id="staffTab" class="hidden"><div id="staffList"></div><div class="card"><h4>Add Staff</h4><input type="text" id="st-name" placeholder="Name"><div class="grid-2"><select id="st-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Co-Leader</option><option>Helper</option></select><input type="number" id="st-rate" placeholder="Rate"></div><input type="text" id="st-phone" placeholder="Phone"><button class="btn-green" onclick="addStaff()">ADD STAFF</button></div><div class="footer-copy">© 2026 Zwe Maung Maung</div></div>
 
-    <div id="staffTab" class="hidden">
-        <div id="staffList"></div>
-        <div class="card"><h4>Add Staff</h4><input type="text" id="st-name" placeholder="Name"><div class="grid-2"><select id="st-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Co-Leader</option><option>Helper</option></select><input type="number" id="st-rate" placeholder="Rate"></div><input type="text" id="st-phone" placeholder="Phone"><button class="btn-green" onclick="addStaff()">ADD STAFF</button></div>
-        <div class="footer-copy">© 2026 Zwe Maung Maung</div>
-    </div>
-
-    <div id="attendanceTab" class="hidden">
-        <div class="card"><h3>Daily Attendance</h3><input type="date" id="att-date" onchange="loadStaffForAttendance()"><div id="attTableContainer" style="margin-top:15px;"></div><button class="btn-green" id="saveAttBtn" style="margin-top:15px;" onclick="saveAttendance()">SAVE TODAY</button></div>
-        <div class="footer-copy">© 2026 Zwe Maung Maung</div>
-    </div>
+    <div id="attendanceTab" class="hidden"><div class="card"><h3>Daily Attendance</h3><input type="date" id="att-date" onchange="loadStaffForAttendance()"><div id="attTableContainer" style="margin-top:15px;"></div><button class="btn-green" id="saveAttBtn" style="margin-top:15px;" onclick="saveAttendance()">SAVE TODAY</button></div><div class="footer-copy">© 2026 Zwe Maung Maung</div></div>
 
     <div id="settingsTab" class="hidden">
         <div class="card" style="padding:20px;">
@@ -160,7 +134,15 @@
     function loadJobs() { db.collection("jobs").orderBy("timestamp", "desc").get().then(snap => {
         document.getElementById('jobMasterList').innerHTML = snap.docs.map(doc => {
             const d = doc.data();
-            return `<div class="card" onclick="openJobDetail('${doc.id}')"><div style="display:flex;justify-content:space-between;align-items:start;"><b style="color:var(--p-green)">${d.brand || '-'}</b><span class="status-badge ${d.status==='Done'?'bg-done':'bg-pending'}">${d.status}</span></div><div style="font-size:12px; margin-top:5px;">🛠️ ${d.appliance || '-'} | HP: ${d.hp || '-'} | Gas: ${d.gas || '-'}</div><div style="font-size:12px; color:orange; margin-top:3px;">📝 Prob: ${d.desc || '-'}</div><div style="font-size:11px; color:#888; margin-top:5px; border-top:0.5px solid var(--border); padding-top:5px;">📅 ${d.date || '-'} | 📞 ${d.phone || '-'} | 👤 ${d.staff?.join(', ') || '-'}</div></div>`;
+            return `<div class="card" onclick="openJobDetail('${doc.id}')">
+                <div style="display:flex;justify-content:space-between;align-items:start;">
+                    <b style="color:var(--p-green)">${d.name} , ${d.brand || '-'}</b>
+                    <span class="status-badge ${d.status==='Done'?'bg-done':'bg-pending'}">${d.status}</span>
+                </div>
+                <div style="font-size:12px; color:var(--text); margin-top:5px;">🛠️ ${d.appliance || '-'} | HP: ${d.hp || '-'} | Gas: ${d.gas || '-'}</div>
+                <div style="font-size:12px; color:orange; margin-top:3px;">📝 Prob: ${d.desc || '-'}</div>
+                <div style="font-size:11px; color:#888; margin-top:5px; border-top:0.5px solid var(--border); padding-top:5px;">📅 ${d.date || '-'} | 📞 ${d.phone || '-'} | 👤 ${d.staff?.join(', ') || '-'}</div>
+            </div>`;
         }).join('');
     }); }
     function openJobDetail(id) { db.collection("jobs").doc(id).get().then(doc => { const d = doc.data(); window.currentJobId = id; document.getElementById('jobDetailView').innerHTML = `<b>Customer:</b> ${d.name}<br><b>Staff:</b> ${d.staff?.join(', ') || '-'}`; document.getElementById('edit-j-cost').value = d.cost; document.getElementById('edit-j-status').value = d.status; document.getElementById('jobModal').style.display = 'flex'; }); }
