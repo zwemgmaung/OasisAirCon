@@ -24,12 +24,8 @@
         .btn-green { background: var(--p-green); color: white; border: none; padding: 14px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .hidden { display: none !important; }
-        .st-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 0.5px solid var(--border); font-size: 13px; align-items: center; }
-        .td-left { font-weight: bold; color: var(--p-green); width: 42%; text-align: left; }
-        .td-mid { width: 6%; text-align: center; font-weight: bold; color: var(--p-green); }
-        .td-right { width: 52%; text-align: right; }
-        .about-header { font-weight: bold; color: var(--p-green); margin-top: 20px; margin-bottom: 8px; border-bottom: 1.5px solid var(--p-green); padding-bottom: 4px; font-size: 13px; }
-        .profit-text { font-size: 18px; font-weight: bold; color: var(--p-green); }
+        .st-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 0.5px solid var(--border); font-size: 13px; align-items: center; text-align: left; }
+        .profit-text { font-size: 18px; font-weight: bold; color: var(--p-green); text-align: right; }
         .footer-copy { text-align: center; font-size: 10px; color: #888; margin-top: 20px; }
         .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; color: white; }
         .bg-pending { background: #ffc107; color: #000; } .bg-done { background: #28a745; }
@@ -63,8 +59,8 @@
             <h4>Full Master Report</h4>
             <div id="monthlyStats" style="line-height: 2.5; padding: 10px; background: var(--bg); border-radius: 8px;">Loading...</div>
             <div class="grid-2" style="margin-top:15px;">
-                <button class="btn-green" onclick="exportMasterPDF()">Export PDF</button>
-                <button class="btn-green" style="background:#4285f4;" onclick="updateFinance()">Sync Now</button>
+                <button class="btn-green" onclick="exportMasterPDF()">Export Master PDF</button>
+                <button class="btn-green" style="background:#4285f4;" onclick="updateFinance()">Master Sync</button>
             </div>
         </div>
         <div class="footer-copy">Copyright © 2026 <b>Zwe Maung Maung</b></div>
@@ -116,10 +112,10 @@
     <div id="settingsTab" class="hidden">
         <div class="card" style="padding:20px;">
             <div style="text-align:center;"><img src="1000064267.png" style="width:70px;height:70px;border-radius:50%;border:2px solid var(--p-green);"><h3>About App</h3></div>
-            <div class="about-header">BUSINESS INFO</div><table style="width:100%"><tr><td class="td-left">Business Owner</td><td class="td-mid">:</td><td class="td-right">Ko Htay Aung</td></tr><tr><td class="td-left">Business</td><td class="td-mid">:</td><td class="td-right">Oasis Air-Con Sales & Service</td></tr></table>
-            <div class="about-header">APP INFO</div><table style="width:100%"><tr><td class="td-left">App Name</td><td class="td-mid">:</td><td class="td-right">Ko Htay Aung (Oasis) AC Service</td></tr><tr><td class="td-left">Version</td><td class="td-mid">:</td><td class="td-right">2.5.0 (Ultimate)</td></tr></table>
-            <div class="about-header">DEVELOPER INFO</div><table style="width:100%"><tr><td class="td-left">App Developer</td><td class="td-mid">:</td><td class="td-right">Zwe Maung Maung</td></tr></table>
-            <div class="about-header">APP FEATURES</div><div style="font-size:12px;line-height:1.8;">✅ Customer Records & Tracking<br>✅ Daily Profit & Salary Sync<br>✅ Full Master PDF Report Export</div>
+            <div class="st-row"><span>Business Owner</span> <span>Ko Htay Aung</span></div>
+            <div class="st-row"><span>App Developer</span> <span>Zwe Maung Maung</span></div>
+            <div class="st-row"><span>App Version</span> <span>2.5.0 (Ultimate)</span></div>
+            <div style="font-size:12px;line-height:1.8;margin-top:15px;padding:10px;background:var(--bg);border-radius:8px;">✅ Customer Tracking<br>✅ Daily Profit Sync<br>✅ Master PDF Export</div>
         </div>
         <div class="footer-copy">© 2026 Zwe Maung Maung</div>
     </div>
@@ -159,31 +155,32 @@
             const d = doc.data();
             return `<div class="card" onclick="openJobDetail('${doc.id}')">
                 <div style="display:flex;justify-content:space-between;align-items:start;">
-                    <b>${d.name}</b>
+                    <b style="color:var(--p-green)">${d.brand || 'No Brand'}</b>
                     <span class="status-badge ${d.status==='Done'?'bg-done':'bg-pending'}">${d.status}</span>
                 </div>
-                <div style="font-size:12px;color:#888;margin-top:5px;">
-                    📅 ${d.date || '-'} | 📞 ${d.phone || '-'} <br>
-                    🛠️ ${d.appliance || '-'} (${d.hp || '-'}) <br>
-                    👤 Staff: <span style="color:var(--p-green)">${d.staff?.join(', ') || '-'}</span>
+                <div style="font-size:13px; font-weight:bold; margin-top:5px;">Customer: ${d.name}</div>
+                <div style="font-size:12px; color:var(--text); margin-top:3px;">🛠️ ${d.appliance || '-'} | HP: ${d.hp || '-'} | Gas: ${d.gas || '-'}</div>
+                <div style="font-size:12px; color:orange; margin-top:3px;">📝 Problem: ${d.desc || 'No Description'}</div>
+                <div style="font-size:11px; color:#888; margin-top:5px; border-top:0.5px solid var(--border); padding-top:5px;">
+                    📅 ${d.date || '-'} | 📞 ${d.phone || '-'} | 👤 ${d.staff?.join(', ') || '-'}
                 </div>
             </div>`;
         }).join('');
     }); }
 
-    function openJobDetail(id) { db.collection("jobs").doc(id).get().then(doc => { const d = doc.data(); window.currentJobId = id; document.getElementById('jobDetailView').innerHTML = `<b>Customer:</b> ${d.name}<br><b>Phone:</b> ${d.phone||'-'}<br><b>Staff:</b> ${d.staff?.join(', ') || '-'}`; document.getElementById('edit-j-cost').value = d.cost; document.getElementById('edit-j-status').value = d.status; document.getElementById('jobModal').style.display = 'flex'; }); }
+    function openJobDetail(id) { db.collection("jobs").doc(id).get().then(doc => { const d = doc.data(); window.currentJobId = id; document.getElementById('jobDetailView').innerHTML = `<b>Customer:</b> ${d.name}<br><b>Staff:</b> ${d.staff?.join(', ') || '-'}`; document.getElementById('edit-j-cost').value = d.cost; document.getElementById('edit-j-status').value = d.status; document.getElementById('jobModal').style.display = 'flex'; }); }
     async function updateJob() { await db.collection("jobs").doc(window.currentJobId).update({ cost: Number(document.getElementById('edit-j-cost').value), status: document.getElementById('edit-j-status').value }); closeModal('jobModal'); loadJobs(); updateFinance(); }
     async function deleteJob() { if(confirm("Delete?")) { await db.collection("jobs").doc(window.currentJobId).delete(); closeModal('jobModal'); loadJobs(); updateFinance(); } }
     function loadStaff() { db.collection("staff").get().then(snap => { let sArr = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => (rOrder[a.role]||9) - (rOrder[b.role]||9)); document.getElementById('staffList').innerHTML = sArr.map(s => `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;"><b>${s.name}</b><a href="tel:${s.phone}" style="color:var(--p-green);text-decoration:none;">📞 Call</a></div><small>${s.role}</small></div>`).join(''); }); }
     function loadStaffForService() { db.collection("staff").get().then(snap => { let sArr = snap.docs.map(d => d.data()).filter(s => s.role !== "MD").sort((a,b) => (rOrder[a.role]||9) - (rOrder[b.role]||9)); document.getElementById('staffChecks').innerHTML = sArr.map(s => `<label style="display:block;margin-bottom:5px;"><input type="checkbox" class="st-check" value="${s.name}"> ${s.name} (${s.role})</label>`).join(''); }); }
     function loadStaffForAttendance() { db.collection("staff").get().then(snap => { let sArr = snap.docs.map(d => d.data()).sort((a,b) => (rOrder[a.role]||9) - (rOrder[b.role]||9)); document.getElementById('attTableContainer').innerHTML = sArr.map(s => `<div class="st-row" style="background:var(--bg);padding:12px;border-radius:8px;margin-bottom:8px;"><b>${s.name}</b><select class="att-sel" data-name="${s.name}" style="width:110px;margin:0;"><option>Present</option><option>Absent</option></select></div>`).join(''); }); }
     function loadHistory(col, div) { db.collection(col).orderBy("timestamp", "desc").get().then(snap => { document.getElementById(div).innerHTML = snap.docs.map(d => `<div class="st-row"><span>${d.data().name}</span> <b>${(d.data().total||d.data().price).toLocaleString()}</b></div>`).join(''); }); }
-    async function saveJob() { const s = []; document.querySelectorAll('.st-check:checked').forEach(c => s.push(c.value)); await db.collection("jobs").add({ name: document.getElementById('j-name').value, phone: document.getElementById('j-phone').value, appliance: document.getElementById('j-app').value, hp: document.getElementById('j-hp').value, gas: document.getElementById('j-gas').value, staff: s, date: document.getElementById('j-date').value, cost: Number(document.getElementById('j-cost').value), status: document.getElementById('j-status').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); showTab('jobs'); }
+    async function saveJob() { const s = []; document.querySelectorAll('.st-check:checked').forEach(c => s.push(c.value)); await db.collection("jobs").add({ name: document.getElementById('j-name').value, phone: document.getElementById('j-phone').value, appliance: document.getElementById('j-app').value, brand: document.getElementById('j-brand').value, desc: document.getElementById('j-desc').value, hp: document.getElementById('j-hp').value, gas: document.getElementById('j-gas').value, staff: s, date: document.getElementById('j-date').value, cost: Number(document.getElementById('j-cost').value), status: document.getElementById('j-status').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); showTab('jobs'); }
     async function savePur() { await db.collection("purchases").add({ name: document.getElementById('p-name').value, total: Number(document.getElementById('p-total').value), timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); updateFinance(); loadHistory('purchases', 'purHistory'); }
     async function saveSale() { await db.collection("sales").add({ name: document.getElementById('s-name').value, price: Number(document.getElementById('s-total').value), timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); updateFinance(); loadHistory('sales', 'saleHistory'); }
     async function addStaff() { await db.collection("staff").add({ name: document.getElementById('st-name').value, role: document.getElementById('st-role').value, rate: Number(document.getElementById('st-rate').value), phone: document.getElementById('st-phone').value }); alert("Added!"); loadStaff(); }
     async function saveAttendance() { const records = []; document.querySelectorAll('.att-sel').forEach(s => records.push({name: s.dataset.name, status: s.value})); await db.collection("attendance").add({ date: document.getElementById('att-date').value, records, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); }
-    async function exportMasterPDF() { const { jsPDF } = window.jspdf; const doc = new jsPDF(); doc.text("Oasis Master Report", 14, 20); doc.text(document.getElementById('monthlyStats').innerText.split('\n'), 14, 30); doc.save('Report.pdf'); }
+    async function exportMasterPDF() { const { jsPDF } = window.jspdf; const doc = new jsPDF(); doc.text("Oasis Master Report", 14, 20); doc.text(document.getElementById('monthlyStats').innerText.split('\n'), 14, 30); const b64 = doc.output('datauristring'); if (window.ReactNativeWebView) window.ReactNativeWebView.postMessage(b64); else doc.save('Report.pdf'); }
     function calcPur() { document.getElementById('p-total').value = (document.getElementById('p-qty').value||0) * (document.getElementById('p-price').value||0); }
     function calcSale() { document.getElementById('s-total').value = (document.getElementById('s-qty').value||0) * (document.getElementById('s-price').value||0); }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
