@@ -18,7 +18,7 @@
         .tab-btn { padding: 15px; flex: none; text-align: center; cursor: pointer; font-weight: bold; font-size: 11px; color: #666; border-bottom: 3px solid transparent; }
         .tab-btn.active { color: var(--p-green); border-bottom-color: var(--p-green); }
         .container { padding: 15px; max-width: 800px; margin: auto; }
-        .card { background: var(--card); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--border); position: relative; }
+        .card { background: var(--card); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--border); position: relative; overflow: hidden; }
         label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 12px; color: var(--p-green); }
         input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); box-sizing: border-box; margin-bottom: 10px; }
         .btn-green { background: var(--p-green); color: white; border: none; padding: 14px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; }
@@ -27,13 +27,15 @@
         .st-row { display: flex; justify-content: space-between; padding: 12px 10px; border-bottom: 0.5px solid var(--border); font-size: 13px; align-items: center; }
         .td-left { font-weight: bold; color: var(--p-green); width: 45%; }
         .td-right { width: 55%; text-align: right; }
-        .att-card { background: var(--bg); padding: 10px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .att-card { background: var(--bg); padding: 12px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 3000; }
+        .modal-content { background: var(--card); padding: 20px; border-radius: 15px; width: 90%; max-width: 400px; }
     </style>
 </head>
 <body data-theme="dark">
 <div class="header">
     <div style="display:flex; align-items:center; gap:8px;"><img src="1000064267.png" class="logo-img"><span style="font-weight:bold; font-size:11px;">OASIS AC SERVICE</span></div>
-    <div style="display:flex; gap:10px; align-items:center;"><button onclick="toggleTheme()" style="background:none; border:none; color:white; font-size:18px;">🌓</button></div>
+    <button onclick="toggleTheme()" style="background:none; border:none; color:white; font-size:18px;">🌓</button>
 </div>
 <div class="nav-tabs">
     <div class="tab-btn active" onclick="showTab('home')" id="t-home">HOME</div>
@@ -50,28 +52,33 @@
         <div class="card" style="text-align: center;">
             <h3>Daily Dashboard</h3>
             <p style="color:var(--p-green); font-size:11px; font-weight:bold;">Today: <span id="currentDateDisp"></span></p>
-            <div id="dailyFinanceDisplay" style="font-size:13px; line-height:2.2; text-align: center; padding: 15px; background: var(--bg); border-radius: 10px; border: 1px solid var(--border);">Updating...</div>
+            <div id="dailyFinanceDisplay" style="font-size:13px; line-height:2.2; text-align: center; padding: 15px; background: var(--bg); border-radius: 10px; border: 1.5px solid var(--p-green);">Loading...</div>
         </div>
         <div class="card">
-            <h4>Full Master Report (Summary)</h4>
+            <h4>Full Master Report</h4>
             <div id="monthlyStats" style="font-size:13px; line-height:2.2; padding: 10px; background: var(--bg); border-radius: 8px;">Loading...</div>
             <div class="grid-2" style="margin-top:15px;">
                 <button class="btn-green" onclick="exportMasterPDF()">Export Master PDF</button>
                 <button class="btn-green" style="background:#4285f4;" onclick="updateFinance()">Master Sync</button>
             </div>
         </div>
-        <p style="text-align:center; font-size:11px; font-weight:bold; color:var(--p-green); margin-top:10px;">Developed by Zwe Maung Maung</p>
+        <div style="text-align:center; font-size:10px; color:#888; margin-top:20px;">Copyright © 2026 <b>Zwe Maung Maung</b></div>
     </div>
     
-    <div id="jobsTab" class="hidden"><div id="jobMasterList">Loading Jobs...</div></div>
+    <div id="jobsTab" class="hidden"><div id="jobMasterList"></div><div style="text-align:center; font-size:10px; color:#888; margin-top:20px;">© 2026 Zwe Maung Maung</div></div>
     <div id="serviceTab" class="hidden">
-        <div class="card"><h3>New Service Entry</h3><div class="grid-2"><input type="text" id="j-name" placeholder="Name"><input type="text" id="j-phone" placeholder="Phone"></div><textarea id="j-addr" rows="2" placeholder="Address"></textarea><div class="grid-2"><select id="j-app"><option>Air-Con</option><option>Refrigerator</option></select><input type="text" id="j-brand" placeholder="Brand"></div><textarea id="j-desc" rows="2" placeholder="Remark"></textarea><label>Staff</label><div id="staffChecks" style="border:1px solid var(--border); padding:10px; border-radius:8px; max-height:150px; overflow-y:auto; margin-bottom:10px; background:var(--bg);"></div><div class="grid-2"><input type="date" id="j-date"><input type="number" id="j-cost" placeholder="Cost"></div><select id="j-status"><option value="Pending">Pending</option><option value="Done">Done</option></select><button class="btn-green" onclick="saveJob()">SAVE SERVICE</button></div>
+        <div class="card"><h3>New Service Entry</h3><div class="grid-2"><input type="text" id="j-name" placeholder="Name"><input type="text" id="j-phone" placeholder="Phone"></div><textarea id="j-addr" rows="2" placeholder="Address"></textarea><div class="grid-2"><select id="j-app"><option>Air-Con</option><option>Refrigerator</option></select><input type="text" id="j-brand" placeholder="Brand"></div><textarea id="j-desc" rows="2" placeholder="Remark"></textarea><label>Staff (Excluding MD)</label><div id="staffChecks" style="border:1px solid var(--border); padding:10px; border-radius:8px; max-height:150px; overflow-y:auto; margin-bottom:10px; background:var(--bg);"></div><div class="grid-2"><input type="date" id="j-date"><input type="number" id="j-cost" placeholder="Cost"></div><select id="j-status"><option value="Pending">Pending</option><option value="Done">Done</option></select><button class="btn-green" onclick="saveJob()">SAVE SERVICE</button></div>
+        <div style="text-align:center; font-size:10px; color:#888;">© 2026 Zwe Maung Maung</div>
     </div>
-    <div id="purchaseTab" class="hidden"><div class="card"><h3>Expense Entry</h3><input type="text" id="p-name" placeholder="Name"><div class="grid-2"><input type="number" id="p-qty" placeholder="Qty" oninput="calcPur()"><input type="number" id="p-price" placeholder="Price" oninput="calcPur()"></div><input type="number" id="p-total" readonly placeholder="Total"><button class="btn-green" onclick="savePur()">SAVE</button><div id="purHistory" style="margin-top:15px;"></div></div></div>
-    <div id="saleTab" class="hidden"><div class="card"><h3>Sale Entry</h3><input type="text" id="s-name" placeholder="Item Name"><div class="grid-2"><input type="number" id="s-qty" placeholder="Qty" oninput="calcSale()"><input type="number" id="s-price" placeholder="Price" oninput="calcSale()"></div><input type="number" id="s-total" readonly placeholder="Total"><button class="btn-green" onclick="saveSale()">SAVE</button><div id="saleHistory" style="margin-top:15px;"></div></div></div>
-    <div id="staffTab" class="hidden"><div id="staffList"></div><div class="card"><h4>Add Staff</h4><input type="text" id="st-name" placeholder="Name"><div class="grid-2"><select id="st-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Co-Leader</option><option>Helper</option></select><input type="number" id="st-rate" placeholder="Rate"></div><input type="text" id="st-phone" placeholder="Phone"><button class="btn-green" onclick="addStaff()">ADD STAFF</button></div></div>
-    <div id="attendanceTab" class="hidden"><div class="card"><h3>Daily Attendance</h3><input type="date" id="att-date" onchange="loadStaffForAttendance()"><div id="attTableContainer" style="margin-top:15px;"></div><button class="btn-green" style="margin-top:15px;" onclick="saveAttendance()">SAVE TODAY</button></div></div>
-    <div id="settingsTab" class="hidden"><div class="card" style="padding:20px; text-align:center;"><h3>Settings</h3><p>Version 2.5.0</p><p>© 2026 Zwe Maung Maung</p></div></div>
+    
+    <div id="purchaseTab" class="hidden"><div class="card"><h3>Expense</h3><input type="text" id="p-name" placeholder="Name"><div class="grid-2"><input type="number" id="p-qty" placeholder="Qty" oninput="calcPur()"><input type="number" id="p-price" placeholder="Price" oninput="calcPur()"></div><input type="number" id="p-total" readonly placeholder="Total"><button class="btn-green" onclick="savePur()">SAVE</button><div id="purHistory" style="margin-top:20px;"></div></div><div style="text-align:center; font-size:10px; color:#888;">© 2026 Zwe Maung Maung</div></div>
+    <div id="saleTab" class="hidden"><div class="card"><h3>Sale</h3><input type="text" id="s-name" placeholder="Item Name"><div class="grid-2"><input type="number" id="s-qty" placeholder="Qty" oninput="calcSale()"><input type="number" id="s-price" placeholder="Price" oninput="calcSale()"></div><input type="number" id="s-total" readonly placeholder="Total"><button class="btn-green" onclick="saveSale()">SAVE</button><div id="saleHistory" style="margin-top:20px;"></div></div><div style="text-align:center; font-size:10px; color:#888;">© 2026 Zwe Maung Maung</div></div>
+    
+    <div id="staffTab" class="hidden"><div id="staffList"></div><div class="card"><h4>Add Staff</h4><input type="text" id="st-name" placeholder="Name"><div class="grid-2"><select id="st-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Co-Leader</option><option>Helper</option></select><input type="number" id="st-rate" placeholder="Rate"></div><input type="text" id="st-phone" placeholder="Phone"><button class="btn-green" onclick="addStaff()">ADD STAFF</button></div><div style="text-align:center; font-size:10px; color:#888;">© 2026 Zwe Maung Maung</div></div>
+    
+    <div id="attendanceTab" class="hidden"><div class="card"><h3>Attendance</h3><input type="date" id="att-date" onchange="loadStaffForAttendance()"><div id="attTableContainer" style="margin-top:15px;"></div><button class="btn-green" id="saveAttBtn" style="margin-top:15px;" onclick="saveAttendance()">SAVE TODAY</button></div><div style="text-align:center; font-size:10px; color:#888;">© 2026 Zwe Maung Maung</div></div>
+    
+    <div id="settingsTab" class="hidden"><div class="card" style="padding:30px; text-align:center;"><h3>Settings</h3><p>Version 2.5.0</p><p>Owner: Ko Htay Aung</p><p>Dev: Zwe Maung Maung</p></div><div style="text-align:center; font-size:10px; color:#888;">© 2026 Zwe Maung Maung</div></div>
 </div>
 
 <script>
@@ -103,36 +110,41 @@
 
     function loadStaff() { db.collection("staff").get().then(snap => {
         let sArr = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => rOrder[a.role] - rOrder[b.role]);
-        document.getElementById('staffList').innerHTML = sArr.map(s => `<div class="card"><b>${s.name}</b> (${s.role}) - ${s.phone}</div>`).join('');
+        document.getElementById('staffList').innerHTML = sArr.map(s => `<div class="card"><div style="display:flex; justify-content:space-between; align-items:center;"><div><b>${s.name}</b> (${s.role})</div><a href="tel:${s.phone}" style="color:var(--p-green); text-decoration:none;">📞 Call</a></div></div>`).join('');
     }); }
-    function loadJobs() { db.collection("jobs").orderBy("timestamp", "desc").get().then(snap => {
-        document.getElementById('jobMasterList').innerHTML = snap.docs.map(doc => `<div class="card"><b>${doc.data().name}</b><br><small>${doc.data().date}</small> - ${doc.data().status}</div>`).join('');
-    }); }
-    function loadStaffForService() { db.collection("staff").get().then(snap => {
-        let sArr = snap.docs.map(d => d.data().name).sort();
-        document.getElementById('staffChecks').innerHTML = sArr.map(s => `<label style="color:var(--text); font-size:12px; margin-bottom:5px; display:block;"><input type="checkbox" class="st-check" value="${s}"> ${s}</label>`).join('');
-    }); }
+    
     function loadStaffForAttendance() { db.collection("staff").get().then(snap => {
         let sArr = snap.docs.map(d => d.data()).sort((a,b) => rOrder[a.role] - rOrder[b.role]);
-        document.getElementById('attTableContainer').innerHTML = sArr.map(s => `<div class="att-card"><span style="font-weight:bold; color:var(--p-green);">${s.name}</span><select class="att-sel" data-name="${s.name}" style="width:100px; padding:5px;"><option>Present</option><option>Absent</option></select></div>`).join('');
+        document.getElementById('attTableContainer').innerHTML = sArr.map(s => `<div class="att-card"><span><b>${s.name}</b><br><small>${s.role}</small></span><select class="att-sel" data-name="${s.name}" style="width:110px; padding:8px;"><option>Present</option><option>Absent</option></select></div>`).join('');
     }); }
-    function loadHistory(col, divId) { db.collection(col).orderBy("timestamp", "desc").limit(5).get().then(snap => {
-        document.getElementById(divId).innerHTML = snap.docs.map(d => `<div class="st-row"><span>${d.data().name}</span> <b>${(d.data().total||d.data().price).toLocaleString()}</b></div>`).join('');
+
+    function loadHistory(col, div) { db.collection(col).orderBy("timestamp", "desc").limit(5).get().then(snap => {
+        document.getElementById(div).innerHTML = snap.docs.map(d => `<div class="st-row"><span>${d.data().name}</span> <b>${(d.data().total||d.data().price).toLocaleString()}</b></div>`).join('');
     }); }
+
+    async function saveAttendance() { 
+        document.getElementById('saveAttBtn').disabled = true;
+        const records = []; document.querySelectorAll('.att-sel').forEach(s => records.push({name: s.dataset.name, status: s.value}));
+        await db.collection("attendance").add({ date: document.getElementById('att-date').value, records, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        alert("Attendance Saved!"); updateFinance();
+    }
+
     async function saveJob() { 
-        const s = []; document.querySelectorAll('.st-check:checked').forEach(c => s.push(c.value));
-        await db.collection("jobs").add({ name: document.getElementById('j-name').value, staff: s, date: document.getElementById('j-date').value, cost: Number(document.getElementById('j-cost').value), status: document.getElementById('j-status').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        const staff = []; document.querySelectorAll('.st-check:checked').forEach(c => staff.push(c.value));
+        await db.collection("jobs").add({ name: document.getElementById('j-name').value, staff, date: document.getElementById('j-date').value, cost: Number(document.getElementById('j-cost').value), status: document.getElementById('j-status').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
         alert("Saved!"); showTab('jobs');
     }
+    
+    function loadStaffForService() { db.collection("staff").get().then(snap => {
+        let sArr = snap.docs.map(d => d.data().name).filter(n => n !== "Ko Htay Aung").sort();
+        document.getElementById('staffChecks').innerHTML = sArr.map(s => `<label style="display:block; margin-bottom:5px;"><input type="checkbox" class="st-check" value="${s}"> ${s}</label>`).join('');
+    }); }
+
     async function savePur() { await db.collection("purchases").add({ name: document.getElementById('p-name').value, total: Number(document.getElementById('p-total').value), timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); updateFinance(); }
     async function saveSale() { await db.collection("sales").add({ name: document.getElementById('s-name').value, price: Number(document.getElementById('s-total').value), timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); updateFinance(); }
     async function addStaff() { await db.collection("staff").add({ name: document.getElementById('st-name').value, role: document.getElementById('st-role').value, rate: Number(document.getElementById('st-rate').value), phone: document.getElementById('st-phone').value }); alert("Added!"); loadStaff(); }
-    async function saveAttendance() { const records = []; document.querySelectorAll('.att-sel').forEach(s => records.push({name: s.dataset.name, status: s.value})); await db.collection("attendance").add({ date: document.getElementById('att-date').value, records, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Attendance Saved!"); updateFinance(); }
-    async function exportMasterPDF() { 
-        const { jsPDF } = window.jspdf; const doc = new jsPDF(); 
-        doc.text("Oasis AC Master Report", 14, 20); doc.text(document.getElementById('monthlyStats').innerText.split('\n'), 14, 30);
-        const b64 = doc.output('datauristring'); if (window.ReactNativeWebView) window.ReactNativeWebView.postMessage(b64); else doc.save('Report.pdf');
-    }
+    function loadJobs() { db.collection("jobs").orderBy("timestamp", "desc").get().then(snap => { document.getElementById('jobMasterList').innerHTML = snap.docs.map(doc => `<div class="card"><b>${doc.data().name}</b><br><small>${doc.data().date}</small> - ${doc.data().status}</div>`).join(''); }); }
+    async function exportMasterPDF() { const { jsPDF } = window.jspdf; const doc = new jsPDF(); doc.text("Oasis AC Master Report", 14, 20); doc.text(document.getElementById('monthlyStats').innerText.split('\n'), 14, 30); const b64 = doc.output('datauristring'); if (window.ReactNativeWebView) window.ReactNativeWebView.postMessage(b64); else doc.save('Report.pdf'); }
     function calcPur() { document.getElementById('p-total').value = document.getElementById('p-qty').value * document.getElementById('p-price').value; }
     function calcSale() { document.getElementById('s-total').value = document.getElementById('s-qty').value * document.getElementById('s-price').value; }
     function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme')==='dark'?'light':'dark'); }
