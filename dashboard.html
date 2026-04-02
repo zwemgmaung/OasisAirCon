@@ -29,10 +29,10 @@
         .profit-text { font-size: 18px; font-weight: bold; color: var(--p-green); }
         .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; color: white; }
         .bg-pending { background: #ffc107; color: #000; } .bg-done { background: #28a745; }
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 3000; }
-        .modal-content { background: var(--card); padding: 20px; border-radius: 15px; width: 90%; max-width: 400px; overflow-y: auto; max-height: 80vh; }
         .footer-copy { text-align: center; font-size: 10px; color: #888; margin-top: 20px; }
         .about-header { font-weight: bold; color: var(--p-green); margin-top: 15px; margin-bottom: 5px; border-bottom: 1.5px solid var(--p-green); padding-bottom: 2px; font-size: 13px; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 3000; }
+        .modal-content { background: var(--card); padding: 20px; border-radius: 15px; width: 90%; max-width: 400px; overflow-y: auto; max-height: 80vh; }
     </style>
 </head>
 <body data-theme="dark">
@@ -53,24 +53,11 @@
 
 <div class="container">
     <div id="homeTab">
-        <div class="card" style="text-align: center;">
-            <h3>Daily Dashboard</h3>
-            <p style="color:var(--p-green); font-size:11px; font-weight:bold;">Today: <span id="currentDateDisp"></span></p>
-            <div id="dailyFinanceDisplay" style="padding: 15px; background: var(--bg); border-radius: 10px; border: 1px solid var(--border); line-height: 2.2;">Updating...</div>
-        </div>
-        <div class="card">
-            <h4>Full Master Report</h4>
-            <div id="monthlyStats" style="line-height: 2.5; padding: 10px; background: var(--bg); border-radius: 8px;">Loading...</div>
-            <div class="grid-2" style="margin-top:15px;">
-                <button class="btn-green" id="pdfBtn" onclick="exportMasterPDF()">Export Master PDF</button>
-                <button class="btn-green" style="background:#4285f4;" onclick="updateFinance()">Master Sync</button>
-            </div>
-        </div>
+        <div class="card" style="text-align:center;"><h3>Daily Dashboard</h3><p style="color:var(--p-green);font-size:11px;font-weight:bold;">Today: <span id="currentDateDisp"></span></p><div id="dailyFinanceDisplay" style="padding:15px;background:var(--bg);border-radius:10px;border:1px solid var(--border);line-height:2.2;">Updating...</div></div>
+        <div class="card"><h4>Full Master Report</h4><div id="monthlyStats" style="line-height:2.5;padding:10px;background:var(--bg);border-radius:8px;">Loading...</div><div class="grid-2" style="margin-top:15px;"><button class="btn-green" id="pdfBtn" onclick="exportMasterPDF()">Export Master PDF</button><button class="btn-green" style="background:#4285f4;" onclick="updateFinance()">Master Sync</button></div></div>
         <div class="footer-copy">Copyright © 2026 <b>Zwe Maung Maung</b></div>
     </div>
-
-    <div id="jobsTab" class="hidden"><div id="jobMasterList"></div><div class="footer-copy">© 2026 Zwe Maung Maung</div></div>
-
+    <div id="jobsTab" class="hidden"><div id="jobMasterList"></div></div>
     <div id="serviceTab" class="hidden">
         <div class="card">
             <h3>New Service Entry</h3>
@@ -80,21 +67,16 @@
             <div class="grid-2"><input type="text" id="j-hp" placeholder="HP/Model"><input type="text" id="j-gas" placeholder="Gas Type"></div>
             <textarea id="j-desc" rows="2" placeholder="Remark / Problem"></textarea>
             <label>Staff</label>
-            <div id="staffChecks" style="border:1px solid var(--border); padding:10px; border-radius:8px; max-height:150px; overflow-y:auto; margin-bottom:10px; background:var(--bg);"></div>
+            <div id="staffChecks" style="border:1px solid var(--border);padding:10px;border-radius:8px;max-height:150px;overflow-y:auto;margin-bottom:10px;background:var(--bg);"></div>
             <div class="grid-2"><input type="date" id="j-date"><input type="number" id="j-cost" placeholder="Cost"></div>
             <select id="j-status"><option value="Pending">Pending</option><option value="Done">Done</option></select>
             <button class="btn-green" id="saveJobBtn" onclick="saveJob()">SAVE SERVICE</button>
         </div>
-        <div class="footer-copy">© 2026 Zwe Maung Maung</div>
     </div>
-
-    <div id="purchaseTab" class="hidden"><div class="card"><h3>Expense Entry</h3><input type="text" id="p-name" placeholder="Item Name"><div class="grid-2"><input type="number" id="p-qty" placeholder="Qty" oninput="calcPur()"><input type="number" id="p-price" placeholder="Price" oninput="calcPur()"></div><input type="number" id="p-total" readonly placeholder="Total"><button class="btn-green" id="savePurBtn" onclick="savePur()">SAVE</button><div id="purHistory" style="margin-top:15px;"></div></div><div class="footer-copy">© 2026 Zwe Maung Maung</div></div>
-    <div id="saleTab" class="hidden"><div class="card"><h3>Sale Entry</h3><input type="text" id="s-name" placeholder="Item Name"><div class="grid-2"><input type="number" id="s-qty" placeholder="Qty" oninput="calcSale()"><input type="number" id="s-price" placeholder="Price" oninput="calcSale()"></div><input type="number" id="s-total" readonly placeholder="Total"><button class="btn-green" id="saveSaleBtn" onclick="saveSale()">SAVE</button><div id="saleHistory" style="margin-top:15px;"></div></div><div class="footer-copy">© 2026 Zwe Maung Maung</div></div>
-
-    <div id="staffTab" class="hidden"><div id="staffList"></div><div class="card"><h4>Add Staff</h4><input type="text" id="st-name" placeholder="Name"><div class="grid-2"><select id="st-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Co-Leader</option><option>Helper</option></select><input type="number" id="st-rate" placeholder="Rate"></div><input type="text" id="st-phone" placeholder="Phone"><button class="btn-green" onclick="addStaff()">ADD STAFF</button></div><div class="footer-copy">© 2026 Zwe Maung Maung</div></div>
-
-    <div id="attendanceTab" class="hidden"><div class="card"><h3>Daily Attendance</h3><input type="date" id="att-date" onchange="checkAttLock()"><div id="attTableContainer" style="margin-top:15px;"></div><div id="attStatusMsg" style="text-align:center;color:orange;font-size:12px;margin-top:10px;"></div><button class="btn-green" id="saveAttBtn" style="margin-top:15px;" onclick="saveAttendance()">SAVE TODAY</button></div><div class="footer-copy">© 2026 Zwe Maung Maung</div></div>
-
+    <div id="purchaseTab" class="hidden"><div class="card"><h3>Expense Entry</h3><input type="text" id="p-name" placeholder="Item Name"><div class="grid-2"><input type="number" id="p-qty" placeholder="Qty" oninput="calcPur()"><input type="number" id="p-price" placeholder="Price" oninput="calcPur()"></div><input type="number" id="p-total" readonly placeholder="Total"><button class="btn-green" id="savePurBtn" onclick="savePur()">SAVE</button><div id="purHistory" style="margin-top:15px;"></div></div></div>
+    <div id="saleTab" class="hidden"><div class="card"><h3>Sale Entry</h3><input type="text" id="s-name" placeholder="Item Name"><div class="grid-2"><input type="number" id="s-qty" placeholder="Qty" oninput="calcSale()"><input type="number" id="s-price" placeholder="Price" oninput="calcSale()"></div><input type="number" id="s-total" readonly placeholder="Total"><button class="btn-green" id="saveSaleBtn" onclick="saveSale()">SAVE</button><div id="saleHistory" style="margin-top:15px;"></div></div></div>
+    <div id="staffTab" class="hidden"><div id="staffList"></div><div class="card"><h4>Add Staff</h4><input type="text" id="st-name" placeholder="Name"><div class="grid-2"><select id="st-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Co-Leader</option><option>Helper</option></select><input type="number" id="st-rate" placeholder="Rate"></div><input type="text" id="st-phone" placeholder="Phone"><button class="btn-green" onclick="addStaff()">ADD STAFF</button></div></div>
+    <div id="attendanceTab" class="hidden"><div class="card"><h3>Daily Attendance</h3><input type="date" id="att-date" onchange="checkAttLock()"><div id="attTableContainer" style="margin-top:15px;"></div><div id="attStatusMsg" style="text-align:center;color:orange;font-size:12px;margin-top:10px;"></div><button class="btn-green" id="saveAttBtn" style="margin-top:15px;" onclick="saveAttendance()">SAVE TODAY</button></div></div>
     <div id="settingsTab" class="hidden">
         <div class="card" style="padding:20px;">
             <div style="text-align:center;"><img src="1000064267.png" style="width:70px;height:70px;border-radius:50%;border:2px solid var(--p-green);"><h3>Settings</h3></div>
@@ -105,9 +87,8 @@
             <div class="st-row"><span>Version</span> <b>2.5.0 (Ultimate)</b></div>
             <div class="st-row"><span>App Developer</span> <b>Zwe Maung Maung</b></div>
             <div class="about-header">APP FEATURES</div>
-            <div style="font-size:12px;line-height:1.8;padding:10px;background:var(--bg);border-radius:8px;">✅ Customer Tracking<br>✅ Daily Profit Sync<br>✅ Full Master PDF Export</div>
+            <div style="font-size:12px;line-height:1.8;padding:10px;background:var(--bg);border-radius:8px;">✅ Customer Tracking<br>✅ Daily Profit Sync<br>✅ Full Master PDF Report Export</div>
         </div>
-        <div class="footer-copy">© 2026 Zwe Maung Maung</div>
     </div>
 </div>
 
@@ -115,7 +96,7 @@
 <div id="staffModal" class="modal"><div class="modal-content"><h3>Edit Staff</h3><input type="hidden" id="m-id"><input type="text" id="m-name"><div class="grid-2"><select id="m-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Co-Leader</option><option>Helper</option></select><input type="number" id="m-rate"></div><input type="text" id="m-phone"><button class="btn-green" onclick="updateStaff()">UPDATE</button><button class="btn-green" onclick="deleteStaff()" style="background:red;margin-top:10px;">DELETE</button><button class="btn-green" onclick="closeModal('staffModal')" style="background:#888;margin-top:10px;">CLOSE</button></div></div>
 
 <script>
-      const firebaseConfig = { apiKey: "AIzaSyAOgPQkaq0mLdzi9jNZK-oRCEa_VsmD_cE", authDomain: "oasis-ac-service.firebaseapp.com", projectId: "oasis-ac-service", storageBucket: "oasis-ac-service.firebasestorage.app", messagingSenderId: "1039018990829", appId: "1:1039018990829:web:bffe0ea0269bfbded780e4" };
+        const firebaseConfig = { apiKey: "AIzaSyAOgPQkaq0mLdzi9jNZK-oRCEa_VsmD_cE", authDomain: "oasis-ac-service.firebaseapp.com", projectId: "oasis-ac-service", storageBucket: "oasis-ac-service.firebasestorage.app", messagingSenderId: "1039018990829", appId: "1:1039018990829:web:bffe0ea0269bfbded780e4" };
     firebase.initializeApp(firebaseConfig); const db = firebase.firestore();
 
     function sortLogic(a,b) { if(a.role === 'MD') return -1; if(b.role === 'MD') return 1; return (b.rate||0) - (a.rate||0); }
@@ -154,7 +135,6 @@
         let sArr = snap.docs.map(d => ({id: d.id, ...d.data()})).sort(sortLogic);
         document.getElementById('staffList').innerHTML = sArr.map(s => `<div class="card" onclick="openStaffModal('${s.id}')"><div style="display:flex;justify-content:space-between;align-items:center;"><b>${s.name}</b><a href="tel:${s.phone}" style="color:var(--p-green);text-decoration:none;" onclick="event.stopPropagation()">📞 Call</a></div><small>${s.role} - Rate: ${s.rate.toLocaleString()}</small></div>`).join('');
     }); }
-
     function openStaffModal(id) { db.collection("staff").doc(id).get().then(d => { const v=d.data(); document.getElementById('m-id').value=id; document.getElementById('m-name').value=v.name; document.getElementById('m-role').value=v.role; document.getElementById('m-rate').value=v.rate; document.getElementById('m-phone').value=v.phone||''; document.getElementById('staffModal').style.display='flex'; }); }
     async function updateStaff() { await db.collection("staff").doc(document.getElementById('m-id').value).update({ name: document.getElementById('m-name').value, role: document.getElementById('m-role').value, rate: Number(document.getElementById('m-rate').value), phone: document.getElementById('m-phone').value }); closeModal('staffModal'); loadStaff(); }
     async function deleteStaff() { if(confirm("Delete?")){ await db.collection("staff").doc(document.getElementById('m-id').value).delete(); closeModal('staffModal'); loadStaff(); } }
@@ -162,7 +142,6 @@
     function loadJobs() { db.collection("jobs").orderBy("timestamp", "desc").get().then(snap => {
         document.getElementById('jobMasterList').innerHTML = snap.docs.map(doc => { const d=doc.data(); return `<div class="card" onclick="openJobDetail('${doc.id}')"><div style="display:flex;justify-content:space-between;align-items:start;"><b style="color:var(--p-green)">${d.name} , ${d.brand||'-'}</b><span class="status-badge ${d.status==='Done'?'bg-done':'bg-pending'}">${d.status}</span></div><div style="font-size:12px;margin-top:5px;">🛠️ ${d.appliance||'-'} | HP: ${d.hp||'-'} | Gas: ${d.gas||'-'}</div><div style="font-size:12px;color:orange;margin-top:3px;">📝 Prob: ${d.desc||'-'}</div><div style="font-size:11px;color:#888;margin-top:5px;border-top:0.5px solid var(--border);padding-top:5px;">📅 ${d.date||'-'} | 📞 ${d.phone||'-'} | 👤 ${d.staff?.join(', ')||'-'}</div></div>`; }).join('');
     }); }
-
     function openJobDetail(id) { db.collection("jobs").doc(id).get().then(doc => { const d=doc.data(); window.currentJobId=id; document.getElementById('jobDetailView').innerHTML=`<b>Customer:</b> ${d.name}<br><b>Staff:</b> ${d.staff?.join(', ')||'-'}`; document.getElementById('edit-j-cost').value=d.cost; document.getElementById('edit-j-status').value=d.status; document.getElementById('jobModal').style.display='flex'; }); }
     async function updateJob() { await db.collection("jobs").doc(window.currentJobId).update({ cost: Number(document.getElementById('edit-j-cost').value), status: document.getElementById('edit-j-status').value }); closeModal('jobModal'); loadJobs(); updateFinance(); }
     async function deleteJob() { if(confirm("Delete?")){ await db.collection("jobs").doc(window.currentJobId).delete(); closeModal('jobModal'); loadJobs(); updateFinance(); } }
@@ -183,7 +162,6 @@
             const [jSn, pSn, sSn, aSn] = await Promise.all([db.collection("jobs").orderBy("date","desc").get(), db.collection("purchases").get(), db.collection("sales").get(), db.collection("attendance").orderBy("date","desc").get()]);
             const { jsPDF } = window.jspdf; const doc = new jsPDF('l', 'mm', 'a4');
             doc.setFontSize(18); doc.setTextColor(40, 167, 69); doc.text("OASIS AC SERVICE - FULL MASTER REPORT", 14, 15);
-            
             const jB = jSn.docs.map(d => { const v=d.data(); return [v.date, v.name, v.brand||'-', v.staff?.join(', ')||'-', (v.cost||0).toLocaleString(), v.status]; });
             doc.autoTable({ head: [['Date', 'Customer', 'Brand', 'Staff', 'Cost', 'Status']], body: jB, startY: 25, headStyles:{fillColor:[40,167,69]}, columnStyles:{4:{halign:'right'}} });
             const pB = pSn.docs.map(d => [d.data().name, (d.data().total||0).toLocaleString()]);
@@ -192,8 +170,8 @@
             doc.autoTable({ head: [['Sale Item', 'Amount (MMK)']], body: sB, startY: doc.lastAutoTable.finalY+10, headStyles:{fillColor:[0, 123, 255]}, columnStyles:{1:{halign:'right'}} });
             const aB = aSn.docs.map(d => [d.data().date, d.data().records.map(r => `${r.name}(${r.status})`).join(', ')]);
             doc.autoTable({ head: [['Date', 'Attendance Records']], body: aB, startY: doc.lastAutoTable.finalY+10, headStyles:{fillColor:[255,193,7]}, columnStyles:{1:{cellWidth:180}} });
-
-            const b64 = doc.output('datauristring'); if (window.ReactNativeWebView) window.ReactNativeWebView.postMessage(b64); else doc.save('Full_Master_Report.pdf');
+            const b64 = doc.output('datauristring');
+            if (window.ReactNativeWebView) window.ReactNativeWebView.postMessage(b64); else doc.save('Oasis_Full_Report.pdf');
         } catch(e) { console.error(e); alert("PDF Error"); }
         btn.disabled = false; btn.innerText = "Export Master PDF";
     }
