@@ -1,7 +1,143 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <script>window.location.href = 'dashboard.html';</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oasis Master Sync v3.0.0</title>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        :root { --p-green: #28a745; --bg: #ffffff; --text: #333; --card: #f8f9fa; --border: #ddd; }
+        [data-theme="dark"] { --bg: #121212; --text: #e0e0e0; --card: #1e1e1e; --border: #333; }
+        body { font-family: Arial, sans-serif; margin: 0; background: var(--bg); color: var(--text); padding-bottom: 80px; }
+        .header { background: var(--p-green); color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 2000; }
+        .logo-img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid white; object-fit: cover; background: white; }
+        .nav-tabs { display: flex; overflow-x: auto; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 55px; z-index: 1000; }
+        .tab-btn { padding: 15px; flex: none; text-align: center; cursor: pointer; font-weight: bold; font-size: 11px; color: #666; border-bottom: 3px solid transparent; }
+        .tab-btn.active { color: var(--p-green); border-bottom-color: var(--p-green); }
+        .container { padding: 15px; max-width: 800px; margin: auto; }
+        .card { background: var(--card); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--border); }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); box-sizing: border-box; margin-bottom: 10px; }
+        .btn-green { background: var(--p-green); color: white; border: none; padding: 14px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 5px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .hidden { display: none !important; }
+        .st-row { display: flex; justify-content: space-between; padding: 8px 10px; border-bottom: 0.5px solid var(--border); font-size: 13px; }
+        .profit-line { display: flex; justify-content: space-between; align-items: center; padding: 12px 10px; border-bottom: 0.5px solid var(--border); }
+        .profit-text { font-size: 18px; font-weight: bold; color: var(--p-green); }
+        .fixed-footer { position: fixed; bottom: 0; width: 100%; background: var(--card); text-align: center; padding: 10px 0; font-size: 10px; color: #888; border-top: 1px solid var(--border); z-index: 2000; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 3000; }
+        .modal-content { background: var(--card); padding: 20px; border-radius: 15px; width: 90%; max-width: 450px; overflow-y: auto; max-height: 85vh; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; color: white; }
+        .bg-red { background: #dc3545; } .bg-blue { background: #007bff; } .bg-green { background: #28a745; }
+    </style>
 </head>
-<body></body>
-</html>
+<body data-theme="dark">
+<div class="header">
+    <div style="display:flex; align-items:center; gap:8px;"><img src="1000064267.png" class="logo-img"><span style="font-weight:bold; font-size:11px;">OASIS Master Sync v3.0</span></div>
+    <button onclick="toggleTheme()" style="background:none; border:none; color:white; font-size:18px;">🌓</button>
+</div>
+<div class="nav-tabs">
+    <div class="tab-btn active" onclick="showTab('home')" id="t-home">HOME</div>
+    <div class="tab-btn" onclick="showTab('jobs')" id="t-jobs">JOBS</div>
+    <div class="tab-btn" onclick="showTab('service')" id="t-service">ENTRY</div>
+    <div class="tab-btn" onclick="showTab('purchase')" id="t-purchase">PURCHASE</div>
+    <div class="tab-btn" onclick="showTab('sale')" id="t-sale">SALE</div>
+    <div class="tab-btn" onclick="showTab('staff')" id="t-staff">STAFF</div>
+    <div class="tab-btn" onclick="showTab('attendance')" id="t-attendance">ATTEND</div>
+    <div class="tab-btn" onclick="showTab('settings')" id="t-settings">SETTINGS</div>
+</div>
+<div class="container">
+    <div id="homeTab">
+        <div class="card" style="text-align:center;"><h3>Daily Dashboard</h3><div id="dailyFinanceDisplay" style="padding:15px;background:var(--bg);border-radius:10px;line-height:2.2;">Updating...</div></div>
+        <div class="card"><h4>Monthly Master Report</h4><div id="monthlyStats" style="line-height:2.5;padding:10px;background:var(--bg);border-radius:8px;">Loading...</div><div class="grid-2" style="margin-top:15px;"><button class="btn-green" id="pdfBtn" onclick="exportMonthlyPDF()">Export Monthly PDF</button><button class="btn-green" style="background:#4285f4;" onclick="updateFinance()">Master Sync</button></div></div>
+    </div>
+    <div id="jobsTab" class="hidden"><div id="jobMasterList"></div></div>
+    <div id="serviceTab" class="hidden">
+        <div class="card">
+            <h3>New Service Entry</h3>
+            <div class="grid-2"><input type="text" id="j-name" placeholder="Customer Name"><input type="text" id="j-phone" placeholder="Phone"></div>
+            <textarea id="j-addr" rows="2" placeholder="Address"></textarea>
+            <div class="grid-2"><input type="text" id="j-brand" placeholder="Brand"><input type="text" id="j-hp" placeholder="HP/Model"></div>
+            <textarea id="j-desc" rows="2" placeholder="Remark / Problem"></textarea>
+            <div id="staffChecks" style="border:1px solid var(--border);padding:10px;border-radius:8px;max-height:120px;overflow-y:auto;margin-bottom:10px;"></div>
+            <div class="grid-2"><input type="date" id="j-date"><input type="number" id="j-cost" placeholder="Total Cost"></div>
+            <div class="grid-2"><input type="number" id="j-paid" placeholder="Received Amount"><select id="j-status"><option value="Pending">Job Pending</option><option value="Done">Job Done</option></select></div>
+            <button class="btn-green" id="saveJobBtn" onclick="saveJob()">SAVE SERVICE</button>
+        </div>
+    </div>
+    <div id="purchaseTab" class="hidden"><div class="card"><h3>Purchase Entry</h3><input type="text" id="p-name" placeholder="Item Name"><div class="grid-2"><input type="number" id="p-qty" placeholder="Qty" oninput="calcPur()"><input type="number" id="p-price" placeholder="Price" oninput="calcPur()"></div><input type="number" id="p-total" readonly placeholder="Total"><select id="p-pay-status"><option value="Paid">Paid (ငွေချေပြီး)</option><option value="Unpaid">Unpaid (ငွေမပေးရသေး)</option></select><button class="btn-green" id="savePurBtn" onclick="savePur()">SAVE PURCHASE</button><div id="purHistory" style="margin-top:15px;"></div></div></div>
+        <div id="saleTab" class="hidden"><div class="card"><h3>Sale Entry</h3><input type="text" id="s-name" placeholder="Item Name"><div class="grid-2"><input type="number" id="s-qty" placeholder="Qty" oninput="calcSale()"><input type="number" id="s-price" placeholder="Price" oninput="calcSale()"></div><input type="number" id="s-total" readonly placeholder="Total"><select id="s-pay-status"><option value="Paid">Paid (ငွေရပြီး)</option><option value="Unpaid">Unpaid (ငွေမရသေး)</option></select><button class="btn-green" id="saveSaleBtn" onclick="saveSale()">SAVE SALE</button><div id="saleHistory" style="margin-top:15px;"></div></div></div>
+    <div id="staffTab" class="hidden"><div id="staffList"></div><div class="card"><h4>Add Staff</h4><input type="text" id="st-name" placeholder="Name"><div class="grid-2"><select id="st-role"><option>Leader</option><option>Co-Leader</option><option>Helper</option></select><input type="number" id="st-rate" placeholder="Rate"></div><button class="btn-green" onclick="addStaff()">ADD STAFF</button></div></div>
+    <div id="attendanceTab" class="hidden"><div class="card"><h3>Attendance</h3><input type="date" id="att-date" onchange="checkAttLock()"><div id="attTableContainer"></div><button class="btn-green" id="saveAttBtn" onclick="saveAttendance()">SAVE TODAY</button></div></div>
+    <div id="settingsTab" class="hidden"><div class="card" style="padding:20px;text-align:center;"><img src="1000064267.png" style="width:70px;"><div style="font-size:13px;margin-top:15px;">Owner: <b>Ko Htay Aung</b><br>App Developer: <b>Zwe Maung Maung</b><br>Version: 3.0.0 (Ultimate AI)</div></div></div>
+</div>
+<div class="fixed-footer">© 2026 <b>Zwe Maung Maung</b></div>
+<div id="jobModal" class="modal"><div class="modal-content"><h3>Edit Job</h3><div id="jobEditForm"></div><button class="btn-green" onclick="updateJob()">UPDATE</button><button class="btn-green" onclick="deleteDoc('jobs', window.currentId)" style="background:red;">DELETE</button><button class="btn-green" onclick="closeModal('jobModal')" style="background:#888;">CLOSE</button></div></div>
+<div id="editModal" class="modal"><div class="modal-content"><h3>Edit Record</h3><div id="editForm"></div><button class="btn-green" onclick="updateRecord()">UPDATE</button><button class="btn-green" onclick="deleteDoc(window.currentCol, window.currentId)" style="background:red;">DELETE</button><button class="btn-green" onclick="closeModal('editModal')" style="background:#888;">CLOSE</button></div></div>
+<script>
+    const firebaseConfig = { apiKey: "AIzaSyAOgPQkaq0mLdzi9jNZK-oRCEa_VsmD_cE", authDomain: "oasis-ac-service.firebaseapp.com", projectId: "oasis-ac-service", storageBucket: "oasis-ac-service.firebasestorage.app", messagingSenderId: "1039018990829", appId: "1:1039018990829:web:bffe0ea0269bfbded780e4" };
+    firebase.initializeApp(firebaseConfig); const db = firebase.firestore();
+    function showTab(t) { 
+        document.querySelectorAll('.container > div').forEach(el => el.classList.add('hidden')); document.getElementById(t+'Tab').classList.remove('hidden');
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById('t-'+t).classList.add('active');
+        if(t==='home') updateFinance(); if(t==='jobs') loadJobs(); if(t==='staff') loadStaff();
+        if(t==='purchase') loadHistory('purchases', 'purHistory'); if(t==='sale') loadHistory('sales', 'saleHistory');
+        if(t==='attendance') { document.getElementById('att-date').valueAsDate = new Date(); checkAttLock(); }
+        if(t==='service') loadStaffForService();
+    }
+    async function updateFinance() {
+        const today = new Date().toISOString().split('T')[0];
+        let dInc=0, dExp=0, dSal=0, dRec=0, dPay=0, mInc=0, mExp=0, mRec=0, mPay=0, mSal=0;
+        const [jSn, sSn, pSn, stSn, aSn] = await Promise.all([db.collection("jobs").get(), db.collection("sales").get(), db.collection("purchases").get(), db.collection("staff").get(), db.collection("attendance").get()]);
+        jSn.forEach(d => { 
+            const v=d.data(); const amt=v.cost||0; const paid=v.paid||0;
+            mInc += paid; if(v.date===today) dInc += paid;
+            mRec += (amt - paid); if(v.date===today) dRec += (amt - paid);
+        });
+        sSn.forEach(d => { 
+            const v=d.data(); const dD = v.timestamp?.toDate().toISOString().split('T')[0];
+            if(v.status==='Paid') { mInc += v.price||0; if(dD===today) dInc += v.price||0; }
+            else { mRec += v.price||0; if(dD===today) dRec += v.price||0; }
+        });
+        pSn.forEach(d => { 
+            const v=d.data(); const dD = v.timestamp?.toDate().toISOString().split('T')[0];
+            if(v.status==='Paid') { mExp += v.total||0; if(dD===today) dExp += v.total||0; }
+            else { mPay += v.total||0; if(dD===today) dPay += v.total||0; }
+        });
+        stSn.forEach(sDoc => { const s = sDoc.data(); aSn.forEach(aDoc => { if(aDoc.data().records?.find(r => r.name === s.name && r.status === 'Present')) { mSal += (s.rate || 0); if(aDoc.data().date === today) dSal += (s.rate || 0); } }); });
+        document.getElementById('dailyFinanceDisplay').innerHTML = `<div class="st-row"><span>Today Income:</span> <b>${dInc.toLocaleString()}</b></div><div class="st-row"><span>Today Expense:</span> <b>${(dExp+dSal).toLocaleString()}</b></div><div class="st-row"><span>Accounts Receivable:</span> <b style="color:#007bff">+${dRec.toLocaleString()}</b></div><div class="st-row"><span>Accounts Payable:</span> <b style="color:#dc3545">-${dPay.toLocaleString()}</b></div><div class="profit-line"><span>Daily Net:</span> <span class="profit-text">${(dInc-dExp-dSal).toLocaleString()}</span></div>`;
+        document.getElementById('monthlyStats').innerHTML = `<div class="st-row"><span>Total Income:</span> <b>${mInc.toLocaleString()}</b></div><div class="st-row"><span>Total Salary/Expense:</span> <b>${(mExp+mSal).toLocaleString()}</b></div><div class="st-row"><span>Total Uncollected:</span> <b style="color:#007bff">${mRec.toLocaleString()}</b></div><div class="st-row"><span>Total Unpaid Debt:</span> <b style="color:#dc3545">${mPay.toLocaleString()}</b></div><div class="profit-line"><span>Monthly Net:</span> <span class="profit-text">${(mInc-mExp-mSal).toLocaleString()}</span></div>`;
+    }
+    function loadJobs() { db.collection("jobs").orderBy("timestamp", "desc").get().then(snap => { document.getElementById('jobMasterList').innerHTML = snap.docs.map(doc => { const d=doc.data(); const bal = (d.cost||0) - (d.paid||0); return `<div class="card" onclick="openJobEdit('${doc.id}')"><div style="display:flex;justify-content:space-between;"><b>${d.name}</b> <span class="badge ${d.status==='Done'?'bg-green':'bg-red'}">${d.status}</span></div><div style="font-size:12px;margin:5px 0;">HP: ${d.hp||'-'} | Brand: ${d.brand||'-'}</div><div style="font-size:13px;display:flex;justify-content:space-between;"><span>Total: ${d.cost.toLocaleString()}</span> <span style="color:${bal>0?'red':'green'}">${bal>0?'Bal: '+bal.toLocaleString():'Fully Paid'}</span></div></div>`; }).join(''); }); }
+    function openJobEdit(id) { window.currentId = id; db.collection("jobs").doc(id).get().then(doc => { const d = doc.data(); document.getElementById('jobEditForm').innerHTML = `<input type="text" id="e-j-name" value="${d.name}"><div class="grid-2"><input type="number" id="e-j-cost" value="${d.cost}"><input type="number" id="e-j-paid" value="${d.paid||0}"></div><select id="e-j-status"><option ${d.status==='Pending'?'selected':''}>Pending</option><option ${d.status==='Done'?'selected':''}>Done</option></select>`; document.getElementById('jobModal').style.display = 'flex'; }); }
+    async function updateJob() { await db.collection("jobs").doc(window.currentId).update({ name: document.getElementById('e-j-name').value, cost: Number(document.getElementById('e-j-cost').value), paid: Number(document.getElementById('e-j-paid').value), status: document.getElementById('e-j-status').value }); closeModal('jobModal'); loadJobs(); updateFinance(); }
+    function loadHistory(col, div) { db.collection(col).orderBy("timestamp", "desc").get().then(snap => { document.getElementById(div).innerHTML = snap.docs.map(doc => { const d = doc.data(); return `<div class="st-row" onclick="openEditRecord('${col}', '${doc.id}')"><span>${d.name}</span> <span class="badge ${d.status==='Paid'?'bg-green':'bg-red'}">${(d.total||d.price).toLocaleString()} (${d.status})</span></div>`; }).join(''); }); }
+    function openEditRecord(col, id) { window.currentCol = col; window.currentId = id; db.collection(col).doc(id).get().then(doc => { const d = doc.data(); document.getElementById('editForm').innerHTML = `<input type="text" id="e-rec-name" value="${d.name}"><input type="number" id="e-rec-amt" value="${d.total||d.price}"><select id="e-rec-status"><option ${d.status==='Paid'?'selected':''}>Paid</option><option ${d.status==='Unpaid'?'selected':''}>Unpaid</option></select>`; document.getElementById('editModal').style.display = 'flex'; }); }
+    async function updateRecord() { const up = { name: document.getElementById('e-rec-name').value, status: document.getElementById('e-rec-status').value }; if(window.currentCol==='purchases') up.total = Number(document.getElementById('e-rec-amt').value); else up.price = Number(document.getElementById('e-rec-amt').value); await db.collection(window.currentCol).doc(window.currentId).update(up); closeModal('editModal'); showTab(window.currentCol === 'purchases' ? 'purchase' : 'sale'); }
+    async function saveJob() { const s=[]; document.querySelectorAll('.st-check:checked').forEach(c=>s.push(c.value)); await db.collection("jobs").add({ name: document.getElementById('j-name').value, phone: document.getElementById('j-phone').value, brand: document.getElementById('j-brand').value, hp: document.getElementById('j-hp').value, addr: document.getElementById('j-addr').value, desc: document.getElementById('j-desc').value, staff: s, date: document.getElementById('j-date').value, cost: Number(document.getElementById('j-cost').value), paid: Number(document.getElementById('j-paid').value), status: document.getElementById('j-status').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Job Saved!"); ['j-name','j-phone','j-brand','j-hp','j-addr','j-desc','j-cost','j-paid'].forEach(i=>document.getElementById(i).value=''); showTab('jobs'); }
+    async function savePur() { await db.collection("purchases").add({ name: document.getElementById('p-name').value, total: Number(document.getElementById('p-total').value), status: document.getElementById('p-pay-status').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); ['p-name','p-qty','p-price','p-total'].forEach(i=>document.getElementById(i).value=''); loadHistory('purchases', 'purHistory'); }
+    async function saveSale() { await db.collection("sales").add({ name: document.getElementById('s-name').value, price: Number(document.getElementById('s-total').value), status: document.getElementById('s-pay-status').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); ['s-name','s-qty','s-price','s-total'].forEach(i=>document.getElementById(i).value=''); loadHistory('sales', 'saleHistory'); }
+    async function deleteDoc(col, id) { if(confirm("Delete this?")) { await db.collection(col).doc(id).delete(); closeModal('jobModal'); closeModal('editModal'); updateFinance(); if(col==='jobs') loadJobs(); else loadHistory(col, col==='purchases'?'purHistory':'saleHistory'); } }
+    async function exportMonthlyPDF() {
+        const btn = document.getElementById('pdfBtn'); btn.innerText = "Generating PDF...";
+        const [jSn, pSn, sSn] = await Promise.all([db.collection("jobs").get(), db.collection("purchases").get(), db.collection("sales").get()]);
+        const { jsPDF } = window.jspdf; const doc = new jsPDF('l', 'mm', 'a4');
+        doc.text("OASIS MASTER MONTHLY REPORT", 14, 15);
+        const jB = jSn.docs.map(d => [d.data().date, d.data().name, d.data().cost.toLocaleString(), d.data().paid.toLocaleString(), (d.data().cost - d.data().paid).toLocaleString(), d.data().status]);
+        doc.autoTable({ head: [['Date', 'Customer', 'Total Cost', 'Received', 'Balance', 'Job Status']], body: jB, startY: 25 });
+        const b64 = doc.output('datauristring'); if (window.ReactNativeWebView) window.ReactNativeWebView.postMessage(b64); else doc.save('Monthly_Report.pdf'); btn.innerText = "Export Monthly PDF";
+    }
+    function loadStaffForService() { db.collection("staff").get().then(snap => { document.getElementById('staffChecks').innerHTML = snap.docs.map(d => `<label style="display:block;font-size:12px;"><input type="checkbox" class="st-check" value="${d.data().name}"> ${d.data().name}</label>`).join(''); }); }
+    function loadStaff() { db.collection("staff").get().then(snap => { document.getElementById('staffList').innerHTML = snap.docs.map(d => `<div class="card"><b>${d.data().name}</b> - ${d.data().role} (${d.data().rate.toLocaleString()})</div>`).join(''); }); }
+    async function addStaff() { await db.collection("staff").add({ name: document.getElementById('st-name').value, role: document.getElementById('st-role').value, rate: Number(document.getElementById('st-rate').value) }); alert("Staff Added!"); loadStaff(); }
+    async function checkAttLock() { const date = document.getElementById('att-date').value; const snap = await db.collection("attendance").where("date", "==", date).get(); if(!snap.empty){ document.getElementById('saveAttBtn').style.display='none'; document.getElementById('attTableContainer').innerHTML="✅ Saved"; } else { document.getElementById('saveAttBtn').style.display='block'; db.collection("staff").get().then(s => { document.getElementById('attTableContainer').innerHTML = s.docs.map(d => `<div class="st-row"><b>${d.data().name}</b><select class="att-sel" data-name="${d.data().name}"><option>Present</option><option>Absent</option></select></div>`).join(''); }); } }
+    async function saveAttendance() { const records = []; document.querySelectorAll('.att-sel').forEach(s => records.push({name: s.dataset.name, status: s.value})); await db.collection("attendance").add({ date: document.getElementById('att-date').value, records, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); checkAttLock(); }
+    function calcPur() { document.getElementById('p-total').value = (document.getElementById('p-qty').value||0) * (document.getElementById('p-price').value||0); }
+    function calcSale() { document.getElementById('s-total').value = (document.getElementById('s-qty').value||0) * (document.getElementById('s-price').value||0); }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme')==='dark'?'light':'dark'); }
+    window.onload = () => showTab('home');
+</script>
+</body></html>
