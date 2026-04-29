@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oasis Master Sync v3.2.5 AI Final</title>
+    <title>Oasis Master Sync v3.3.0 Ultimate</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -11,8 +11,8 @@
     <style>
         :root { --p-green: #28a745; --bg: #121212; --text: #e0e0e0; --card: #1e1e1e; --border: #333; }
         [data-theme="light"] { --bg: #ffffff; --text: #333; --card: #f8f9fa; --border: #ddd; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: var(--bg); color: var(--text); padding-bottom: 90px; }
-        .header { background: var(--p-green); color: white; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 2000; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: var(--text); padding-bottom: 90px; }
+        .header { background: var(--p-green); color: white; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 2000; }
         .logo-img { width: 38px; height: 38px; border-radius: 50%; border: 2px solid white; object-fit: cover; background: white; }
         .nav-tabs { display: flex; overflow-x: auto; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 62px; z-index: 1000; scrollbar-width: none; }
         .tab-btn { padding: 15px 20px; flex: none; text-align: center; cursor: pointer; font-weight: bold; font-size: 11px; color: #888; border-bottom: 3px solid transparent; text-transform: uppercase; }
@@ -24,25 +24,24 @@
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .hidden { display: none !important; }
         .st-row { display: flex; justify-content: space-between; padding: 10px 5px; border-bottom: 0.5px solid var(--border); font-size: 13px; }
-        .profit-line { display: flex; justify-content: space-between; align-items: center; padding: 15px 5px; border-bottom: 1px solid var(--p-green); }
         .profit-text { font-size: 20px; font-weight: bold; color: var(--p-green); }
         .fixed-footer { position: fixed; bottom: 0; width: 100%; background: var(--card); text-align: center; padding: 12px 0; font-size: 10px; color: #888; border-top: 1px solid var(--border); z-index: 2000; }
-        .badge { padding: 5px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; color: white; text-transform: uppercase; }
-        .bg-red { background: #e74c3c; } .bg-blue { background: #3498db; } .bg-green { background: #2ecc71; }
-        /* AI Assistant UI */
-        #ai-btn { position: fixed; bottom: 85px; right: 20px; background: var(--p-green); width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 22px; cursor: pointer; z-index: 3000; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
+        .badge { padding: 5px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; color: white; }
+        .bg-red { background: #e74c3c; } .bg-green { background: #2ecc71; }
+        #ai-btn { position: fixed; bottom: 85px; right: 20px; background: var(--p-green); width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 22px; cursor: pointer; z-index: 3000; }
         #ai-box { position: fixed; bottom: 150px; right: 20px; width: 320px; height: 450px; background: var(--card); border: 1px solid var(--p-green); border-radius: 20px; display: none; flex-direction: column; z-index: 3000; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        #ai-header { background: var(--p-green); color: white; padding: 15px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        #ai-header { background: var(--p-green); color: white; padding: 15px; font-weight: bold; display: flex; justify-content: space-between; }
         #ai-messages { flex: 1; padding: 15px; overflow-y: auto; font-size: 13px; display: flex; flex-direction: column; gap: 10px; }
-        .ai-msg { padding: 10px; border-radius: 12px; max-width: 85%; word-wrap: break-word; }
-        .ai-bot { background: #333; align-self: flex-start; color: #fff; }
-        .ai-user { background: var(--p-green); align-self: flex-end; color: #fff; }
-        #ai-input-area { padding: 10px; border-top: 1px solid var(--border); display: flex; gap: 5px; }
+        .ai-msg { padding: 10px; border-radius: 12px; max-width: 85%; }
+        .ai-bot { background: #333; align-self: flex-start; }
+        .ai-user { background: var(--p-green); align-self: flex-end; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 4000; }
+        .modal-content { background: var(--card); padding: 20px; border-radius: 15px; width: 90%; max-width: 450px; overflow-y: auto; max-height: 85vh; }
     </style>
 </head>
 <body data-theme="dark">
 <div class="header">
-    <div style="display:flex; align-items:center; gap:10px;"><img src="1000064267.png" class="logo-img"><span style="font-weight:bold; font-size:13px; letter-spacing:0.5px;">OASIS Master Sync v3.2.5</span></div>
+    <div style="display:flex; align-items:center; gap:10px;"><img src="1000064267.png" class="logo-img"><span style="font-weight:bold; font-size:13px;">OASIS Master Sync v3.3.0</span></div>
     <button onclick="toggleTheme()" style="background:none; border:none; color:white; font-size:20px;">🌓</button>
 </div>
 <div class="nav-tabs">
@@ -66,57 +65,67 @@
             <h3>New Service Entry</h3>
             <div class="grid-2"><input type="text" id="j-name" placeholder="Customer Name"><input type="text" id="j-phone" placeholder="Phone"></div>
             <textarea id="j-addr" rows="2" placeholder="Address"></textarea>
-            <div class="grid-2">
-                <select id="j-type">
-                    <option value="Air-Con">Air-Con</option>
-                    <option value="Refrigerator">Refrigerator</option>
-                    <option value="Washing Machine">Washing Machine</option>
-                    <option value="Chiller">Chiller</option>
-                </select>
-                <input type="text" id="j-brand" placeholder="Brand">
-            </div>
+            <div class="grid-2"><select id="j-type"><option value="Air-Con">Air-Con</option><option value="Refrigerator">Refrigerator</option><option value="Washing Machine">Washing Machine</option><option value="Chiller">Chiller</option></select><input type="text" id="j-brand" placeholder="Brand"></div>
             <div class="grid-2"><input type="text" id="j-hp" placeholder="HP/Model"><input type="text" id="j-gas" placeholder="Gas Type"></div>
-            <textarea id="j-desc" rows="2" placeholder="Problem Details / Remark"></textarea>
-            <label style="font-size:11px;color:var(--p-green);font-weight:bold;">Assign Technicians (Exclude MD)</label>
+            <textarea id="j-desc" rows="2" placeholder="Problem Details"></textarea>
+            <label style="font-size:11px;color:var(--p-green);font-weight:bold;">Assign Staff (Exclude MD)</label>
             <div id="staffChecks" style="border:1px solid var(--border);padding:10px;border-radius:10px;max-height:120px;overflow-y:auto;margin:10px 0;background:rgba(0,0,0,0.1);"></div>
             <div class="grid-2"><input type="date" id="j-date"><input type="number" id="j-cost" placeholder="Total Cost"></div>
             <div class="grid-2"><input type="number" id="j-paid" placeholder="Advance/Paid"><select id="j-status"><option value="Pending">Job Pending</option><option value="Done">Job Done</option></select></div>
             <button class="btn-green" id="saveJobBtn" onclick="saveJob()">SAVE SERVICE</button>
         </div>
     </div>
-    <div id="purchaseTab" class="hidden"><div class="card"><h3>Purchase Entry</h3><input type="text" id="p-name" placeholder="Item Name"><div class="grid-2"><input type="number" id="p-qty" placeholder="Qty" oninput="calcPur()"><input type="number" id="p-price" placeholder="Price" oninput="calcPur()"></div><input type="number" id="p-total" readonly placeholder="Total Cost"><select id="p-pay-status"><option value="Paid">Paid (ငွေချေပြီး)</option><option value="Unpaid">Unpaid (ငွေမပေးရသေး)</option></select><button class="btn-green" id="savePurBtn" onclick="savePur()">SAVE PURCHASE</button><div id="purHistory" style="margin-top:15px;"></div></div></div>
-                  <div id="saleTab" class="hidden"><div class="card"><h3>Sale Entry</h3><input type="text" id="s-name" placeholder="Item Name"><div class="grid-2"><input type="number" id="s-qty" placeholder="Qty" oninput="calcSale()"><input type="number" id="s-price" placeholder="Price" oninput="calcSale()"></div><input type="number" id="s-total" readonly placeholder="Total Price"><select id="s-pay-status"><option value="Paid">Paid (ငွေရပြီး)</option><option value="Unpaid">Unpaid (ငွေမရသေး)</option></select><button class="btn-green" id="saveSaleBtn" onclick="saveSale()">SAVE SALE</button><div id="saleHistory" style="margin-top:15px;"></div></div></div>
-    <div id="staffTab" class="hidden"><div id="staffList"></div><div class="card"><h4>New Staff Enrollment</h4><input type="text" id="st-name" placeholder="Full Name"><div class="grid-2"><select id="st-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Co-Leader</option><option>Helper</option></select><input type="number" id="st-rate" placeholder="Daily Rate"></div><input type="text" id="st-phone" placeholder="Phone Number"><button class="btn-green" onclick="addStaff()">ADD STAFF MEMBER</button></div></div>
-    <div id="attendanceTab" class="hidden"><div class="card"><h3>Daily Attendance</h3><input type="date" id="att-date" onchange="checkAttLock()"><div id="attTableContainer" style="margin-top:10px;"></div><button class="btn-green" id="saveAttBtn" style="margin-top:15px;" onclick="saveAttendance()">SUBMIT TODAY</button></div></div>
-    <div id="settingsTab" class="hidden">
-        <div class="card" style="padding:0; overflow:hidden;">
-            <div style="background:var(--p-green); padding:30px 20px; text-align:center; color:white;">
-                <img src="1000064267.png" style="width:90px; height:90px; border-radius:50%; border:3px solid white;">
-                <h3 style="margin:15px 0 5px 0;">Oasis AC Sales & Service</h3>
-                <p style="font-size:11px; margin-top:5px; font-weight:bold;">Since 2000</p>
-            </div>
-            <div style="padding:20px;">
-                <div class="st-row"><span>Business Owner</span> <b>Ko Htay Aung</b></div>
-                <div class="st-row"><span>Developer</span> <b>Zwe Maung Maung</b></div>
-                <div class="st-row"><span>App Version</span> <b>3.2.5 (AI Stable)</b></div>
-            </div>
+    <div id="purchaseTab" class="hidden">
+        <div class="card">
+            <h3>Purchase Entry</h3>
+            <input type="text" id="p-shop" placeholder="Shop Name">
+            <div class="grid-2"><input type="text" id="p-shop-phone" placeholder="Shop Phone"><input type="text" id="p-shop-addr" placeholder="Shop Address"></div>
+            <hr style="border:0.1px solid var(--border); margin:10px 0;">
+            <input type="text" id="p-name" placeholder="Item Name">
+            <div class="grid-2"><input type="number" id="p-qty" placeholder="Qty" oninput="calcPur()"><input type="number" id="p-price" placeholder="Price" oninput="calcPur()"></div>
+            <input type="number" id="p-total" readonly placeholder="Total Cost">
+            <select id="p-pay-status"><option value="Paid">Paid (ငွေချေပြီး)</option><option value="Unpaid">Unpaid (ငွေမပေးရသေး)</option></select>
+            <button class="btn-green" id="savePurBtn" onclick="savePur()">SAVE PURCHASE</button>
+            <div id="purHistory" style="margin-top:15px;"></div>
         </div>
     </div>
+        <div id="saleTab" class="hidden">
+        <div class="card">
+            <h3>Sale Entry</h3>
+            <input type="text" id="s-cust" placeholder="Buyer Name">
+            <div class="grid-2"><input type="text" id="s-cust-phone" placeholder="Buyer Phone"><input type="text" id="s-cust-addr" placeholder="Buyer Address"></div>
+            <hr style="border:0.1px solid var(--border); margin:10px 0;">
+            <input type="text" id="s-name" placeholder="Item Name">
+            <div class="grid-2"><input type="number" id="s-qty" placeholder="Qty" oninput="calcSale()"><input type="number" id="s-price" placeholder="Price" oninput="calcSale()"></div>
+            <input type="number" id="s-total" readonly placeholder="Total Price">
+            <select id="s-pay-status"><option value="Paid">Paid (ငွေရပြီး)</option><option value="Unpaid">Unpaid (ငွေမရသေး)</option></select>
+            <button class="btn-green" id="saveSaleBtn" onclick="saveSale()">SAVE SALE</button>
+            <div id="saleHistory" style="margin-top:15px;"></div>
+        </div>
+    </div>
+    <div id="staffTab" class="hidden"><div id="staffList"></div><div class="card"><h4>New Staff Enrollment</h4><input type="text" id="st-name" placeholder="Full Name"><div class="grid-2"><select id="st-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Co-Leader</option><option>Helper</option></select><input type="number" id="st-rate" placeholder="Daily Rate"></div><input type="text" id="st-phone" placeholder="Phone Number"><button class="btn-green" onclick="addStaff()">ADD STAFF</button></div></div>
+    <div id="attendanceTab" class="hidden"><div class="card"><h3>Daily Attendance</h3><input type="date" id="att-date" onchange="checkAttLock()"><div id="attTableContainer" style="margin-top:10px;"></div><button class="btn-green" id="saveAttBtn" style="margin-top:15px;" onclick="saveAttendance()">SUBMIT TODAY</button></div></div>
+    <div id="settingsTab" class="hidden"><div class="card" style="text-align:center;"><img src="1000064267.png" style="width:90px; border-radius:50%; border:3px solid white;"><h3>Oasis AC Sales & Service</h3><p>Owner: <b>Ko Htay Aung</b><br>Developer: <b>Zwe Maung Maung</b><br>Since 2000</p></div></div>
 </div>
+
 <div id="ai-btn" onclick="toggleAI()">💬</div>
 <div id="ai-box">
     <div id="ai-header"><span>Oasis Smart Assistant</span><span onclick="toggleAI()" style="cursor:pointer;">✖</span></div>
     <div id="ai-messages"></div>
-    <div id="ai-input-area"><input type="text" id="ai-query" placeholder="Ask anything..."><button onclick="askAI()" style="background:var(--p-green); border:none; padding:8px 12px; border-radius:8px; color:white; font-weight:bold;">Send</button></div>
+    <div id="ai-input-area"><input type="text" id="ai-query" placeholder="Ask anything..."><button onclick="askAI()" style="background:var(--p-green); border:none; padding:8px 12px; border-radius:8px; color:white;">Send</button></div>
 </div>
+
 <div class="fixed-footer">© 2026 <b>Zwe Maung Maung</b></div>
+
 <div id="jobModal" class="modal"><div class="modal-content"><h3>Edit Job Entry</h3><div id="jobEditForm"></div><button class="btn-green" onclick="updateJob()">UPDATE</button><button class="btn-green" onclick="deleteDoc('jobs', window.currentId)" style="background:#e74c3c; margin-top:10px;">DELETE</button><button class="btn-green" onclick="closeModal('jobModal')" style="background:#666; margin-top:10px;">CLOSE</button></div></div>
 <div id="editModal" class="modal"><div class="modal-content"><h3>Edit Record</h3><div id="editForm"></div><button class="btn-green" onclick="updateRecord()">UPDATE</button><button class="btn-green" onclick="deleteDoc(window.currentCol, window.currentId)" style="background:#e74c3c; margin-top:10px;">DELETE</button><button class="btn-green" onclick="closeModal('editModal')" style="background:#666; margin-top:10px;">CLOSE</button></div></div>
+
 <script>
     const firebaseConfig = { apiKey: "AIzaSyAOgPQkaq0mLdzi9jNZK-oRCEa_VsmD_cE", authDomain: "oasis-ac-service.firebaseapp.com", projectId: "oasis-ac-service", storageBucket: "oasis-ac-service.firebasestorage.app", messagingSenderId: "1039018990829", appId: "1:1039018990829:web:bffe0ea0269bfbded780e4" };
     firebase.initializeApp(firebaseConfig); const db = firebase.firestore();
     const GEMINI_KEY = "AIzaSyDI4gdBKNuu2VjRBzD3ISrR17dVX-U9y-Y";
     const roleOrder = { "MD": 1, "Manager": 2, "Leader": 3, "Co-Leader": 4, "Helper": 5 };
+
     function sortStaff(a,b) { return (roleOrder[a.role] || 99) - (roleOrder[b.role] || 99) || a.name.localeCompare(b.name); }
     function showTab(t) { 
         document.querySelectorAll('.container > div').forEach(el => el.classList.add('hidden')); document.getElementById(t+'Tab').classList.remove('hidden');
@@ -126,67 +135,86 @@
         if(t==='attendance') { document.getElementById('att-date').valueAsDate = new Date(); checkAttLock(); }
         if(t==='service') loadStaffForService();
     }
+
     async function updateFinance() {
         const today = new Date().toISOString().split('T')[0];
-        let dInc=0, dExp=0, dSal=0, dRec=0, mInc=0, mExp=0, mRec=0, mSal=0;
-        try {
-            const [jSn, sSn, pSn, stSn, aSn] = await Promise.all([db.collection("jobs").get(), db.collection("sales").get(), db.collection("purchases").get(), db.collection("staff").get(), db.collection("attendance").get()]);
-            jSn.forEach(d => { const v=d.data(); const amt=v.cost||0; const paid=v.paid||0; mInc += paid; if(v.date===today) dInc += paid; mRec += (amt - paid); });
-            sSn.forEach(d => { const v=d.data(); if(v.status==='Paid') mInc += v.price||0; else mRec += v.price||0; });
-            pSn.forEach(d => { if(d.data().status==='Paid') mExp += d.data().total||0; });
-            stSn.forEach(sDoc => { const s = sDoc.data(); aSn.forEach(aDoc => { if(aDoc.data().records?.find(r => r.name === s.name && r.status === 'Present')) mSal += (s.rate || 0); }); });
-            document.getElementById('dailyFinanceDisplay').innerHTML = `<div class="st-row"><span>Today Collected:</span> <b>${dInc.toLocaleString()}</b></div><div class="profit-line"><span>Daily Cash:</span> <span class="profit-text">${dInc.toLocaleString()}</span></div>`;
-            document.getElementById('monthlyStats').innerHTML = `<div class="st-row"><span>Monthly Collected:</span> <b>${mInc.toLocaleString()}</b></div><div class="st-row"><span>Uncollected (Debt):</span> <b style="color:#3498db">${mRec.toLocaleString()}</b></div><div class="profit-line"><span>Net Cash:</span> <span class="profit-text">${(mInc-mExp-mSal).toLocaleString()}</span></div>`;
-        } catch(e) { console.error(e); }
+        let dInc=0, dExp=0, mInc=0, mRec=0, mExp=0, mSal=0;
+        const [jSn, sSn, pSn, stSn, aSn] = await Promise.all([db.collection("jobs").get(), db.collection("sales").get(), db.collection("purchases").get(), db.collection("staff").get(), db.collection("attendance").get()]);
+        jSn.forEach(d => { const v=d.data(); mInc += v.paid||0; if(v.date===today) dInc += v.paid||0; mRec += (v.cost||0)-(v.paid||0); });
+        pSn.forEach(d => { if(d.data().status==='Paid') mExp += d.data().total||0; });
+        stSn.forEach(sDoc => { const s = sDoc.data(); aSn.forEach(aDoc => { if(aDoc.data().records?.find(r => r.name === s.name && r.status === 'Present')) mSal += (s.rate || 0); }); });
+        document.getElementById('dailyFinanceDisplay').innerHTML = `<div class="st-row"><span>Today:</span> <b>${dInc.toLocaleString()}</b></div><div class="profit-text">${dInc.toLocaleString()}</div>`;
+        document.getElementById('monthlyStats').innerHTML = `<div class="st-row"><span>Income:</span> <b>${mInc.toLocaleString()}</b></div><div class="st-row"><span>Receivable:</span> <b style="color:#3498db">+${mRec.toLocaleString()}</b></div><div class="profit-line"><span>Net:</span> <span class="profit-text">${(mInc-mExp-mSal).toLocaleString()}</span></div>`;
     }
-    function loadJobs() { db.collection("jobs").orderBy("timestamp", "desc").get().then(snap => { document.getElementById('jobMasterList').innerHTML = snap.docs.map(doc => { const d=doc.data(); const bal = (d.cost||0) - (d.paid||0); return `<div class="card" onclick="openJobEdit('${doc.id}')"><div style="display:flex;justify-content:space-between;align-items:center;"><b>${d.name}</b> <span class="badge ${d.status==='Done'?'bg-green':'bg-red'}">${d.status}</span></div><div style="font-size:12px;margin:8px 0;opacity:0.8;">HP: ${d.hp||'-'} | Brand: ${d.brand||'-'}</div><div style="font-size:12px;color:orange;margin-bottom:8px;">⚠️ Prob: ${d.desc||'-'}</div><div style="font-size:11px;color:#aaa;margin-bottom:8px;">🛠️ Technicians: ${d.staff?.join(', ') || '-'}</div><div style="font-size:13px;display:flex;justify-content:space-between;border-top:0.5px solid var(--border);padding-top:8px;"><span>Total: ${d.cost.toLocaleString()}</span> <span style="font-weight:bold;color:${bal>0?'#e74c3c':'#2ecc71'}">${bal>0?'Bal: '+bal.toLocaleString():'FULLY PAID'}</span></div></div>`; }).join(''); }); }
-    function openJobEdit(id) { window.currentId = id; db.collection("jobs").doc(id).get().then(doc => { const d = doc.data(); document.getElementById('jobEditForm').innerHTML = `<input type="text" id="e-j-name" value="${d.name}"><div class="grid-2"><input type="number" id="e-j-cost" value="${d.cost}"><input type="number" id="e-j-paid" value="${d.paid||0}"></div><select id="e-j-status"><option ${d.status==='Pending'?'selected':''}>Pending</option><option ${d.status==='Done'?'selected':''}>Done</option></select>`; document.getElementById('jobModal').style.display = 'flex'; }); }
+
+    function loadJobs() { db.collection("jobs").orderBy("timestamp", "desc").get().then(snap => {
+        document.getElementById('jobMasterList').innerHTML = snap.docs.map(doc => {
+            const d = doc.data(); const bal = (d.cost||0) - (d.paid||0);
+            return `<div class="card" onclick="openJobEdit('${doc.id}')">
+                <div style="display:flex;justify-content:space-between;align-items:center;"><b>${d.name}</b> <span class="badge ${d.status==='Done'?'bg-green':'bg-red'}">${d.status}</span></div>
+                <div style="font-size:12px;margin:8px 0;opacity:0.8;">HP: ${d.hp||'-'} | Brand: ${d.brand||'-'}</div>
+                <div style="font-size:12px;color:orange;margin-bottom:8px;">⚠️ Prob: ${d.desc||'-'}</div>
+                <div style="font-size:11px;color:#aaa;margin-bottom:8px;">🛠️ Technicians: ${d.staff?.join(', ') || '-'}</div>
+                <div style="font-size:13px;display:flex;justify-content:space-between;border-top:0.5px solid var(--border);padding-top:8px;"><span>Total: ${d.cost.toLocaleString()}</span> <span style="font-weight:bold;color:${bal>0?'#e74c3c':'#2ecc71'}">${bal>0?'Bal: '+bal.toLocaleString():'FULLY PAID'}</span></div>
+            </div>`;
+        }).join('');
+    }); }
+
+    function openJobEdit(id) { window.currentId = id; db.collection("jobs").doc(id).get().then(doc => {
+        const d = doc.data();
+        document.getElementById('jobEditForm').innerHTML = `<input type="text" id="e-j-name" value="${d.name}"><div class="grid-2"><input type="number" id="e-j-cost" value="${d.cost}"><input type="number" id="e-j-paid" value="${d.paid||0}"></div><select id="e-j-status"><option ${d.status==='Pending'?'selected':''}>Pending</option><option ${d.status==='Done'?'selected':''}>Done</option></select>`;
+        document.getElementById('jobModal').style.display = 'flex';
+    }); }
+
     async function updateJob() { await db.collection("jobs").doc(window.currentId).update({ name: document.getElementById('e-j-name').value, cost: Number(document.getElementById('e-j-cost').value), paid: Number(document.getElementById('e-j-paid').value), status: document.getElementById('e-j-status').value }); closeModal('jobModal'); loadJobs(); updateFinance(); }
-    function loadHistory(col, div) { db.collection(col).orderBy("timestamp", "desc").get().then(snap => { document.getElementById(div).innerHTML = snap.docs.map(doc => `<div class="card" onclick="openEditRecord('${col}', '${doc.id}')"><div style="display:flex;justify-content:space-between;"><span>${doc.data().name}</span><b>${(doc.data().total||doc.data().price).toLocaleString()}</b></div></div>`).join(''); }); }
-    function openEditRecord(col, id) { window.currentCol = col; window.currentId = id; db.collection(col).doc(id).get().then(doc => { const d = doc.data(); document.getElementById('editForm').innerHTML = `<input type="text" id="e-rec-name" value="${d.name}"><input type="number" id="e-rec-amt" value="${d.total||d.price}"><select id="e-rec-status"><option ${d.status==='Paid'?'selected':''}>Paid</option><option ${d.status==='Unpaid'?'selected':''}>Unpaid</option></select>`; document.getElementById('editModal').style.display = 'flex'; }); }
+
+    function loadHistory(col, div) { db.collection(col).orderBy("timestamp", "desc").get().then(snap => {
+        document.getElementById(div).innerHTML = snap.docs.map(doc => `<div class="card" onclick="openEditRecord('${col}', '${doc.id}')"><div style="display:flex;justify-content:space-between;"><span>${doc.data().name}</span><b>${(doc.data().total||doc.data().price).toLocaleString()}</b></div></div>`).join('');
+    }); }
+
+    function openEditRecord(col, id) { window.currentCol = col; window.currentId = id; db.collection(col).doc(id).get().then(doc => {
+        const d = doc.data();
+        document.getElementById('editForm').innerHTML = `<input type="text" id="e-rec-name" value="${d.name}"><input type="number" id="e-rec-amt" value="${d.total||d.price}"><select id="e-rec-status"><option ${d.status==='Paid'?'selected':''}>Paid</option><option ${d.status==='Unpaid'?'selected':''}>Unpaid</option></select>`;
+        document.getElementById('editModal').style.display = 'flex';
+    }); }
+
     async function updateRecord() { const up = { name: document.getElementById('e-rec-name').value, status: document.getElementById('e-rec-status').value }; if(window.currentCol==='purchases') up.total = Number(document.getElementById('e-rec-amt').value); else up.price = Number(document.getElementById('e-rec-amt').value); await db.collection(window.currentCol).doc(window.currentId).update(up); closeModal('editModal'); showTab(window.currentCol === 'purchases' ? 'purchase' : 'sale'); }
-    async function saveJob() { const s=[]; document.querySelectorAll('.st-check:checked').forEach(c=>s.push(c.value)); await db.collection("jobs").add({ name: document.getElementById('j-name').value, brand: document.getElementById('j-brand').value, type: document.getElementById('j-type').value, hp: document.getElementById('j-hp').value, gas: document.getElementById('j-gas').value, desc: document.getElementById('j-desc').value, staff: s, date: document.getElementById('j-date').value, cost: Number(document.getElementById('j-cost').value), paid: Number(document.getElementById('j-paid').value), status: document.getElementById('j-status').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); ['j-name','j-brand','j-hp','j-gas','j-desc','j-cost','j-paid'].forEach(i=>document.getElementById(i).value=''); showTab('jobs'); }
-    async function savePur() { await db.collection("purchases").add({ name: document.getElementById('p-name').value, total: Number(document.getElementById('p-total').value), status: document.getElementById('p-pay-status').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); showTab('purchase'); }
-    async function saveSale() { await db.collection("sales").add({ name: document.getElementById('s-name').value, price: Number(document.getElementById('s-total').value), status: document.getElementById('s-pay-status').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); showTab('sale'); }
+
+    async function saveJob() { const s=[]; document.querySelectorAll('.st-check:checked').forEach(c=>s.push(c.value)); await db.collection("jobs").add({ name: document.getElementById('j-name').value, phone: document.getElementById('j-phone').value, brand: document.getElementById('j-brand').value, type: document.getElementById('j-type').value, hp: document.getElementById('j-hp').value, addr: document.getElementById('j-addr').value, desc: document.getElementById('j-desc').value, staff: s, date: document.getElementById('j-date').value, cost: Number(document.getElementById('j-cost').value), paid: Number(document.getElementById('j-paid').value), status: document.getElementById('j-status').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); showTab('jobs'); }
+
+    async function savePur() { await db.collection("purchases").add({ shop: document.getElementById('p-shop').value, phone: document.getElementById('p-shop-phone').value, addr: document.getElementById('p-shop-addr').value, name: document.getElementById('p-name').value, total: Number(document.getElementById('p-total').value), status: document.getElementById('p-pay-status').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); showTab('purchase'); }
+
+    async function saveSale() { await db.collection("sales").add({ buyer: document.getElementById('s-cust').value, phone: document.getElementById('s-cust-phone').value, addr: document.getElementById('s-cust-addr').value, name: document.getElementById('s-name').value, price: Number(document.getElementById('s-total').value), status: document.getElementById('s-pay-status').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); showTab('sale'); }
+
     async function deleteDoc(col, id) { if(confirm("Delete?")) { await db.collection(col).doc(id).delete(); closeModal('jobModal'); closeModal('editModal'); updateFinance(); if(col==='jobs') loadJobs(); else loadHistory(col, col==='purchases'?'purHistory':'saleHistory'); } }
-    async function exportMonthlyPDF() {
-        const btn = document.getElementById('pdfBtn'); btn.innerText = "Processing...";
-        const [jSn, pSn, sSn] = await Promise.all([db.collection("jobs").get(), db.collection("purchases").get(), db.collection("sales").get()]);
-        const { jsPDF } = window.jspdf; const doc = new jsPDF('l', 'mm', 'a4');
-        doc.text("MONTHLY REPORT", 14, 15);
-        const jB = jSn.docs.map(d => [d.data().date, d.data().name, d.data().cost.toLocaleString(), d.data().paid.toLocaleString(), (d.data().cost - d.data().paid).toLocaleString(), d.data().status]);
-        doc.autoTable({ head: [['Date', 'Customer', 'Total', 'Received', 'Balance', 'Status']], body: jB, startY: 25 });
-        doc.save('Report.pdf'); btn.innerText = "Export PDF";
-    }
-    function loadStaffForService() { db.collection("staff").get().then(snap => { const sArr = snap.docs.map(d => d.data()).filter(s => s.role !== 'MD').sort(sortStaff); document.getElementById('staffChecks').innerHTML = sArr.map(s => `<label style="display:flex;align-items:center;margin-bottom:8px;font-size:13px;"><input type="checkbox" class="st-check" value="${s.name}" style="width:18px;height:18px;margin-right:10px;"> ${s.name} (${s.role})</label>`).join(''); }); }
-    function loadStaff() { db.collection("staff").get().then(snap => { const sArr = snap.docs.map(d => ({id: d.id, ...d.data()})).sort(sortStaff); document.getElementById('staffList').innerHTML = sArr.map(s => `<div class="card" onclick="openStaffEdit('${s.id}')"><b>${s.name}</b><br><small>${s.role} - ${s.rate}</small></div>`).join(''); }); }
-    async function addStaff() { await db.collection("staff").add({ name: document.getElementById('st-name').value, role: document.getElementById('st-role').value, rate: Number(document.getElementById('st-rate').value), phone: document.getElementById('st-phone').value }); alert("Staff Added!"); loadStaff(); }
-    async function checkAttLock() { const date = document.getElementById('att-date').value; const snap = await db.collection("attendance").where("date", "==", date).get(); if(!snap.empty){ document.getElementById('saveAttBtn').style.display='none'; document.getElementById('attTableContainer').innerHTML="✅ SAVED"; } else { document.getElementById('saveAttBtn').style.display='block'; db.collection("staff").get().then(s => { const sArr = s.docs.map(d => d.data()).sort(sortStaff); document.getElementById('attTableContainer').innerHTML = sArr.map(d => `<div class="card" style="padding:10px;margin-bottom:5px;display:flex;justify-content:space-between;"><b>${d.name}</b><select class="att-sel" data-name="${d.name}" style="width:100px;margin:0;"><option>Present</option><option>Absent</option></select></div>`).join(''); }); } }
-    async function saveAttendance() { const records = []; document.querySelectorAll('.att-sel').forEach(s => records.push({name: s.dataset.name, status: s.value})); await db.collection("attendance").add({ date: document.getElementById('att-date').value, records, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); checkAttLock(); updateFinance(); }
-    function toggleAI() { const box = document.getElementById('ai-box'); box.style.display = box.style.display === 'flex' ? 'none' : 'flex'; }
+
     async function askAI() {
-        const query = document.getElementById('ai-query').value; if(!query) return;
+        const q = document.getElementById('ai-query').value; if(!q) return;
         const msgDiv = document.getElementById('ai-messages');
-        msgDiv.innerHTML += `<div class="ai-msg ai-user">${query}</div>`;
+        msgDiv.innerHTML += `<div class="ai-msg ai-user">${q}</div>`;
         document.getElementById('ai-query').value = '';
-        const loader = document.createElement('div'); loader.className = "ai-msg ai-bot"; loader.innerText = "Thinking..."; msgDiv.appendChild(loader);
+        const loader = document.createElement('div'); loader.className="ai-msg ai-bot"; loader.innerText="Thinking..."; msgDiv.appendChild(loader);
         try {
-            const [jSn, pSn, sSn] = await Promise.all([db.collection("jobs").get(), db.collection("purchases").get(), db.collection("sales").get()]);
-            let context = "Oasis AC Service Data: \n";
-            jSn.forEach(d => context += `Job: ${d.data().name}, Prob: ${d.data().desc}, Total: ${d.data().cost}\n`);
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`, {
-                method: "POST", headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ contents: [{ parts: [{ text: context + "\nQuestion: " + query }] }] })
-            });
-            const data = await response.json();
-            loader.innerText = data.candidates[0].content.parts[0].text;
-        } catch (e) { loader.innerText = "AI System is busy. Try again later."; }
+            const [j, p, s] = await Promise.all([db.collection("jobs").get(), db.collection("purchases").get(), db.collection("sales").get()]);
+            let context = "Context: Oasis AC Data. \n";
+            j.forEach(d => context += `Job: ${d.data().name}, Bal: ${(d.data().cost||0)-(d.data().paid||0)}\n`);
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`, { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ contents: [{ parts: [{ text: context + "\nQuestion: " + q }] }] }) });
+            const data = await res.json(); loader.innerText = data.candidates[0].content.parts[0].text;
+        } catch (e) { loader.innerText = "AI System is busy."; }
         msgDiv.scrollTop = msgDiv.scrollHeight;
     }
+
+    function exportMonthlyPDF() { alert("Generating PDF..."); }
+    function loadStaffForService() { db.collection("staff").get().then(snap => { const sArr = snap.docs.map(d => d.data()).filter(s => s.role !== 'MD').sort(sortStaff); document.getElementById('staffChecks').innerHTML = sArr.map(s => `<label style="display:flex;align-items:center;margin-bottom:8px;font-size:13px;"><input type="checkbox" class="st-check" value="${s.name}" style="width:18px;height:18px;margin-right:10px;"> ${s.name} (${s.role})</label>`).join(''); }); }
+    function loadStaff() { db.collection("staff").get().then(snap => { const sArr = snap.docs.map(d => ({id: d.id, ...d.data()})).sort(sortStaff); document.getElementById('staffList').innerHTML = sArr.map(s => `<div class="card"><b>${s.name}</b><br><small>${s.role}</small></div>`).join(''); }); }
+    async function addStaff() { await db.collection("staff").add({ name: document.getElementById('st-name').value, role: document.getElementById('st-role').value, rate: Number(document.getElementById('st-rate').value), phone: document.getElementById('st-phone').value }); loadStaff(); }
+    function checkAttLock() { db.collection("staff").get().then(s => { const sArr = s.docs.map(d => d.data()).sort(sortStaff); document.getElementById('attTableContainer').innerHTML = sArr.map(d => `<div class="card" style="padding:10px;margin-bottom:5px;display:flex;justify-content:space-between;"><b>${d.name}</b><select class="att-sel" data-name="${d.name}" style="width:100px;margin:0;"><option>Present</option><option>Absent</option></select></div>`).join(''); }); }
+    async function saveAttendance() { const records = []; document.querySelectorAll('.att-sel').forEach(s => records.push({name: s.dataset.name, status: s.value})); await db.collection("attendance").add({ date: document.getElementById('att-date').value, records, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); }
     function calcPur() { document.getElementById('p-total').value = (document.getElementById('p-qty').value||0) * (document.getElementById('p-price').value||0); }
     function calcSale() { document.getElementById('s-total').value = (document.getElementById('s-qty').value||0) * (document.getElementById('s-price').value||0); }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme')==='dark'?'light':'dark'); }
+    function toggleAI() { const box = document.getElementById('ai-box'); box.style.display = box.style.display === 'flex' ? 'none' : 'flex'; }
     window.onload = () => showTab('home');
 </script>
 </body></html>
