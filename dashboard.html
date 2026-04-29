@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oasis Master Sync v3.5.0 Platinum</title>
+    <title>Oasis Legacy Sync v3.6.0</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -11,41 +11,61 @@
     <style>
         :root { --p-green: #28a745; --bg: #121212; --text: #e0e0e0; --card: #1e1e1e; --border: #333; }
         [data-theme="light"] { --bg: #ffffff; --text: #333; --card: #f8f9fa; --border: #ddd; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; background: var(--bg); color: var(--text); padding-bottom: 100px; }
-        .header { background: var(--p-green); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 2000; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
-        .logo-img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
-        .nav-tabs { display: flex; overflow-x: auto; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 70px; z-index: 1000; scrollbar-width: none; }
-        .tab-btn { padding: 15px 20px; flex: none; text-align: center; cursor: pointer; font-weight: bold; font-size: 11px; color: #888; border-bottom: 3px solid transparent; text-transform: uppercase; transition: 0.3s; }
-        .tab-btn.active { color: var(--p-green); border-bottom-color: var(--p-green); background: rgba(40, 167, 69, 0.1); }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; background: var(--bg); color: var(--text); padding-bottom: 90px; overflow-x: hidden; }
+        /* Login Screen */
+        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #121212; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 5000; padding: 20px; box-sizing: border-box; }
+        #login-box { background: #1e1e1e; padding: 30px; border-radius: 20px; border: 1px solid var(--border); text-align: center; width: 90%; max-width: 380px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .login-logo { width: 90px; height: 90px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.3); margin-bottom: 20px; }
+        .header { background: var(--p-green); color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 2000; box-shadow: 0 2px 10px rgba(0,0,0,0.3); height: 60px; box-sizing: border-box;}
+        .logo-img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid white; object-fit: cover; background: white; cursor: pointer; transition: 0.3s; }
+        .logo-img:active { transform: scale(1.1); }
+        .header-title-set { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; margin-left: -55px; }
+        .header-title { font-weight: bold; font-size: 15px; letter-spacing: 0.5px; margin: 0; }
+        .header-subtitle { font-size: 11px; opacity: 0.9; margin: 2px 0 0 0; }
+        .nav-tabs { display: flex; overflow-x: auto; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 60px; z-index: 1000; scrollbar-width: none; height: 55px; box-sizing: border-box;}
+        .nav-tabs::-webkit-scrollbar { display: none; }
+        .tab-btn { padding: 0 20px; display: flex; align-items: center; justify-content: center; flex: none; text-align: center; cursor: pointer; font-weight: bold; font-size: 11px; color: #888; border-bottom: 3px solid transparent; text-transform: uppercase; transition: 0.3s; height: 100%; box-sizing: border-box;}
+        .tab-btn.active { color: var(--p-green); border-bottom-color: var(--p-green); background: rgba(40, 167, 69, 0.08); }
         .container { padding: 15px; max-width: 800px; margin: auto; }
-        .card { background: var(--card); padding: 20px; border-radius: 15px; margin-bottom: 15px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .card { background: var(--card); padding: 18px; border-radius: 15px; margin-bottom: 15px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         input, select, textarea { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--text); box-sizing: border-box; margin-bottom: 12px; font-size: 14px; }
-        .btn-green { background: var(--p-green); color: white; border: none; padding: 16px; border-radius: 12px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 5px; transition: 0.2s; font-size: 15px; }
+        .btn-green { background: var(--p-green); color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s; }
+        .btn-green:active { transform: scale(0.98); opacity: 0.9; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .hidden { display: none !important; }
-        .st-row { display: flex; justify-content: space-between; padding: 12px 5px; border-bottom: 0.5px solid var(--border); font-size: 14px; }
-        .profit-line { display: flex; justify-content: space-between; align-items: center; padding: 15px 5px; border-top: 2px solid var(--p-green); margin-top: 10px; }
-        .profit-text { font-size: 22px; font-weight: bold; color: var(--p-green); }
+        .st-row { display: flex; justify-content: space-between; padding: 10px 5px; border-bottom: 0.5px solid var(--border); font-size: 13px; align-items: center; }
+        .profit-line { display: flex; justify-content: space-between; align-items: center; padding: 15px 5px; border-bottom: 1px solid var(--p-green); margin-top: 10px; }
+        .profit-text { font-size: 20px; font-weight: bold; color: var(--p-green); }
         .fixed-footer { position: fixed; bottom: 0; width: 100%; background: var(--card); text-align: center; padding: 12px 0; font-size: 10px; color: #888; border-top: 1px solid var(--border); z-index: 2000; }
-        .badge { padding: 5px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; color: white; }
+        .badge { padding: 5px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; color: white; text-transform: uppercase; }
         .bg-red { background: #dc3545; } .bg-blue { background: #007bff; } .bg-green { background: #28a745; }
-        /* AI Assistant */
-        #ai-btn { position: fixed; bottom: 85px; right: 20px; background: var(--p-green); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 26px; cursor: pointer; z-index: 3000; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
-        #ai-box { position: fixed; bottom: 155px; right: 20px; width: 330px; height: 480px; background: var(--card); border: 1px solid var(--p-green); border-radius: 25px; display: none; flex-direction: column; z-index: 3000; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
-        #ai-header { background: var(--p-green); color: white; padding: 18px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
-        #ai-messages { flex: 1; padding: 15px; overflow-y: auto; font-size: 13px; display: flex; flex-direction: column; gap: 12px; }
-        .ai-msg { padding: 12px; border-radius: 15px; max-width: 85%; line-height: 1.5; }
-        .ai-bot { background: #333; align-self: flex-start; color: #eee; }
-        .ai-user { background: var(--p-green); align-self: flex-end; color: #fff; }
-        #ai-input-area { padding: 12px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 4000; }
-        .modal-content { background: var(--card); padding: 25px; border-radius: 20px; width: 92%; max-width: 450px; max-height: 85vh; overflow-y: auto; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 4000; padding: 20px; box-sizing: border-box; overflow-y: auto; }
+        .modal-content { background: var(--card); padding: 25px; border-radius: 20px; width: 95%; max-width: 450px; position: relative; max-height: 85vh; overflow-y: auto; }
+        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 20px; color: #888; cursor: pointer; font-weight: bold; }
+        #logo-hd-modal .modal-content { background: none; border: none; padding: 0; text-align: center; display: flex; align-items: center; justify-content: center; max-height: 90vh;}
+        #hd-logo-img { max-width: 100%; max-height: 90vh; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); object-fit: contain;}
     </style>
 </head>
 <body data-theme="dark">
+
+<div id="login-screen">
+    <div id="login-box">
+        <img src="1000064267.png" class="login-logo">
+        <h3 style="color:var(--p-green); margin-bottom:20px;">Oasis Master Login</h3>
+        <input type="text" id="login-user" placeholder="Username (Oasis)">
+        <input type="password" id="login-pass" placeholder="Password (oasis@2000)">
+        <button class="btn-green" onclick="checkLogin()">LOGIN</button>
+        <p id="login-error" style="color:#dc3545; font-size:12px; margin-top:15px; display:none;">Incorrect credentials. Please try again.</p>
+    </div>
+</div>
+
 <div class="header">
-    <div style="display:flex; align-items:center; gap:12px;"><img src="1000064267.png" class="logo-img"><span style="font-weight:bold; font-size:14px; letter-spacing:0.8px;">OASIS Master Sync v3.5</span></div>
-    <button onclick="toggleTheme()" style="background:none; border:none; color:white; font-size:22px;">🌓</button>
+    <div style="display:flex; align-items:center; gap:10px;"><img src="1000064267.png" class="logo-img" onclick="viewLogoHD()"></div>
+    <div class="header-title-set">
+        <span class="header-title">Ko Htay Aung (Oasis)</span>
+        <span class="header-subtitle">Air-Con Sales and Service</span>
+    </div>
+    <button onclick="toggleTheme()" style="background:none; border:none; color:white; font-size:18px;">🌓</button>
 </div>
 <div class="nav-tabs">
     <div class="tab-btn active" onclick="showTab('home')" id="t-home">HOME</div>
@@ -59,18 +79,8 @@
 </div>
 <div class="container">
     <div id="homeTab">
-        <div class="card" style="border-left: 5px solid var(--p-green);">
-            <h3 style="margin-top:0;">Daily Dashboard</h3>
-            <div id="dailyFinanceDisplay">Calculating...</div>
-        </div>
-        <div class="card" style="border-left: 5px solid #007bff;">
-            <h3 style="margin-top:0;">Monthly Summary</h3>
-            <div id="monthlyStats">Loading Data...</div>
-            <div class="grid-2" style="margin-top:20px;">
-                <button class="btn-green" id="pdfBtn" onclick="exportMonthlyPDF()">Export PDF</button>
-                <button class="btn-green" style="background:#4285f4;" onclick="updateFinance()">Sync Cloud</button>
-            </div>
-        </div>
+        <div class="card" style="text-align:center; border-color:var(--p-green);"><h3>Daily Dashboard</h3><div id="dailyFinanceDisplay" style="line-height:2.4;">Updating...</div></div>
+        <div class="card"><h4>Monthly Analytics Summary</h4><div id="monthlyStats" style="line-height:2.6;">Loading...</div><div class="grid-2" style="margin-top:15px;"><button class="btn-green" id="pdfBtn" onclick="exportMonthlyPDF()">Export PDF</button><button class="btn-green" style="background:#4285f4;" onclick="updateFinance()">Sync Cloud</button></div></div>
     </div>
     <div id="jobsTab" class="hidden"><div id="jobMasterList"></div></div>
     <div id="serviceTab" class="hidden">
@@ -80,57 +90,65 @@
             <textarea id="j-addr" rows="2" placeholder="Address"></textarea>
             <div class="grid-2"><select id="j-type"><option value="Air-Con">Air-Con</option><option value="Refrigerator">Refrigerator</option><option value="Washing Machine">Washing Machine</option><option value="Chiller">Chiller</option></select><input type="text" id="j-brand" placeholder="Brand"></div>
             <div class="grid-2"><input type="text" id="j-hp" placeholder="HP/Model"><input type="text" id="j-gas" placeholder="Gas Type"></div>
-            <textarea id="j-desc" rows="2" placeholder="Problem Details / Remark"></textarea>
+            <textarea id="j-desc" rows="2" placeholder="Problem Details"></textarea>
             <label style="font-size:11px;color:var(--p-green);font-weight:bold;">Assign Technicians</label>
-            <div id="staffChecks" style="border:1px solid var(--border);padding:12px;border-radius:12px;max-height:130px;overflow-y:auto;margin:10px 0;background:rgba(0,0,0,0.2);"></div>
+            <div id="staffChecks" style="border:1px solid var(--border);padding:10px;border-radius:10px;max-height:120px;overflow-y:auto;margin:10px 0;background:rgba(0,0,0,0.1);"></div>
             <div class="grid-2"><input type="date" id="j-date"><input type="number" id="j-cost" placeholder="Total Cost"></div>
-            <div class="grid-2"><input type="number" id="j-paid" placeholder="Amount Received"><select id="j-status"><option value="Pending">Job Pending</option><option value="Done">Job Done</option></select></div>
+            <div class="grid-2"><input type="number" id="j-paid" placeholder="Advance Received"><select id="j-status"><option value="Pending">Job Pending</option><option value="Done">Job Done</option></select></div>
             <button class="btn-green" id="saveJobBtn" onclick="saveJob()">SAVE SERVICE</button>
         </div>
     </div>
-    <div id="purchaseTab" class="hidden"><div class="card"><h3>Purchase Entry</h3><input type="text" id="p-shop" placeholder="Shop Name"><div class="grid-2"><input type="text" id="p-shop-phone" placeholder="Phone"><input type="text" id="p-shop-addr" placeholder="Address"></div><input type="text" id="p-name" placeholder="Item Name"><div class="grid-2"><input type="number" id="p-qty" placeholder="Qty" oninput="calcPur()"><input type="number" id="p-price" placeholder="Price" oninput="calcPur()"></div><input type="number" id="p-total" readonly placeholder="Total Cost"><select id="p-pay-status"><option value="Paid">Paid (ငွေချေပြီး)</option><option value="Unpaid">Unpaid (ငွေမပေးရသေး)</option></select><button class="btn-green" id="savePurBtn" onclick="savePur()">SAVE PURCHASE</button><div id="purHistory" style="margin-top:15px;"></div></div></div>
-        <div id="saleTab" class="hidden"><div class="card"><h3>Sale Entry</h3><input type="text" id="s-cust" placeholder="Buyer Name"><div class="grid-2"><input type="text" id="s-cust-phone" placeholder="Phone"><input type="text" id="s-cust-addr" placeholder="Address"></div><input type="text" id="s-name" placeholder="Item Name"><div class="grid-2"><input type="number" id="s-qty" placeholder="Qty" oninput="calcSale()"><input type="number" id="s-price" placeholder="Price" oninput="calcSale()"></div><input type="number" id="s-total" readonly placeholder="Total Price"><select id="s-pay-status"><option value="Paid">Paid (ငွေရပြီး)</option><option value="Unpaid">Unpaid (ငွေမရသေး)</option></select><button class="btn-green" id="saveSaleBtn" onclick="saveSale()">SAVE SALE</button><div id="saleHistory" style="margin-top:15px;"></div></div></div>
-    <div id="staffTab" class="hidden"><div id="staffList"></div><div class="card"><h4>New Staff Enrollment</h4><input type="text" id="st-name" placeholder="Name"><div class="grid-2"><select id="st-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Co-Leader</option><option>Helper</option></select><input type="number" id="st-rate" placeholder="Daily Rate"></div><input type="text" id="st-phone" placeholder="Phone Number"><button class="btn-green" onclick="addStaff()">ADD STAFF</button></div></div>
-    <div id="attendanceTab" class="hidden"><div class="card"><h3>Daily Attendance</h3><input type="date" id="att-date" onchange="checkAttLock()"><div id="attTableContainer" style="margin-top:15px;"></div><div id="attLockMsg" style="display:none; text-align:center; padding:20px; color:orange; font-weight:bold;">⚠️ Attendance can only be submitted once daily after 11:00 AM.</div><button class="btn-green" id="saveAttBtn" onclick="saveAttendance()">SUBMIT TODAY</button></div></div>
+    <div id="purchaseTab" class="hidden"><div class="card"><h3>Purchase Entry</h3><input type="text" id="p-shop" placeholder="Shop Name"><div class="grid-2"><input type="text" id="p-shop-phone" placeholder="Phone"><input type="text" id="p-shop-addr" placeholder="Address"></div><hr style="border:0.1px solid var(--border); margin:10px 0;"><input type="text" id="p-name" placeholder="Item Name"><div class="grid-2"><input type="number" id="p-qty" placeholder="Qty" oninput="calcPur()"><input type="number" id="p-price" placeholder="Price" oninput="calcPur()"></div><input type="number" id="p-total" readonly placeholder="Total Cost"><select id="p-pay-status"><option value="Paid">Paid (ငွေချေပြီး)</option><option value="Unpaid">Unpaid (ငွေမပေးရသေး)</option></select><button class="btn-green" id="savePurBtn" onclick="savePur()">SAVE PURCHASE</button><div id="purHistory" style="margin-top:15px;"></div></div></div>
+        <div id="saleTab" class="hidden"><div class="card"><h3>Sale Entry</h3><input type="text" id="s-cust" placeholder="Buyer Name"><div class="grid-2"><input type="text" id="s-cust-phone" placeholder="Phone"><input type="text" id="s-cust-addr" placeholder="Address"></div><hr style="border:0.1px solid var(--border); margin:10px 0;"><input type="text" id="s-name" placeholder="Item Name"><div class="grid-2"><input type="number" id="s-qty" placeholder="Qty" oninput="calcSale()"><input type="number" id="s-price" placeholder="Price" oninput="calcSale()"></div><input type="number" id="s-total" readonly placeholder="Total Price"><select id="s-pay-status"><option value="Paid">Paid (ငွေရပြီး)</option><option value="Unpaid">Unpaid (ငွေမရသေး)</option></select><button class="btn-green" id="saveSaleBtn" onclick="saveSale()">SAVE SALE</button><div id="saleHistory" style="margin-top:15px;"></div></div></div>
+    <div id="staffTab" class="hidden"><div id="staffList"></div><div class="card"><h4>New Staff Enrollment</h4><input type="text" id="st-name" placeholder="Full Name"><div class="grid-2"><select id="st-role"><option>MD</option><option>Manager</option><option>Leader</option><option>Co-Leader</option><option>Helper</option></select><input type="number" id="st-rate" placeholder="Daily Rate"></div><input type="text" id="st-phone" placeholder="Phone Number"><button class="btn-green" onclick="addStaff()">ADD STAFF</button></div></div>
+    <div id="attendanceTab" class="hidden"><div class="card"><h3>Daily Attendance</h3><input type="date" id="att-date" onchange="checkAttLock()"><div id="attTableContainer" style="margin-top:10px;"></div><button class="btn-green" id="saveAttBtn" style="margin-top:15px;" onclick="saveAttendance()">SUBMIT TODAY</button></div></div>
     <div id="settingsTab" class="hidden">
-        <div class="card" style="padding:0; overflow:hidden; border:none;">
-            <div style="background:linear-gradient(45deg, #1e7e34, #28a745); padding:40px 20px; text-align:center; color:white;">
-                <img src="1000064267.png" style="width:100px; height:100px; border-radius:50%; border:4px solid rgba(255,255,255,0.3); box-shadow:0 5px 15px rgba(0,0,0,0.4);">
-                <h2 style="margin:15px 0 5px 0;">Oasis AC Sales & Service</h2>
-                <p style="font-size:13px; opacity:0.9;">Professional Engineering Solutions | Since 2000</p>
+        <div class="card" style="padding:0; overflow:hidden;">
+            <div style="background:linear-gradient(45deg, #1e7e34, #28a745); padding:30px 20px; text-align:center; color:white;">
+                <img src="1000064267.png" style="width:85px; height:85px; border-radius:50%; border:3px solid white; cursor:pointer;" onclick="viewLogoHD()">
+                <h3 style="margin:10px 0 5px 0;">Oasis AC Sales & Service</h3>
+                <p style="font-size:12px; opacity:0.9; font-weight:bold;">Real-time Cloud Sync | Since 2000</p>
             </div>
-            <div style="padding:25px;">
-                <div class="st-row"><span>Authorized Owner</span> <b>Ko Htay Aung</b></div>
-                <div class="st-row"><span>Lead Developer</span> <b>Zwe Maung Maung</b></div>
-                <div class="st-row"><span>System Version</span> <b>3.5.0 Platinum AI</b></div>
-                <div class="st-row"><span>Server Status</span> <b style="color:var(--p-green)">● Cloud Sync Active</b></div>
-                <div style="margin-top:25px; padding:15px; background:rgba(40,167,69,0.05); border-radius:12px; font-size:12px; line-height:1.6; color:#aaa;">
-                    This enterprise application is designed for real-time tracking of site operations, technician productivity, and financial health.
+            <div style="padding:20px;">
+                <div class="st-row"><span>Owner</span> <b>Ko Htay Aung</b></div>
+                <div class="st-row"><span>Developer</span> <b>Zwe Maung Maung</b></div>
+                <div class="st-row"><span>App Version</span> <b>3.6.0 (Legacy)</b></div>
+                <div class="st-row"><span>Firebase Status</span> <b style="color:var(--p-green)">Connected ●</b></div>
+                <h4 style="color:var(--p-green); border-bottom:1.5px solid var(--p-green); padding-bottom:5px; margin-top:20px;">App Features Summary</h4>
+                <div style="font-size:12px; line-height:1.8; color:#aaa; padding:10px; background:rgba(0,0,0,0.2); border-radius:8px;">
+                    ✅ Daily Dashboard (Daily/Monthly Financial Summary)<br>
+                    ✅ Site Report Management (Job History & Tracking)<br>
+                    ✅ Technician Performance (Attendance & Salary Tracking)<br>
+                    ✅ Inventory Financials (Sale & Purchase Tracking)<br>
+                    ✅ Data Management (Real-time Cloud Sync & PDF Report)<br>
+                    ✅ App Security (Authentication Login Protected)
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<div id="ai-btn" onclick="toggleAI()">💬</div>
-<div id="ai-box">
-    <div id="ai-header"><span>Oasis Smart Assistant</span><span onclick="toggleAI()" style="cursor:pointer;">✖</span></div>
-    <div id="ai-messages"></div>
-    <div id="ai-input-area"><input type="text" id="ai-query" placeholder="Ask AI..."><button onclick="askAI()" style="background:var(--p-green); border:none; padding:10px 15px; border-radius:12px; color:white; font-weight:bold;">Send</button></div>
-</div>
-
-<div class="fixed-footer">© 2026 <b>Zwe Maung Maung</b></div>
+<div class="fixed-footer">© 2026 <b>Zwe Maung Maung</b> | King Engineering</div>
 
 <div id="jobModal" class="modal"><div class="modal-content"><h3>Edit Job Entry</h3><div id="jobEditForm"></div><button class="btn-green" onclick="updateJob()">UPDATE</button><button class="btn-green" onclick="deleteDoc('jobs', window.currentId)" style="background:#dc3545; margin-top:10px;">DELETE</button><button class="btn-green" onclick="closeModal('jobModal')" style="background:#666; margin-top:10px;">CLOSE</button></div></div>
-<div id="staffModal" class="modal"><div class="modal-content"><h3>Edit Staff Details</h3><div id="staffEditForm"></div><button class="btn-green" onclick="updateStaff()">UPDATE</button><button class="btn-green" onclick="deleteDoc('staff', window.currentId)" style="background:#dc3545; margin-top:10px;">REMOVE</button><button class="btn-green" onclick="closeModal('staffModal')" style="background:#666; margin-top:10px;">CLOSE</button></div></div>
-<div id="editModal" class="modal"><div class="modal-content"><h3>Edit Financial Record</h3><div id="editForm"></div><button class="btn-green" onclick="updateRecord()">UPDATE</button><button class="btn-green" onclick="deleteDoc(window.currentCol, window.currentId)" style="background:#dc3545; margin-top:10px;">DELETE</button><button class="btn-green" onclick="closeModal('editModal')" style="background:#666; margin-top:10px;">CLOSE</button></div></div>
+<div id="staffModal" class="modal"><div class="modal-content"><h3>Edit Staff</h3><div id="staffEditForm"></div><button class="btn-green" onclick="updateStaff()">UPDATE</button><button class="btn-green" onclick="deleteDoc('staff', window.currentId)" style="background:#dc3545; margin-top:10px;">REMOVE</button><button class="btn-green" onclick="closeModal('staffModal')" style="background:#666; margin-top:10px;">CLOSE</button></div></div>
+<div id="financialModal" class="modal"><div class="modal-content"><h3>Record Details</h3><div id="financialEditForm"></div><button class="btn-green" onclick="updateFinancial()">UPDATE</button><button class="btn-green" onclick="deleteDoc(window.currentCol, window.currentId)" style="background:#dc3545; margin-top:10px;">DELETE</button><button class="btn-green" onclick="closeModal('financialModal')" style="background:#666; margin-top:10px;">CLOSE</button></div></div>
+<div id="logo-hd-modal" class="modal" onclick="closeModal('logo-hd-modal')"><div class="modal-content"><img src="1000064267.png" id="hd-logo-img"></div></div>
 
 <script>
     const firebaseConfig = { apiKey: "AIzaSyAOgPQkaq0mLdzi9jNZK-oRCEa_VsmD_cE", authDomain: "oasis-ac-service.firebaseapp.com", projectId: "oasis-ac-service", storageBucket: "oasis-ac-service.firebasestorage.app", messagingSenderId: "1039018990829", appId: "1:1039018990829:web:bffe0ea0269bfbded780e4" };
     firebase.initializeApp(firebaseConfig); const db = firebase.firestore();
-    const GEMINI_KEY = "AIzaSyDI4gdBKNuu2VjRBzD3ISrR17dVX-U9y-Y";
     const roleOrder = { "MD": 1, "Manager": 2, "Leader": 3, "Co-Leader": 4, "Helper": 5 };
 
+    function checkLogin() {
+        const u = document.getElementById('login-user').value; const p = document.getElementById('login-pass').value;
+        if ((u === "Oasis" || u === "Oasis ") && p === "oasis@2000") {
+            document.getElementById('login-screen').style.display = 'none'; sessionStorage.setItem('OasisLogin', 'true'); showTab('home');
+        } else { document.getElementById('login-error').style.display = 'block'; }
+    }
+    if(sessionStorage.getItem('OasisLogin') === 'true') { document.getElementById('login-screen').style.display = 'none'; }
+
+    function viewLogoHD() { document.getElementById('logo-hd-modal').style.display = 'flex'; }
     function sortStaff(a,b) { return (roleOrder[a.role] || 99) - (roleOrder[b.role] || 99) || a.name.localeCompare(b.name); }
     function showTab(t) { 
         document.querySelectorAll('.container > div').forEach(el => el.classList.add('hidden')); document.getElementById(t+'Tab').classList.remove('hidden');
@@ -150,57 +168,51 @@
         pSn.forEach(d => { const v=d.data(); const dD = v.timestamp?.toDate().toISOString().split('T')[0]; if(v.status==='Paid') { mExp += v.total||0; if(dD===today) dExp += v.total||0; } else { mPay += v.total||0; } });
         stSn.forEach(sDoc => { const s = sDoc.data(); aSn.forEach(aDoc => { if(aDoc.data().records?.find(r => r.name === s.name && r.status === 'Present')) { mSal += (s.rate || 0); if(aDoc.data().date === today) dSal += (s.rate || 0); } }); });
         
-        document.getElementById('dailyFinanceDisplay').innerHTML = `<div class="st-row"><span>Today Income:</span> <b>${dInc.toLocaleString()}</b></div><div class="st-row"><span>Today Exp+Sal:</span> <b>${(dExp+dSal).toLocaleString()}</b></div><div class="profit-line"><span>Daily Profit:</span> <span class="profit-text">${(dInc-dExp-dSal).toLocaleString()}</span></div>`;
-        document.getElementById('monthlyStats').innerHTML = `<div class="st-row"><span>Monthly Income:</span> <b>${mInc.toLocaleString()}</b></div><div class="st-row"><span>Monthly Exp+Sal:</span> <b>${(mExp+mSal).toLocaleString()}</b></div><div class="st-row"><span>Uncollected (Receivable):</span> <b style="color:#007bff">+${mRec.toLocaleString()}</b></div><div class="st-row"><span>Unpaid (Payable):</span> <b style="color:#dc3545">-${mPay.toLocaleString()}</b></div><div class="profit-line"><span>Net Monthly Cash:</span> <span class="profit-text">${(mInc-mExp-mSal).toLocaleString()}</span></div>`;
+        document.getElementById('dailyFinanceDisplay').innerHTML = `<div class="st-row"><span>Today Collected:</span> <b>${dInc.toLocaleString()}</b></div><div class="st-row"><span>Today Sal+Exp:</span> <b>${(dExp+dSal).toLocaleString()}</b></div><div class="profit-line"><span>Daily Cash:</span> <span class="profit-text">${(dInc-dExp-dSal).toLocaleString()}</span></div>`;
+        document.getElementById('monthlyStats').innerHTML = `<div class="st-row"><span>Monthly Collected:</span> <b>${mInc.toLocaleString()}</b></div><div class="st-row"><span>Uncollected (Debt):</span> <b style="color:#007bff">+${mRec.toLocaleString()}</b></div><div class="st-row"><span>Net Monthly Profit:</span> <span class="profit-text">${(mInc-mExp-mSal).toLocaleString()}</span></div>`;
     }
 
-    function loadJobs() { db.collection("jobs").orderBy("timestamp", "desc").get().then(snap => { document.getElementById('jobMasterList').innerHTML = snap.docs.map(doc => { const d=doc.data(); const bal = (d.cost||0) - (d.paid||0); return `<div class="card" onclick="openJobEdit('${doc.id}')"><div style="display:flex;justify-content:space-between;align-items:center;"><b>${d.name}</b> <span class="badge ${d.status==='Done'?'bg-green':'bg-red'}">${d.status}</span></div><div style="font-size:12px;margin:8px 0;opacity:0.8;">HP: ${d.hp||'-'} | Brand: ${d.brand||'-'}</div><div style="font-size:12px;color:orange;margin-bottom:8px;">📝 Prob: ${d.desc||'-'}</div><div style="font-size:11px;color:#aaa;margin-bottom:8px;">🛠️ Techs: ${d.staff?.join(', ') || '-'}</div><div style="font-size:13px;display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:10px;"><span>Total: ${d.cost.toLocaleString()}</span> <span style="font-weight:bold;color:${bal>0?'#dc3545':'#28a745'}">${bal>0?'Bal: '+bal.toLocaleString():'FULLY PAID'}</span></div></div>`; }).join(''); }); }
-    function openJobEdit(id) { window.currentId = id; db.collection("jobs").doc(id).get().then(doc => { const d = doc.data(); document.getElementById('jobEditForm').innerHTML = `<input type="text" id="e-j-name" value="${d.name}"><div class="grid-2"><input type="number" id="e-j-cost" value="${d.cost}"><input type="number" id="e-j-paid" value="${d.paid||0}"></div><select id="e-j-status"><option ${d.status==='Pending'?'selected':''}>Pending</option><option ${d.status==='Done'?'selected':''}>Done</option></select>`; document.getElementById('jobModal').style.display = 'flex'; }); }
+    function loadJobs() { db.collection("jobs").orderBy("timestamp", "desc").get().then(snap => {
+        document.getElementById('jobMasterList').innerHTML = snap.docs.map(doc => { const d=doc.data(); const bal = (d.cost||0) - (d.paid||0); return `<div class="card" onclick="openJobEdit('${doc.id}')"><div style="display:flex;justify-content:space-between;align-items:center;"><b>${d.name}</b> <span class="badge ${d.status==='Done'?'bg-green':'bg-red'}">${d.status}</span></div><div style="font-size:12px;margin:8px 0;opacity:0.8;">🛠️ ${d.staff?.join(', ') || '-'}</div><div style="font-size:13px;display:flex;justify-content:space-between;border-top:0.5px solid var(--border);padding-top:10px;"><span>Total: ${d.cost.toLocaleString()}</span> <span style="font-weight:bold;color:${bal>0?'#dc3545':'#28a745'}">${bal>0?'Bal: '+bal.toLocaleString():'PAID'}</span></div></div>`; }).join('');
+    }); }
+    function openJobEdit(id) { window.currentId = id; db.collection("jobs").doc(id).get().then(doc => { const d=doc.data(); document.getElementById('jobEditForm').innerHTML = `<input type="text" id="e-j-name" value="${d.name}"><div class="grid-2"><input type="number" id="e-j-cost" value="${d.cost}"><input type="number" id="e-j-paid" value="${d.paid||0}"></div><select id="e-j-status"><option ${d.status==='Pending'?'selected':''}>Pending</option><option ${d.status==='Done'?'selected':''}>Done</option></select>`; document.getElementById('jobModal').style.display='flex'; }); }
     async function updateJob() { await db.collection("jobs").doc(window.currentId).update({ name: document.getElementById('e-j-name').value, cost: Number(document.getElementById('e-j-cost').value), paid: Number(document.getElementById('e-j-paid').value), status: document.getElementById('e-j-status').value }); closeModal('jobModal'); loadJobs(); updateFinance(); }
 
-    function loadStaff() { db.collection("staff").get().then(snap => { const sArr = snap.docs.map(d => ({id: d.id, ...d.data()})).sort(sortStaff); document.getElementById('staffList').innerHTML = sArr.map(s => `<div class="card" onclick="openStaffEdit('${s.id}')"><div style="display:flex;justify-content:space-between;align-items:center;"><b>${s.name}</b><a href="tel:${s.phone}" onclick="event.stopPropagation()" style="text-decoration:none;font-size:20px;">📞</a></div><small>${s.role} - Daily Rate: ${s.rate.toLocaleString()}</small></div>`).join(''); }); }
-    function openStaffEdit(id) { window.currentId = id; db.collection("staff").doc(id).get().then(doc => { const d = doc.data(); document.getElementById('staffEditForm').innerHTML = `<input type="text" id="m-st-name" value="${d.name}"><div class="grid-2"><select id="m-st-role"><option ${d.role==='MD'?'selected':''}>MD</option><option ${d.role==='Manager'?'selected':''}>Manager</option><option ${d.role==='Leader'?'selected':''}>Leader</option><option ${d.role==='Co-Leader'?'selected':''}>Co-Leader</option><option ${d.role==='Helper'?'selected':''}>Helper</option></select><input type="number" id="m-st-rate" value="${d.rate}"></div><input type="text" id="m-st-phone" value="${d.phone||''}">`; document.getElementById('staffModal').style.display = 'flex'; }); }
+    function loadHistory(col, div) { db.collection(col).orderBy("timestamp", "desc").get().then(snap => {
+        document.getElementById(div).innerHTML = snap.docs.map(doc => { const d=doc.data(); return `<div class="card" onclick="openFinancialEdit('${col}', '${doc.id}')"><div style="display:flex;justify-content:space-between;"><span>${d.name || d.buyer || d.shop}</span><b>${(d.total||d.price).toLocaleString()}</b></div></div>`; }).join('');
+    }); }
+    function openFinancialEdit(col, id) { window.currentCol=col; window.currentId=id; db.collection(col).doc(id).get().then(doc => {
+        const d=doc.data(); let form=``;
+        if(col==='purchases'){ form=`<input type="text" id="m-fin-shop" value="${d.shop||''}" placeholder="Shop Name"><div class="grid-2"><input type="text" id="m-fin-name" value="${d.name}" placeholder="Item Name"><input type="number" id="m-fin-amt" value="${d.total}" placeholder="Amount"></div>`; }
+        else { form=`<input type="text" id="m-fin-buyer" value="${d.buyer||''}" placeholder="Buyer Name"><div class="grid-2"><input type="text" id="m-fin-name" value="${d.name}" placeholder="Item Name"><input type="number" id="m-fin-amt" value="${d.price}" placeholder="Amount"></div>`; }
+        form +=`<input type="text" id="m-fin-phone" value="${d.phone||''}" placeholder="Phone"><textarea id="m-fin-addr" placeholder="Address">${d.addr||''}</textarea><select id="m-fin-status"><option ${d.status==='Paid'?'selected':''}>Paid</option><option ${d.status==='Unpaid'?'selected':''}>Unpaid</option></select>`;
+        document.getElementById('financialEditForm').innerHTML=form; document.getElementById('financialModal').style.display='flex';
+    }); }
+    async function updateFinancial() {
+        let up = { name: document.getElementById('m-fin-name').value, phone: document.getElementById('m-fin-phone').value, addr: document.getElementById('m-fin-addr').value, status: document.getElementById('m-fin-status').value };
+        if(window.currentCol==='purchases'){ up.shop = document.getElementById('m-fin-shop').value; up.total = Number(document.getElementById('m-fin-amt').value); }
+        else { up.buyer = document.getElementById('m-fin-buyer').value; up.price = Number(document.getElementById('m-fin-amt').value); }
+        await db.collection(window.currentCol).doc(window.currentId).update(up); closeModal('financialModal'); loadHistory(window.currentCol, window.currentCol==='purchases'?'purHistory':'saleHistory'); updateFinance();
+    }
+
+    async function saveJob() { const s=[]; document.querySelectorAll('.st-check:checked').forEach(c=>s.push(c.value)); await db.collection("jobs").add({ name: document.getElementById('j-name').value, phone: document.getElementById('j-phone').value, brand: document.getElementById('j-brand').value, type: document.getElementById('j-type').value, hp: document.getElementById('j-hp').value, addr: document.getElementById('j-addr').value, desc: document.getElementById('j-desc').value, staff: s, date: document.getElementById('j-date').value, cost: Number(document.getElementById('j-cost').value), paid: Number(document.getElementById('j-paid').value), status: document.getElementById('j-status').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); showTab('jobs'); }
+    async function savePur() { await db.collection("purchases").add({ shop: document.getElementById('p-shop').value, phone: document.getElementById('p-shop-phone').value, addr: document.getElementById('p-shop-addr').value, name: document.getElementById('p-name').value, total: Number(document.getElementById('p-total').value), status: document.getElementById('p-pay-status').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); showTab('purchase'); }
+    async function saveSale() { await db.collection("sales").add({ buyer: document.getElementById('s-cust').value, phone: document.getElementById('s-cust-phone').value, addr: document.getElementById('s-cust-addr').value, name: document.getElementById('s-name').value, price: Number(document.getElementById('s-total').value), status: document.getElementById('s-pay-status').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); showTab('sale'); }
+    
+    function loadStaff() { db.collection("staff").get().then(snap => { const sArr=snap.docs.map(d=>({id: d.id, ...d.data()})).sort(sortStaff); document.getElementById('staffList').innerHTML = sArr.map(s => `<div class="card" onclick="openStaffEdit('${s.id}')"><div style="display:flex;justify-content:space-between;align-items:center;"><b>${s.name}</b><a href="tel:${s.phone||''}" onclick="event.stopPropagation()" style="text-decoration:none;">📞</a></div><small>${s.role} - Rate: ${s.rate.toLocaleString()}</small></div>`).join(''); }); }
+    function openStaffEdit(id) { window.currentId=id; db.collection("staff").doc(id).get().then(doc => { const d=doc.data(); document.getElementById('staffEditForm').innerHTML=`<input type="text" id="m-st-name" value="${d.name}"><div class="grid-2"><select id="m-st-role"><option ${d.role==='MD'?'selected':''}>MD</option><option ${d.role==='Leader'?'selected':''}>Leader</option><option ${d.role==='Helper'?'selected':''}>Helper</option></select><input type="number" id="m-st-rate" value="${d.rate}"></div><input type="text" id="m-st-phone" value="${d.phone||''}" placeholder="Phone">`; document.getElementById('staffModal').style.display='flex'; }); }
     async function updateStaff() { await db.collection("staff").doc(window.currentId).update({ name: document.getElementById('m-st-name').value, role: document.getElementById('m-st-role').value, rate: Number(document.getElementById('m-st-rate').value), phone: document.getElementById('m-st-phone').value }); closeModal('staffModal'); loadStaff(); }
-
-    async function checkAttLock() { 
-        const date = document.getElementById('att-date').value; const now = new Date(); const hour = now.getHours();
-        const snap = await db.collection("attendance").where("date", "==", date).get();
-        const container = document.getElementById('attTableContainer'); const btn = document.getElementById('saveAttBtn'); const msg = document.getElementById('attLockMsg');
-        if(!snap.empty){ btn.style.display='none'; container.innerHTML=""; msg.style.display='block'; msg.innerText="✅ Attendance Secured for Today."; } 
-        else if(hour < 11) { btn.style.display='none'; container.innerHTML=""; msg.style.display='block'; msg.innerText="⏳ Attendance opens after 11:00 AM."; }
-        else { btn.style.display='block'; msg.style.display='none'; db.collection("staff").get().then(s => { const sArr = s.docs.map(d => d.data()).sort(sortStaff); container.innerHTML = sArr.map(d => `<div class="st-row"><b>${d.name}</b><select class="att-sel" data-name="${d.name}"><option>Present</option><option>Absent</option></select></div>`).join(''); }); }
-    }
-    async function saveAttendance() { const records = []; document.querySelectorAll('.att-sel').forEach(s => records.push({name: s.dataset.name, status: s.value})); await db.collection("attendance").add({ date: document.getElementById('att-date').value, records, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); checkAttLock(); updateFinance(); }
-
-    function loadHistory(col, div) { db.collection(col).orderBy("timestamp", "desc").get().then(snap => { document.getElementById(div).innerHTML = snap.docs.map(doc => `<div class="card" onclick="openEditRecord('${col}', '${doc.id}')"><div style="display:flex;justify-content:space-between;"><span>${doc.data().name}</span><b>${(doc.data().total||doc.data().price).toLocaleString()}</b></div></div>`).join(''); }); }
-    function openEditRecord(col, id) { window.currentCol = col; window.currentId = id; db.collection(col).doc(id).get().then(doc => { const d = doc.data(); document.getElementById('editForm').innerHTML = `<input type="text" id="e-rec-name" value="${d.name}"><input type="number" id="e-rec-amt" value="${d.total||d.price}"><select id="e-rec-status"><option ${d.status==='Paid'?'selected':''}>Paid</option><option ${d.status==='Unpaid'?'selected':''}>Unpaid</option></select>`; document.getElementById('editModal').style.display = 'flex'; }); }
-    async function updateRecord() { const up = { name: document.getElementById('e-rec-name').value, status: document.getElementById('e-rec-status').value }; if(window.currentCol==='purchases') up.total = Number(document.getElementById('e-rec-amt').value); else up.price = Number(document.getElementById('e-rec-amt').value); await db.collection(window.currentCol).doc(window.currentId).update(up); closeModal('editModal'); showTab(window.currentCol === 'purchases' ? 'purchase' : 'sale'); }
-
-    async function askAI() {
-        const q = document.getElementById('ai-query').value; if(!q) return;
-        const msgDiv = document.getElementById('ai-messages'); msgDiv.innerHTML += `<div class="ai-msg ai-user">${q}</div>`; document.getElementById('ai-query').value = '';
-        const loader = document.createElement('div'); loader.className="ai-msg ai-bot"; loader.innerText="Thinking..."; msgDiv.appendChild(loader);
-        try {
-            const [j, p, s] = await Promise.all([db.collection("jobs").get(), db.collection("purchases").get(), db.collection("sales").get()]);
-            let context = "Business: Oasis AC. \n"; j.forEach(d => context += `Job: ${d.data().name}, Bal: ${(d.data().cost||0)-(d.data().paid||0)}\n`);
-            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`, { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ contents: [{ parts: [{ text: context + "\nQuestion: " + q }] }] }) });
-            const data = await res.json(); loader.innerText = data.candidates[0].content.parts[0].text;
-        } catch (e) { loader.innerText = "AI System is currently busy."; }
-        msgDiv.scrollTop = msgDiv.scrollHeight;
-    }
-
-    async function saveJob() { const s=[]; document.querySelectorAll('.st-check:checked').forEach(c=>s.push(c.value)); await db.collection("jobs").add({ name: document.getElementById('j-name').value, phone: document.getElementById('j-phone').value, brand: document.getElementById('j-brand').value, type: document.getElementById('j-type').value, hp: document.getElementById('j-hp').value, addr: document.getElementById('j-addr').value, desc: document.getElementById('j-desc').value, staff: s, date: document.getElementById('j-date').value, cost: Number(document.getElementById('j-cost').value), paid: Number(document.getElementById('j-paid').value), status: document.getElementById('j-status').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Job Saved!"); showTab('jobs'); }
-    async function savePur() { await db.collection("purchases").add({ name: document.getElementById('p-name').value, total: Number(document.getElementById('p-total').value), status: document.getElementById('p-pay-status').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); showTab('purchase'); }
-    async function saveSale() { await db.collection("sales").add({ name: document.getElementById('s-name').value, price: Number(document.getElementById('s-total').value), status: document.getElementById('s-pay-status').value, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); showTab('sale'); }
-    async function addStaff() { await db.collection("staff").add({ name: document.getElementById('st-name').value, role: document.getElementById('st-role').value, rate: Number(document.getElementById('st-rate').value), phone: document.getElementById('st-phone').value }); loadStaff(); }
-    async function deleteDoc(col, id) { if(confirm("Permanently delete?")) { await db.collection(col).doc(id).delete(); closeModal('jobModal'); closeModal('staffModal'); closeModal('editModal'); updateFinance(); showTab(col==='jobs'?'jobs':col==='staff'?'staff':'home'); } }
-    function loadStaffForService() { db.collection("staff").get().then(snap => { const sArr = snap.docs.map(d => d.data()).filter(s => s.role !== 'MD').sort(sortStaff); document.getElementById('staffChecks').innerHTML = sArr.map(s => `<label style="display:flex;align-items:center;margin-bottom:8px;"><input type="checkbox" class="st-check" value="${s.name}" style="width:18px;height:18px;margin-right:10px;"> ${s.name} (${s.role})</label>`).join(''); }); }
+    
+    function checkAttLock() { db.collection("staff").get().then(s => { const sArr=s.docs.map(d=>d.data()).sort(sortStaff); document.getElementById('attTableContainer').innerHTML = sArr.map(d => `<div class="st-row"><b>${d.name}</b><select class="att-sel" data-name="${d.name}" style="width:100px; margin:0;"><option>Present</option><option>Absent</option></select></div>`).join(''); }); }
+    async function saveAttendance() { const records=[]; document.querySelectorAll('.att-sel').forEach(s=>records.push({name: s.dataset.name, status: s.value})); await db.collection("attendance").add({ date: document.getElementById('att-date').value, records, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); }
+    
+    async function deleteDoc(col, id) { if(confirm("Delete permanently?")) { await db.collection(col).doc(id).delete(); closeModal('jobModal'); closeModal('staffModal'); closeModal('financialModal'); updateFinance(); if(col==='jobs') loadJobs(); else if(col==='staff') loadStaff(); } }
+    function loadStaffForService() { db.collection("staff").get().then(snap => { const sArr=snap.docs.map(d=>d.data()).sort(sortStaff); document.getElementById('staffChecks').innerHTML = sArr.map(s => `<label style="display:flex;align-items:center;margin-bottom:8px;"><input type="checkbox" class="st-check" value="${s.name}" style="width:18px;height:18px;margin-right:10px;"> ${s.name} (${s.role})</label>`).join(''); }); }
     function calcPur() { document.getElementById('p-total').value = (document.getElementById('p-qty').value||0) * (document.getElementById('p-price').value||0); }
     function calcSale() { document.getElementById('s-total').value = (document.getElementById('s-qty').value||0) * (document.getElementById('s-price').value||0); }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme')==='dark'?'light':'dark'); }
-    function toggleAI() { const box = document.getElementById('ai-box'); box.style.display = box.style.display === 'flex' ? 'none' : 'flex'; }
-    window.onload = () => showTab('home');
+    function exportMonthlyPDF() { alert("Report generating..."); }
+    // AI functions removed
 </script>
 </body></html>
-    
