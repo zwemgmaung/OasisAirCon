@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oasis Master Sync v3.6.5</title>
+    <title>Oasis Master Sync v3.6.8</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -17,7 +17,7 @@
         .pass-box { position: relative; width: 100%; }
         .eye-icon { position: absolute; right: 15px; top: 15px; color: #888; cursor: pointer; }
         .header { background: var(--p-green); color: white; padding: 5px 12px; display: flex; align-items: center; position: sticky; top: 0; z-index: 2000; height: 65px; gap: 8px; }
-        .logo-img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid white; object-fit: cover; background: transparent; cursor: pointer; box-shadow: none; display: block; margin-top: -2px;}
+        .logo-img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid white; object-fit: cover; background: transparent; cursor: pointer; }
         .header-info { display: flex; flex-direction: column; line-height: 1.2; }
         .header-title { font-weight: bold; font-size: 16px; margin: 0; }
         .header-subtitle { font-size: 11px; opacity: 0.95; }
@@ -25,16 +25,19 @@
         .tab-btn { padding: 0 18px; display: flex; align-items: center; flex: none; cursor: pointer; font-weight: bold; font-size: 11px; color: #888; border-bottom: 3px solid transparent; text-transform: uppercase; }
         .tab-btn.active { color: var(--p-green); border-bottom-color: var(--p-green); background: rgba(40, 167, 69, 0.1); }
         .container { padding: 15px; max-width: 800px; margin: auto; }
-        .card { background: var(--card); padding: 18px; border-radius: 15px; margin-bottom: 15px; border: 1px solid var(--border); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .card { background: var(--card); padding: 18px; border-radius: 15px; margin-bottom: 15px; border: 1px solid var(--border); }
         input, select, textarea { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--text); box-sizing: border-box; margin-bottom: 12px; font-size: 14px; }
         .btn-green { background: var(--p-green); color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .hidden { display: none !important; }
         .st-row { display: flex; justify-content: space-between; padding: 10px 5px; border-bottom: 0.5px solid var(--border); font-size: 14px; }
-        .profit-line { display: flex; justify-content: space-between; align-items: center; padding: 15px 5px; border-top: 1.5px solid var(--p-green); margin-top: 10px; }
-        .fixed-footer { position: fixed; bottom: 0; width: 100%; background: var(--card); text-align: center; padding: 10px 0; font-size: 10px; color: #888; border-top: 1px solid var(--border); z-index: 2000; }
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 5000; padding: 15px; box-sizing: border-box; }
         .modal-content { background: var(--card); padding: 25px; border-radius: 20px; width: 100%; max-width: 450px; max-height: 90vh; overflow-y: auto; position: relative; }
+        /* Logo Modal Extra */
+        #hdModal .modal-content { background: none; border: none; text-align: center; }
+        #hdModal img { max-width: 100%; border-radius: 15px; }
+        .hd-close { position: absolute; top: -40px; right: 0; font-size: 30px; color: white; cursor: pointer; }
+        .hd-label { color: white; margin-top: 15px; font-size: 14px; font-weight: bold; letter-spacing: 0.5px; opacity: 0.9; }
     </style>
 </head>
 <body>
@@ -73,7 +76,7 @@
 <div class="container">
     <div id="homeTab">
         <div class="card"><h3>Daily Dashboard</h3><div id="dFin">Loading...</div></div>
-        <div class="card"><h3>Monthly Summary</h3><div id="mFin">Loading...</div><div class="grid-2" style="margin-top:15px;"><button class="btn-green" onclick="exportMonthlyPDF()">PDF Report</button><button class="btn-green" style="background:#4285f4;" onclick="updateFinance()">Sync</button></div></div>
+        <div class="card"><h3>Monthly Summary</h3><div id="mFin">Loading...</div><div class="grid-2" style="margin-top:15px;"><button class="btn-green" onclick="oneClickPDF()">PDF Report</button><button class="btn-green" style="background:#4285f4;" onclick="updateFinance()">Sync</button></div></div>
     </div>
     <div id="jobsTab" class="hidden"><div id="jobList"></div></div>
     <div id="serviceTab" class="hidden">
@@ -103,25 +106,31 @@
             <div style="padding:20px;">
                 <div class="st-row"><span>Owner</span> <b>Ko Htay Aung</b></div>
                 <div class="st-row"><span>Developer</span> <b>Zwe Maung Maung</b></div>
-                <div class="st-row"><span>App Version</span> <b>3.6.5 (Enterprise)</b></div>
+                <div class="st-row"><span>App Version</span> <b>3.6.8 (Pro Sync)</b></div>
+                <p style="font-size:12px; margin-top:5px; color:var(--text);"><b>Data Secured on Zwe Maung Maung's Cloud Server.</b></p>
                 <h4 style="color:var(--p-green); margin-top:20px;">Core Features</h4>
                 <div style="font-size:12px; line-height:1.7; color:#aaa;">
-                    ● Real-time Cashflow (Income & Expense)<br>● Multi-User Login Protection<br>● Site Report & Technician Management<br>● Dynamic Inventory Tracking<br>● Attendance Automation<br>● PDF Business Reports
+                    ● Real-time Cashflow (Income & Expense)<br>● Multi-User Login Protection<br>● Site Report & Technician Management<br>● Dynamic Inventory Tracking<br>● Attendance Automation<br>● One-Click PDF Business Reports
                 </div>
             </div>
         </div>
     </div>
 </div>
-<div class="fixed-footer">© 2026 <b>Zwe Maung Maung</b></div>
-<div id="jobModal" class="modal"><div class="modal-content"><h3>Edit Job</h3><div id="jEditForm"></div><button class="btn-green" onclick="uJ()">UPDATE</button><button class="btn-green" onclick="delD('jobs',window.currId)" style="background:#dc3545;margin-top:10px;">DELETE</button><button class="btn-green" onclick="closeModal('jobModal')" style="background:#666;margin-top:10px;">CLOSE</button></div></div>
-<div id="finModal" class="modal"><div class="modal-content"><h3>Edit Record</h3><div id="fEditForm"></div><button class="btn-green" onclick="uF()">UPDATE</button><button class="btn-green" onclick="delD(window.currCol,window.currId)" style="background:#dc3545;margin-top:10px;">DELETE</button><button class="btn-green" onclick="closeModal('finModal')" style="background:#666;margin-top:10px;">CLOSE</button></div></div>
-<div id="hdModal" class="modal" onclick="closeModal('hdModal')"><img src="1000064267.png" style="max-width:90%; border-radius:10px;"></div>
+<div id="hdModal" class="modal">
+    <div class="modal-content">
+        <span class="hd-close" onclick="closeModal('hdModal')">&times;</span>
+        <img src="1000064267.png">
+        <div class="hd-label">Zwe Maung Maung's Cloud Server</div>
+    </div>
+</div>
+
+<div id="jobModal" class="modal"><div class="modal-content"><h3>Edit Job</h3><div id="jEditForm"></div><button class="btn-green" onclick="uJ()">UPDATE</button><button class="btn-green" onclick="closeModal('jobModal')" style="background:#666;margin-top:10px;">CLOSE</button></div></div>
+<div id="finModal" class="modal"><div class="modal-content"><h3>Edit Record</h3><div id="fEditForm"></div><button class="btn-green" onclick="uF()">UPDATE</button><button class="btn-green" onclick="closeModal('finModal')" style="background:#666;margin-top:10px;">CLOSE</button></div></div>
 
 <script>
     const firebaseConfig = { apiKey: "AIzaSyAOgPQkaq0mLdzi9jNZK-oRCEa_VsmD_cE", authDomain: "oasis-ac-service.firebaseapp.com", projectId: "oasis-ac-service", storageBucket: "oasis-ac-service.firebasestorage.app", messagingSenderId: "1039018990829", appId: "1:1039018990829:web:bffe0ea0269bfbded780e4" };
     firebase.initializeApp(firebaseConfig); const db = firebase.firestore();
-    const roleOrder = { "MD":1, "Manager":2, "Leader":3, "Co-Leader":4, "Helper":5 };
-
+    
     function doLogin() {
         const u = document.getElementById('l-user').value.trim(); const p = document.getElementById('l-pass').value;
         if ((u==="Oasis" || u==="Oasis ") && p==="oasis@2000") { document.getElementById('login-screen').style.display='none'; sessionStorage.setItem('OasisLogin','true'); showTab('home'); }
@@ -130,7 +139,6 @@
     if(sessionStorage.getItem('OasisLogin')==='true') document.getElementById('login-screen').style.display='none';
     function togglePass() { const x=document.getElementById('l-pass'); x.type=x.type==="password"?"text":"password"; }
     function openHD() { document.getElementById('hdModal').style.display='flex'; }
-    function sortS(a,b) { return (roleOrder[a.role]||99)-(roleOrder[b.role]||99); }
     function showTab(t) { 
         document.querySelectorAll('.container > div').forEach(el=>el.classList.add('hidden')); document.getElementById(t+'Tab').classList.remove('hidden');
         document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); document.getElementById('t-'+t).classList.add('active');
@@ -147,35 +155,25 @@
         s.forEach(doc=>{ const v=doc.data(); const dt=v.timestamp?.toDate().toISOString().split('T')[0]; if(v.status==='Paid'){ mI+=v.price||0; if(dt===today) dI+=v.price||0; } else mR+=v.price||0; });
         p.forEach(doc=>{ const v=doc.data(); const dt=v.timestamp?.toDate().toISOString().split('T')[0]; if(v.status==='Paid'){ dE+=v.total||0; if(dt===today) dE+=v.total||0; } else mP+=v.total||0; });
         st.forEach(sd=>{ const sv=sd.data(); a.forEach(ad=>{ if(ad.data().records?.find(r=>r.name===sv.name && r.status==='Present')){ mS+=(sv.rate||0); if(ad.data().date===today) dS+=(sv.rate||0); } }); });
-        document.getElementById('dFin').innerHTML = `<div class="st-row"><span>Today Collected:</span><b>${dI.toLocaleString()}</b></div><div class="st-row"><span>Today Exp+Sal:</span><b>${(dE+dS).toLocaleString()}</b></div><div class="profit-line"><span>Daily Cash:</span><span style="color:var(--p-green);font-weight:bold;font-size:22px;">${(dI-dE-dS).toLocaleString()}</span></div>`;
-        document.getElementById('mFin').innerHTML = `<div class="st-row"><span>Monthly Income:</span><b>${mI.toLocaleString()}</b></div><div class="st-row"><span>Monthly Exp+Sal:</span><b>${(mS+dE).toLocaleString()}</b></div><div class="st-row"><span>Receivable:</span><b style="color:#007bff">+${mR.toLocaleString()}</b></div><div class="st-row"><span>Payable:</span><b style="color:#dc3545">-${mP.toLocaleString()}</b></div><div class="profit-line"><span>Net Cash:</span><span style="color:var(--p-green);font-weight:bold;font-size:22px;">${(mI-mS-dE).toLocaleString()}</span></div>`;
+        document.getElementById('dFin').innerHTML = `<div class="st-row"><span>Today Collected:</span><b>${dI.toLocaleString()}</b></div><div class="st-row"><span>Today Exp+Sal:</span><b>${(dE+dS).toLocaleString()}</b></div><div class="st-row"><span>Daily Profit:</span><b style="color:var(--p-green)">${(dI-dE-dS).toLocaleString()}</b></div>`;
+        document.getElementById('mFin').innerHTML = `<div class="st-row"><span>Monthly Collected:</span><b>${mI.toLocaleString()}</b></div><div class="st-row"><span>Receivable:</span><b style="color:#007bff">+${mR.toLocaleString()}</b></div><div class="st-row"><span>Net Cash:</span><b style="color:var(--p-green);font-size:18px;">${(mI-mS-dE).toLocaleString()}</b></div>`;
     }
-    function loadJobs() { db.collection("jobs").orderBy("timestamp","desc").get().then(sn=>{ document.getElementById('jobList').innerHTML = sn.docs.map(doc=>{ const v=doc.data(); return `<div class="card" onclick="openJE('${doc.id}')"><div style="display:flex;justify-content:space-between;"><b>${v.name} (${v.brand||'-'})</b><span class="badge ${v.status==='Done'?'bg-green':'bg-red'}">${v.status}</span></div><div style="font-size:12px;margin:5px 0;opacity:0.7;">📝 Prob: ${v.desc||'-'}<br>🛠️ Techs: ${v.staff?.join(', ')}</div><div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:8px;"><span>Total: ${v.cost.toLocaleString()}</span><b>${((v.cost||0)-(v.paid||0))>0?'Bal: '+((v.cost||0)-(v.paid||0)).toLocaleString():'PAID'}</b></div></div>`; }).join(''); }); }
-    function openJE(id) { window.currId=id; db.collection("jobs").doc(id).get().then(d=>{ const v=d.data(); document.getElementById('jEditForm').innerHTML=`<input id="e-n" value="${v.name}"><div class="grid-2"><input id="e-p" value="${v.phone}"><input id="e-b" value="${v.brand}"></div><textarea id="e-a">${v.addr}</textarea><textarea id="e-d">${v.desc}</textarea><div class="grid-2"><input type="number" id="e-c" value="${v.cost}"><input type="number" id="e-pd" value="${v.paid||0}"></div><select id="e-s"><option ${v.status==='Pending'?'selected':''}>Pending</option><option ${v.status==='Done'?'selected':''}>Done</option></select>`; document.getElementById('jobModal').style.display='flex'; }); }
-    async function uJ() { await db.collection("jobs").doc(window.currId).update({ name:document.getElementById('e-n').value, phone:document.getElementById('e-p').value, brand:document.getElementById('e-b').value, addr:document.getElementById('e-a').value, desc:document.getElementById('e-d').value, cost:Number(document.getElementById('e-c').value), paid:Number(document.getElementById('e-pd').value), status:document.getElementById('e-s').value }); closeModal('jobModal'); loadJobs(); }
-    function loadHistory(col,div) { db.collection(col).orderBy("timestamp","desc").get().then(sn=>{ document.getElementById(div).innerHTML = sn.docs.map(doc=>{ const v=doc.data(); return `<div class="card" onclick="openFE('${col}','${doc.id}')"><div style="display:flex;justify-content:space-between;"><span>${v.buyer||v.shop||v.name}</span><b>${(v.total||v.price).toLocaleString()}</b></div></div>`; }).join(''); }); }
-    function openFE(col,id) { window.currCol=col; window.currId=id; db.collection(col).doc(id).get().then(d=>{ const v=d.data(); document.getElementById('fEditForm').innerHTML=`<input id="ef-n" value="${v.shop||v.buyer}" placeholder="Name"><div class="grid-2"><input id="ef-i" value="${v.name}" placeholder="Item"><input type="number" id="ef-q" value="${v.qty||1}" placeholder="Qty"></div><div class="grid-2"><input type="number" id="ef-a" value="${v.total||v.price}" placeholder="Amount"><input id="ef-p" value="${v.phone||''}" placeholder="Phone"></div><textarea id="ef-ad" placeholder="Address">${v.addr||''}</textarea><select id="ef-s"><option ${v.status==='Paid'?'selected':''}>Paid</option><option ${v.status==='Unpaid'?'selected':''}>Unpaid</option></select>`; document.getElementById('finModal').style.display='flex'; }); }
-    async function uF() { let up={ name:document.getElementById('ef-i').value, qty:Number(document.getElementById('ef-q').value), phone:document.getElementById('ef-p').value, addr:document.getElementById('ef-ad').value, status:document.getElementById('ef-s').value }; if(window.currCol==='purchases'){ up.shop=document.getElementById('ef-n').value; up.total=Number(document.getElementById('ef-a').value); } else { up.buyer=document.getElementById('ef-n').value; up.price=Number(document.getElementById('ef-a').value); } await db.collection(window.currCol).doc(window.currId).update(up); closeModal('finModal'); showTab(window.currCol==='purchases'?'purchase':'sale'); }
-    async function saveJob() { const s=[]; document.querySelectorAll('.st-check:checked').forEach(c=>s.push(c.value)); await db.collection("jobs").add({ name:document.getElementById('j-n').value, phone:document.getElementById('j-p').value, brand:document.getElementById('j-b').value, addr:document.getElementById('j-a').value, desc:document.getElementById('j-d').value, type:document.getElementById('j-t').value, hp:document.getElementById('j-h').value, gas:document.getElementById('j-g').value, staff:s, date:document.getElementById('j-dt').value, cost:Number(document.getElementById('j-c').value), paid:Number(document.getElementById('j-pd').value), status:document.getElementById('j-s').value, timestamp:firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); showTab('jobs'); }
-    async function savePur() { await db.collection("purchases").add({ shop:document.getElementById('p-sh').value, phone:document.getElementById('p-ph').value, addr:document.getElementById('p-ad').value, name:document.getElementById('p-n').value, qty:Number(document.getElementById('p-q').value), total:Number(document.getElementById('p-t').value), status:document.getElementById('p-st').value, timestamp:firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); showTab('purchase'); }
-    async function saveSale() { await db.collection("sales").add({ buyer:document.getElementById('s-cu').value, phone:document.getElementById('s-ph').value, addr:document.getElementById('s-ad').value, name:document.getElementById('s-n').value, qty:Number(document.getElementById('s-q').value), price:Number(document.getElementById('s-t').value), status:document.getElementById('s-st').value, timestamp:firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); showTab('sale'); }
-    function loadStaff() { db.collection("staff").get().then(sn=>{ const sArr=sn.docs.map(d=>({id:d.id, ...d.data()})).sort(sortS); document.getElementById('staffList').innerHTML = sArr.map(s=>`<div class="card" style="display:flex;justify-content:space-between;align-items:center;"><div><b>${s.name}</b><br><small>${s.role} - ${s.rate.toLocaleString()}</small></div><a href="tel:${s.phone||''}" style="text-decoration:none;font-size:20px;">📞</a></div>`).join(''); }); }
-    async function addStaff() { await db.collection("staff").add({ name:document.getElementById('st-n').value, role:document.getElementById('st-r').value, rate:Number(document.getElementById('st-rt').value), phone:document.getElementById('st-p').value }); loadStaff(); }
-    async function checkAttLock() { 
-        const dt=document.getElementById('att-date').value; const hr=new Date().getHours(); const sn=await db.collection("attendance").where("date","==",dt).get();
-        const cont=document.getElementById('attTable'); const btn=document.getElementById('saveAttBtn');
-        if(!sn.empty){ btn.style.display='none'; cont.innerHTML="<div style='text-align:center;padding:20px;color:var(--p-green);'>✅ SECURED</div>"; }
-        else if(hr<11){ btn.style.display='none'; cont.innerHTML="<div style='text-align:center;padding:20px;color:orange;'>⏳ OPENS AFTER 11:00 AM</div>"; }
-        else { btn.style.display='block'; db.collection("staff").get().then(s=>{ const sArr=s.docs.map(d=>d.data()).sort(sortS); cont.innerHTML = sArr.map(d=>`<div class="st-row"><b>${d.name}</b><select class="att-sel" data-name="${d.name}"><option>Present</option><option>Absent</option></select></div>`).join(''); }); }
+    function oneClickPDF() {
+        const { jsPDF } = window.jspdf; const doc = new jsPDF();
+        doc.setFontSize(18); doc.text("Oasis AC Sales & Service Report", 14, 20);
+        doc.setFontSize(10); doc.text("Generated by Zwe Maung Maung's Cloud Server", 14, 28);
+        doc.autoTable({ startY: 35, head: [['Date', 'Description', 'Income', 'Status']], body: [['2026-04-29', 'Daily Summary', document.getElementById('dFin').innerText, 'Auto-Synced']] });
+        doc.save(`Oasis_Report_${new Date().toLocaleDateString()}.pdf`);
     }
-    async function saveAttendance() { const r=[]; document.querySelectorAll('.att-sel').forEach(s=>r.push({name:s.dataset.name, status:s.value})); await db.collection("attendance").add({ date:document.getElementById('att-date').value, records:r, timestamp:firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); checkAttLock(); }
-    function cP() { document.getElementById('p-t').value=(document.getElementById('p-q').value||0)*(document.getElementById('p-pr').value||0); }
-    function cS() { document.getElementById('s-t').value=(document.getElementById('s-q').value||0)*(document.getElementById('s-pr').value||0); }
-    async function delD(col,id) { if(confirm("Delete?")){ await db.collection(col).doc(id).delete(); closeModal('jobModal'); closeModal('finModal'); updateFinance(); if(col==='jobs') loadJobs(); else showTab(col==='purchases'?'purchase':'sale'); } }
-    function loadStaffForService() { db.collection("staff").get().then(sn=>{ const sArr=sn.docs.map(d=>d.data()).filter(s=>s.role!=='MD').sort(sortS); document.getElementById('staffChecks').innerHTML=sArr.map(s=>`<label style="display:flex;align-items:center;margin-bottom:8px;"><input type="checkbox" class="st-check" value="${s.name}" style="width:18px;height:18px;margin-right:10px;"> ${s.name} (${s.role})</label>`).join(''); }); }
+    function loadJobs() { db.collection("jobs").orderBy("timestamp","desc").get().then(sn=>{ document.getElementById('jobList').innerHTML = sn.docs.map(doc=>{ const v=doc.data(); return `<div class="card" onclick="openJE('${doc.id}')"><b>${v.name} (${v.brand||'-'})</b><div style="font-size:12px;opacity:0.7;">📝 ${v.desc||'-'}</div><div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);margin-top:8px;padding-top:8px;"><span>Total: ${v.cost.toLocaleString()}</span><b>Bal: ${((v.cost||0)-(v.paid||0)).toLocaleString()}</b></div></div>`; }).join(''); }); }
+    function loadHistory(col,div) { db.collection(col).orderBy("timestamp","desc").get().then(sn=>{ document.getElementById(div).innerHTML = sn.docs.map(doc=>{ const v=doc.data(); return `<div class="card"><span>${v.buyer||v.shop||v.name}</span> - <b>${(v.total||v.price).toLocaleString()}</b></div>`; }).join(''); }); }
+    async function saveJob() { const s=[]; document.querySelectorAll('.st-check:checked').forEach(c=>s.push(c.value)); await db.collection("jobs").add({ name:document.getElementById('j-n').value, phone:document.getElementById('j-p').value, brand:document.getElementById('j-b').value, addr:document.getElementById('j-a').value, desc:document.getElementById('j-d').value, staff:s, date:document.getElementById('j-dt').value, cost:Number(document.getElementById('j-c').value), paid:Number(document.getElementById('j-pd').value), status:document.getElementById('j-s').value, timestamp:firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); showTab('jobs'); }
+    async function savePur() { await db.collection("purchases").add({ shop:document.getElementById('p-sh').value, name:document.getElementById('p-n').value, total:Number(document.getElementById('p-t').value), status:document.getElementById('p-st').value, timestamp:firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); showTab('purchase'); }
+    async function saveSale() { await db.collection("sales").add({ buyer:document.getElementById('s-cu').value, name:document.getElementById('s-n').value, price:Number(document.getElementById('s-t').value), status:document.getElementById('s-st').value, timestamp:firebase.firestore.FieldValue.serverTimestamp() }); alert("Saved!"); showTab('sale'); }
+    function loadStaff() { db.collection("staff").get().then(sn=>{ document.getElementById('staffList').innerHTML = sn.docs.map(d=>{ const s=d.data(); return `<div class="card"><b>${s.name}</b> (${s.role})</div>`; }).join(''); }); }
+    function loadStaffForService() { db.collection("staff").get().then(sn=>{ document.getElementById('staffChecks').innerHTML=sn.docs.filter(s=>s.data().role!=='MD').map(s=>`<label style="display:block;margin-bottom:5px;"><input type="checkbox" class="st-check" value="${s.data().name}"> ${s.data().name}</label>`).join(''); }); }
     function closeModal(id) { document.getElementById(id).style.display='none'; }
     function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme')==='dark'?'light':'dark'); }
-    function exportMonthlyPDF() { alert("Generating..."); }
     window.onload = () => showTab('home');
 </script>
 </body></html>
