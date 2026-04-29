@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oasis Master Sync v3.1.0</title>
+    <title>Oasis Master Sync v3.1.1</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -22,7 +22,6 @@
         .card { background: var(--card); padding: 18px; border-radius: 15px; margin-bottom: 15px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         input, select, textarea { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--text); box-sizing: border-box; margin-bottom: 12px; font-size: 14px; }
         .btn-green { background: var(--p-green); color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 5px; transition: 0.2s; }
-        .btn-green:active { transform: scale(0.98); opacity: 0.9; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .hidden { display: none !important; }
         .st-row { display: flex; justify-content: space-between; padding: 10px 5px; border-bottom: 0.5px solid var(--border); font-size: 13px; }
@@ -31,7 +30,6 @@
         .fixed-footer { position: fixed; bottom: 0; width: 100%; background: var(--card); text-align: center; padding: 12px 0; font-size: 10px; color: #888; border-top: 1px solid var(--border); z-index: 2000; }
         .badge { padding: 5px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; color: white; text-transform: uppercase; }
         .bg-red { background: #e74c3c; } .bg-blue { background: #3498db; } .bg-green { background: #2ecc71; }
-        .info-card { text-align: center; border: 1px solid var(--p-green); background: rgba(40,167,69,0.05); }
     </style>
 </head>
 <body data-theme="dark">
@@ -51,7 +49,7 @@
 </div>
 <div class="container">
     <div id="homeTab">
-        <div class="card info-card"><h3>Daily Dashboard</h3><div id="dailyFinanceDisplay" style="line-height:2.4;">Updating...</div></div>
+        <div class="card" style="text-align:center; border-color:var(--p-green);"><h3>Daily Dashboard</h3><div id="dailyFinanceDisplay" style="line-height:2.4;">Updating...</div></div>
         <div class="card"><h4>Monthly Analytics</h4><div id="monthlyStats" style="line-height:2.6;">Loading...</div><div class="grid-2" style="margin-top:15px;"><button class="btn-green" id="pdfBtn" onclick="exportMonthlyPDF()">Export PDF</button><button class="btn-green" style="background:#4285f4;" onclick="updateFinance()">Sync Cloud</button></div></div>
     </div>
     <div id="jobsTab" class="hidden"><div id="jobMasterList"></div></div>
@@ -62,8 +60,8 @@
             <textarea id="j-addr" rows="2" placeholder="Address"></textarea>
             <div class="grid-2"><input type="text" id="j-brand" placeholder="Brand"><input type="text" id="j-hp" placeholder="HP/Model"></div>
             <textarea id="j-desc" rows="2" placeholder="Problem Details"></textarea>
-            <label style="font-size:12px;color:var(--p-green);font-weight:bold;">Assign Staff</label>
-            <div id="staffChecks" style="border:1px solid var(--border);padding:10px;border-radius:10px;max-height:130px;overflow-y:auto;margin:10px 0;background:rgba(0,0,0,0.1);"></div>
+            <label style="font-size:11px;color:var(--p-green);font-weight:bold;">Assign Staff</label>
+            <div id="staffChecks" style="border:1px solid var(--border);padding:10px;border-radius:10px;max-height:120px;overflow-y:auto;margin:10px 0;background:rgba(0,0,0,0.1);"></div>
             <div class="grid-2"><input type="date" id="j-date"><input type="number" id="j-cost" placeholder="Total Cost"></div>
             <div class="grid-2"><input type="number" id="j-paid" placeholder="Advance/Paid"><select id="j-status"><option value="Pending">Job Pending</option><option value="Done">Job Done</option></select></div>
             <button class="btn-green" id="saveJobBtn" onclick="saveJob()">SAVE SERVICE</button>
@@ -76,23 +74,30 @@
     <div id="settingsTab" class="hidden">
         <div class="card" style="padding:0; overflow:hidden;">
             <div style="background:var(--p-green); padding:30px 20px; text-align:center; color:white;">
-                <img src="1000064267.png" style="width:85px; height:85px; border-radius:50%; border:3px solid white; box-shadow:0 4px 10px rgba(0,0,0,0.3);">
+                <img src="1000064267.png" style="width:90px; height:90px; border-radius:50%; border:3px solid white; box-shadow:0 4px 10px rgba(0,0,0,0.3);">
                 <h3 style="margin:15px 0 5px 0;">Oasis AC Sales & Service</h3>
                 <p style="font-size:12px; opacity:0.9;">Professional Air-Conditioning Solutions</p>
+                <p style="font-size:11px; margin-top:5px; font-weight:bold;">Since 2000</p>
             </div>
             <div style="padding:20px;">
                 <div class="st-row"><span>Business Owner</span> <b>Ko Htay Aung</b></div>
-                <div class="st-row"><span>Lead Engineer</span> <b>Zwe Maung Maung</b></div>
-                <div class="st-row"><span>Application Version</span> <b>3.1.0 (Ultimate AI)</b></div>
+                <div class="st-row"><span>Developer</span> <b>Zwe Maung Maung</b></div>
+                <div class="st-row"><span>App Version</span> <b>3.1.1 (Ultimate AI)</b></div>
                 <div class="st-row"><span>Database Status</span> <b style="color:var(--p-green)">Connected (Real-time)</b></div>
-                <div style="margin-top:20px; font-size:11px; color:#888; text-align:center; line-height:1.6;">
-                    This application is developed specifically for King Engineering Air-Con Service to manage site reports and finances efficiently.
-                </div>
+                <h4 style="color:var(--p-green); margin:20px 0 10px 0; border-bottom:1px solid var(--border); padding-bottom:5px;">App Features</h4>
+                <ul style="font-size:12px; line-height:1.8; color:#aaa; padding-left:20px;">
+                    <li>Financial Tracking (Income, Expense, Debt)</li>
+                    <li>Site Report Management (Entry & History)</li>
+                    <li>Automatic Staff Salary Calculation</li>
+                    <li>Daily Attendance Management</li>
+                    <li>Monthly PDF Master Report Export</li>
+                    <li>Real-time Cloud Sync with AI Ready Data</li>
+                </ul>
             </div>
         </div>
     </div>
 </div>
-<div class="fixed-footer">© 2026 <b>Zwe Maung Maung</b> | King Engineering</div>
+<div class="fixed-footer">© 2026 <b>Zwe Maung Maung</b></div>
 <div id="jobModal" class="modal"><div class="modal-content"><h3>Edit Job Entry</h3><div id="jobEditForm"></div><button class="btn-green" onclick="updateJob()">UPDATE DATA</button><button class="btn-green" onclick="deleteDoc('jobs', window.currentId)" style="background:#e74c3c; margin-top:10px;">DELETE RECORD</button><button class="btn-green" onclick="closeModal('jobModal')" style="background:#666; margin-top:10px;">CANCEL</button></div></div>
 <div id="editModal" class="modal"><div class="modal-content"><h3>Edit Financial Record</h3><div id="editForm"></div><button class="btn-green" onclick="updateRecord()">UPDATE RECORD</button><button class="btn-green" onclick="deleteDoc(window.currentCol, window.currentId)" style="background:#e74c3c; margin-top:10px;">DELETE</button><button class="btn-green" onclick="closeModal('editModal')" style="background:#666; margin-top:10px;">CANCEL</button></div></div>
 <script>
