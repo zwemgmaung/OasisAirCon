@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oasis Master Sync v3.8.0</title>
+    <title>Oasis Master Sync v3.8.5</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -13,31 +13,26 @@
         [data-theme="light"] { --bg: #ffffff; --text: #333; --card: #f8f9fa; --border: #ddd; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: var(--text); padding-bottom: 90px; }
         
-        /* Login Page UI Fix */
         #login-screen { position: fixed; inset: 0; background: radial-gradient(circle at center, #1e1e1e, #000); display: flex; align-items: center; justify-content: center; z-index: 6000; padding: 20px; }
-        #login-box { background: rgba(30, 30, 30, 0.9); backdrop-filter: blur(10px); padding: 40px 30px; border-radius: 30px; border: 1px solid var(--p-green); text-align: center; width: 100%; max-width: 380px; box-shadow: 0 0 20px rgba(40, 167, 69, 0.2); }
+        #login-box { background: rgba(30, 30, 30, 0.9); backdrop-filter: blur(10px); padding: 40px 30px; border-radius: 30px; border: 1px solid var(--p-green); text-align: center; width: 100%; max-width: 380px; }
         .login-logo { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--p-green); margin-bottom: 20px; }
         
         .header { background: var(--p-green); color: white; padding: 8px 15px; display: flex; align-items: center; position: sticky; top: 0; z-index: 2000; height: 65px; gap: 12px; }
-        .logo-img { width: 48px; height: 48px; border-radius: 50%; border: 2px solid white; cursor: pointer; transition: 0.3s; }
-        .logo-img:active { transform: scale(0.9); }
+        .logo-img { width: 48px; height: 48px; border-radius: 50%; border: 2px solid white; cursor: pointer; }
 
-        .nav-tabs { display: flex; overflow-x: auto; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 65px; z-index: 1000; scrollbar-width: none; }
+        .nav-tabs { display: flex; overflow-x: auto; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 65px; z-index: 1000; scrollbar-width: none; white-space: nowrap; }
         .tab-btn { padding: 15px 20px; flex: none; cursor: pointer; font-weight: bold; font-size: 11px; color: #888; border-bottom: 3px solid transparent; }
         .tab-btn.active { color: var(--p-green); border-bottom-color: var(--p-green); background: rgba(40, 167, 69, 0.1); }
         
         .container { padding: 15px; max-width: 800px; margin: auto; }
-        .card { background: var(--card); padding: 18px; border-radius: 15px; margin-bottom: 12px; border: 1px solid var(--border); position: relative; }
-        input, select, textarea { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg); color: var(--text); box-sizing: border-box; margin-bottom: 12px; outline: none; }
-        
+        .card { background: var(--card); padding: 18px; border-radius: 15px; margin-bottom: 12px; border: 1px solid var(--border); }
+        input, select, textarea { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg); color: var(--text); box-sizing: border-box; margin-bottom: 12px; }
         .btn-green { background: var(--p-green); color: white; border: none; padding: 15px; border-radius: 12px; width: 100%; font-weight: bold; cursor: pointer; }
         .st-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 0.5px solid var(--border); font-size: 14px; }
         
-        /* Ultra HD Logo Modal */
         #hdModal { position: fixed; inset: 0; background: rgba(0,0,0,1); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 7000; padding: 20px; }
-        #hdModal img { max-width: 100%; border-radius: 10px; box-shadow: 0 0 30px rgba(255,255,255,0.2); }
+        #hdModal img { max-width: 100%; border-radius: 10px; }
         .close-hd { position: absolute; top: 20px; right: 20px; color: white; font-size: 30px; cursor: pointer; }
-
         .hidden { display: none !important; }
     </style>
 </head>
@@ -56,83 +51,70 @@
 
 <div class="header">
     <img src="1000064267.png" class="logo-img" onclick="openHD()">
-    <div style="flex:1">
-        <b style="font-size:16px;">Ko Htay Aung (Oasis)</b><br>
-        <small>Air-Con Sales & Service</small>
-    </div>
-    <button onclick="toggleTheme()" style="background:none; border:none; color:white; font-size:20px;">🌓</button>
+    <div style="flex:1"><b>Ko Htay Aung (Oasis)</b><br><small>Air-Con Sales & Service</small></div>
 </div>
 
-<div class="nav-tabs">
-    <div class="tab-btn active" onclick="showTab('home')" id="t-home">HOME</div>
-    <div class="tab-btn" onclick="showTab('jobs')" id="t-jobs">JOBS</div>
-    <div class="tab-btn" onclick="showTab('service')" id="t-service">ENTRY</div>
-    <div class="tab-btn" onclick="showTab('purchase')" id="t-purchase">PURCHASE</div>
-    <div class="tab-btn" onclick="showTab('sale')" id="t-sale">SALE</div>
-    <div class="tab-btn" onclick="showTab('staff')" id="t-staff">STAFF</div>
-    <div class="tab-btn" onclick="showTab('attendance')" id="t-attendance">ATTEND</div>
-    <div class="tab-btn" onclick="showTab('settings')" id="t-settings">SETTINGS</div>
+<div class="nav-tabs" id="mainTabs">
+    <div class="tab-btn active" data-tab="home">HOME</div>
+    <div class="tab-btn" data-tab="jobs">JOBS</div>
+    <div class="tab-btn" data-tab="service">ENTRY</div>
+    <div class="tab-btn" data-tab="purchase">PURCHASE</div>
+    <div class="tab-btn" data-tab="sale">SALE</div>
+    <div class="tab-btn" data-tab="staff">STAFF</div>
+    <div class="tab-btn" data-tab="attendance">ATTEND</div>
+    <div class="tab-btn" data-tab="settings">SETTINGS</div>
 </div>
 
 <div class="container">
-    <div id="homeTab">
-        <div class="card"><h3>Daily Dashboard</h3><div id="dFin">Calculating...</div></div>
-        <div class="card"><h3>Monthly Summary</h3><div id="mFin">Calculating...</div>
-            <button class="btn-green" style="margin-top:15px;" onclick="generateDetailedPDF()">Download A3 Full Report</button>
-        </div>
+    <div id="homeTab" class="tab-content">
+        <div class="card"><h3>Daily Dashboard</h3><div id="dFin">Loading Data...</div></div>
+        <div class="card"><h3>Monthly Summary</h3><div id="mFin">Loading Data...</div></div>
     </div>
-    <div id="jobsTab" class="hidden"><div id="jobList"></div></div>
-    <div id="serviceTab" class="hidden">
+    <div id="jobsTab" class="tab-content hidden"><div id="jobList">No jobs found.</div></div>
+    <div id="serviceTab" class="tab-content hidden">
         <div class="card">
             <h3>New Service Entry</h3>
             <input type="text" id="j-n" placeholder="Customer Name">
-            <select id="j-t">
-                <option>Air-Con</option><option>Refrigerator</option>
-                <option>Washing Machine</option><option>Chiller</option>
-            </select>
+            <select id="j-t"><option>Air-Con</option><option>Refrigerator</option><option>Washing Machine</option><option>Chiller</option></select>
             <textarea id="j-d" placeholder="Problem Details"></textarea>
-            <label style="font-size:12px; color:var(--p-green); font-weight:bold;">Assign Staff</label>
-            <div id="staffChecks" style="border:1px solid #333; padding:12px; border-radius:12px; margin:10px 0;"></div>
+            <div id="staffChecks" style="margin-bottom:10px;"></div>
             <input type="number" id="j-c" placeholder="Total Cost">
-            <input type="number" id="j-pd" placeholder="Paid Amount">
             <button class="btn-green" onclick="saveJob()">SAVE SERVICE</button>
         </div>
     </div>
-    <div id="staffTab" class="hidden"><div id="staffList"></div></div>
-    <div id="attendanceTab" class="hidden"><div class="card"><h3>Attendance</h3><div id="attTable"></div><button class="btn-green" id="saveAttBtn" onclick="saveAttendance()">SUBMIT TODAY</button></div></div>
-    
-    <div id="settingsTab" class="hidden">
-        <div class="card" style="padding:0; overflow:hidden;">
-            <div style="background:var(--p-green); padding:30px; text-align:center; color:white;">
-                <img src="1000064267.png" style="width:90px; border-radius:50%; border:3px solid white;" onclick="openHD()">
-                <h3 style="margin:10px 0 0 0;">Ko Htay Aung (Oasis)</h3>
-                <p style="font-size:12px; opacity:0.8;">Air-Con Sales and Service</p>
-            </div>
-            <div style="padding:20px;">
-                <div class="st-row"><span>Authorized Owner</span> <b>Ko Htay Aung</b></div>
-                <div class="st-row"><span>Developer</span> <b>Zwe Maung Maung</b></div>
-                <div class="st-row"><span>App Version</span> <b>3.8.0 (Pro Sync)</b></div>
-                <div class="st-row"><span>Cloud Server</span> <b>Connected</b></div>
-                <button class="btn-green" style="background:#c00; margin-top:20px;" onclick="doLogout()">LOGOUT FROM SYSTEM</button>
-            </div>
+    <div id="staffTab" class="tab-content hidden"><div id="staffList"></div></div>
+    <div id="attendanceTab" class="tab-content hidden"><div id="attTable"></div><button class="btn-green" id="saveAttBtn" onclick="saveAttendance()">SUBMIT TODAY</button></div>
+    <div id="settingsTab" class="tab-content hidden">
+        <div class="card">
+            <div style="text-align:center;"><img src="1000064267.png" style="width:80px; border-radius:50%;" onclick="openHD()"><h3>Ko Htay Aung (Oasis)</h3></div>
+            <div class="st-row"><span>Authorized Owner</span> <b>Ko Htay Aung</b></div>
+            <div class="st-row"><span>Developer</span> <b>Zwe Maung Maung</b></div>
+            <button class="btn-green" style="background:#c00; margin-top:20px;" onclick="doLogout()">LOGOUT</button>
         </div>
     </div>
 </div>
 
-<div id="hdModal">
-    <span class="close-hd" onclick="closeHD()">&times;</span>
-    <img src="1000064267.png">
-    <p style="color:white; margin-top:15px; font-weight:bold;">Ultra HD Logo View</p>
-</div>
+<div id="hdModal"><span class="close-hd" onclick="closeHD()">&times;</span><img src="1000064267.png"></div>
 <script>
     const firebaseConfig = { apiKey: "AIzaSyAOgPQkaq0mLdzi9jNZK-oRCEa_VsmD_cE", authDomain: "oasis-ac-service.firebaseapp.com", projectId: "oasis-ac-service", storageBucket: "oasis-ac-service.firebasestorage.app", messagingSenderId: "1039018990829", appId: "1:1039018990829:web:bffe0ea0269bfbded780e4" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // Persistent Login Logic
-    if(localStorage.getItem('OasisLogged') === 'true') {
-        document.getElementById('login-screen').style.display='none';
-    }
+    // Fix for Tab Clicking
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const target = btn.dataset.tab;
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.getElementById(target + 'Tab').classList.remove('hidden');
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            if(target === 'home') updateFinance();
+            if(target === 'jobs') loadJobs();
+            if(target === 'staff') loadStaff();
+            if(target === 'attendance') loadAttendance();
+        });
+    });
 
     function doLogin() {
         const u = document.getElementById('l-user').value.trim();
@@ -140,99 +122,47 @@
         if((u === "Oasis" || u === "Oasis ") && p === "oasis@2000") {
             localStorage.setItem('OasisLogged','true');
             location.reload();
-        } else { alert("Access Denied!"); }
+        } else { alert("Login Failed"); }
     }
-
-    function doLogout() {
-        localStorage.removeItem('OasisLogged');
-        location.reload();
-    }
-
-    // HD Modal Logic
+    if(localStorage.getItem('OasisLogged') === 'true') document.getElementById('login-screen').style.display='none';
+    function doLogout() { localStorage.removeItem('OasisLogged'); location.reload(); }
     function openHD() { document.getElementById('hdModal').style.display = 'flex'; }
     function closeHD() { document.getElementById('hdModal').style.display = 'none'; }
 
-    // Dashboard Finance Logic
     async function updateFinance() {
         const today = new Date().toISOString().split('T')[0];
-        const [jobs, staff, att, sales, purs] = await Promise.all([
-            db.collection("jobs").get(),
-            db.collection("staff").get(),
-            db.collection("attendance").get(),
-            db.collection("sales").get(),
-            db.collection("purchases").get()
-        ]);
-
-        let d_coll=0, d_sal=0, m_coll=0, m_rec=0, m_sal=0;
+        const [jobs, att, staff] = await Promise.all([db.collection("jobs").get(), db.collection("attendance").get(), db.collection("staff").get()]);
+        
+        let d_coll = 0, m_coll = 0, d_sal = 0;
         const rates = {}; staff.forEach(s => rates[s.data().name] = s.data().rate || 0);
 
-        // Daily Calculation
         jobs.forEach(j => {
             const v = j.data();
             m_coll += (v.paid || 0);
-            m_rec += ((v.cost || 0) - (v.paid || 0));
             if(v.date === today) d_coll += (v.paid || 0);
         });
 
         att.forEach(a => {
-            const data = a.data();
-            data.records.forEach(r => {
-                if(r.status === 'Present') {
-                    const amt = rates[r.name] || 0;
-                    m_sal += amt;
-                    if(data.date === today) d_sal += amt;
-                }
-            });
+            if(a.data().date === today) {
+                a.data().records.forEach(r => { if(r.status === 'Present') d_sal += rates[r.name] || 0; });
+            }
         });
 
-        document.getElementById('dFin').innerHTML = `
-            <div class="st-row"><span>Today Collected:</span><b>${d_coll.toLocaleString()}</b></div>
-            <div class="st-row"><span>Staff Salary:</span><b>${d_sal.toLocaleString()}</b></div>
-            <div class="st-row"><span>Daily Profit:</span><b style="color:var(--p-green)">${(d_coll - d_sal).toLocaleString()}</b></div>
-        `;
-
-        document.getElementById('mFin').innerHTML = `
-            <div class="st-row"><span>Monthly Collected:</span><b>${m_coll.toLocaleString()}</b></div>
-            <div class="st-row"><span>Receivable:</span><b style="color:var(--accent)">+${m_rec.toLocaleString()}</b></div>
-            <div class="st-row" style="border-top:1px solid var(--p-green); margin-top:10px;">
-                <span>Net Balance:</span><b style="font-size:18px; color:var(--p-green)">${(m_coll - m_sal).toLocaleString()}</b>
-            </div>
-        `;
+        document.getElementById('dFin').innerHTML = `<div class="st-row"><span>Today:</span><b>${d_coll}</b></div><div class="st-row"><span>Salary:</span><b>${d_sal}</b></div>`;
+        document.getElementById('mFin').innerHTML = `<div class="st-row"><span>Monthly:</span><b>${m_coll}</b></div>`;
     }
 
-    // PDF Report A3 Size
-    async function generateDetailedPDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF('p', 'mm', 'a3');
-        doc.setFontSize(22);
-        doc.text("Oasis AC Sales & Service - Comprehensive Report", 15, 20);
-        
-        // Data from Firebase (Jobs Table)
-        const jSnap = await db.collection("jobs").get();
-        const body = jSnap.docs.map(d => [d.data().date, d.data().name, d.data().cost, d.data().status]);
-        doc.autoTable({ startY: 30, head: [['Date', 'Customer', 'Total Cost', 'Status']], body: body });
-
-        // Attendance Table
-        const aSnap = await db.collection("attendance").orderBy("date","desc").limit(5).get();
-        const aBody = [];
-        aSnap.forEach(a => a.data().records.forEach(r => aBody.push([a.data().date, r.name, r.status])));
-        doc.autoTable({ startY: doc.lastAutoTable.finalY + 15, head: [['Date', 'Staff', 'Status']], body: aBody });
-
-        doc.save(`Oasis_Report_${new Date().toLocaleDateString()}.pdf`);
+    function loadJobs() {
+        db.collection("jobs").orderBy("timestamp", "desc").get().then(sn => {
+            document.getElementById('jobList').innerHTML = sn.docs.map(d => `<div class="card"><b>${d.data().name}</b> - ${d.data().status}</div>`).join('');
+        });
     }
 
-    function showTab(t) {
-        document.querySelectorAll('.container > div').forEach(el => el.classList.add('hidden'));
-        document.getElementById(t+'Tab').classList.remove('hidden');
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('t-'+t).classList.add('active');
-        if(t==='home') updateFinance();
+    function loadStaff() {
+        db.collection("staff").get().then(sn => {
+            document.getElementById('staffList').innerHTML = sn.docs.map(d => `<div class="card"><b>${d.data().name}</b> (${d.data().role})</div>`).join('');
+        });
     }
 
-    function toggleTheme() {
-        document.body.setAttribute('data-theme', document.body.getAttribute('data-theme')==='light'?'dark':'light');
-    }
-
-    window.onload = () => { if(localStorage.getItem('OasisLogged')==='true') showTab('home'); };
-                     </script>
-                     
+    window.onload = () => { if(localStorage.getItem('OasisLogged')==='true') updateFinance(); };
+</script>
